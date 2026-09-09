@@ -1,0 +1,350 @@
+// FORECAST — database schema (Phase 1)
+// Postgres + Prisma. Internal data stays language-neutral: e.g.
+// decision_style = "analytical", never a translated string.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------- Identity & preferences ----------
+
+model User {
+  id                String   @id @default(cuid())
+  email             String   @unique
+  passwordHash      String?
+  name              String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  deletedAt         DateTime? // soft delete for account deletion requests
+
+  preferredLanguage String   @default("en-us") // e.g. en-us, en-gb, de, ar
+  preferredLocale   String   @default("en-US")
+  countryCode       String?  // ISO 3166-1 alpha-2, kept separate from language
+  timezone          String?  @default("UTC")
+  currency          String   @default("USD")
+
+  behavioralProfile BehavioralProfile?
+  forecasts         Forecast[]
+  insights          UserInsight[]
+  aiRequests        AIRequest[]
+  usageCredits      UsageCredit[]
+  subscription      Subscription?
+  payments          Payment[]
+  referralsSent     Referral[]      @relation("ReferralSender")
+  referralsReceived Referral[]      @relation("ReferralReceiver")
+  feedback          Feedback[]
+  analyticsEvents   AnalyticsEvent[]
+  teamMemberships   TeamMember[]
+
+  @@index([email])
+}
+
+// ---------- Behavioral profile (non-diagnostic) ----------
+
+model BehavioralProfile {
+  id                        String   @id @default(cuid())
+  userId                    String   @unique
+  user                      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  decisionStyle             String?  // e.g. "analytical" | "intuitive" | "mixed"
+  riskTolerance             String?  // "low" | "moderate" | "high"
+  conflictStyle             String?
+  communicationStyle        String?
+  uncertaintyTolerance      String?
+  planningStyle             String?
+  decisionSpeed             String?
+  adaptability              String?
+  pressureResponse          String?
+  socialInterpretationStyle String?
+  negativeInterpretationTendency Boolean @default(false)
+  overthinkingTendency      Boolean @default(false)
+  riskSensitivity           String?
+  needForCertainty          String?
+  conflictAvoidance         Boolean @default(false)
+  catastrophizingTendency   Boolean @default(false)
+  goals                     Json?   // free-form structured goals/priorities
+
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+
+  answers                   BehavioralAnswer[]
+}
+
+model BehavioralAnswer {
+  id                  String   @id @default(cuid())
+  profileId           String
+  profile             BehavioralProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  questionKey         String   // stable, language-neutral key into the question bank
+  answerValue         String   // structured, language-neutral value
+  createdAt           DateTime @default(now())
+
+  @@index([profileId])
+}
+
+// ---------- Forecasts ----------
+
+model Forecast {
+  id               String   @id @default(cuid())
+  userId           String?  // nullable: supports the pre-signup Free Forecast
+  user             User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  situationText    String
+  mode             String   @default("general") // "general" | "decision" | "business"
+  parentForecastId String?  // set when this is an update to a prior forecast
+  parent           Forecast? @relation("ForecastHistory", fields: [parentForecastId], references: [id])
+  updates          Forecast[] @relation("ForecastHistory")
+
+  isPublicShared   Boolean  @default(false)
+  shareSlug        String?  @unique
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  variables        ForecastVariable[]
+  scenarios        Scenario[]
+  forecastUpdates  ForecastUpdate[]
+  outcomeRecord    OutcomeRecord?
+  aiRequests       AIRequest[]
+  businessForecast BusinessForecast?
+
+  @@index([userId])
+}
+
+model ForecastVariable {
+  id           String   @id @default(cuid())
+  forecastId   String
+  forecast     Forecast @relation(fields: [forecastId], references: [id], onDelete: Cascade)
+
+  kind         String   // "fact" | "assumption" | "unknown" | "behavioral" | "external" | "controllable" | "uncontrollable"
+  content      String
+  createdAt    DateTime @default(now())
+
+  @@index([forecastId, kind])
+}
+
+model Scenario {
+  id                    String   @id @default(cuid())
+  forecastId            String
+  forecast              Forecast @relation(fields: [forecastId], references: [id], onDelete: Cascade)
+
+  title                 String
+  description           String
+  likelihood            String   // "low" | "moderate" | "high" (no fake precision, see docs)
+  confidence            String
+  impact                String
+  evidence              Json?
+  assumptions           Json?
+  triggers              Json?
+  earlyWarningSigns     Json?
+  likelihoodIncreasesIf Json?
+  likelihoodDecreasesIf Json?
+  likelyUserResponse    String?
+  recommendedResponse   String?
+  contingencyPlan       String?
+
+  createdAt             DateTime @default(now())
+
+  @@index([forecastId])
+}
+
+model ForecastUpdate {
+  id            String   @id @default(cuid())
+  forecastId    String
+  forecast      Forecast @relation(fields: [forecastId], references: [id], onDelete: Cascade)
+
+  newInformation String
+  changedVariables Json?
+  explanation    String?
+  createdAt      DateTime @default(now())
+
+  @@index([forecastId])
+}
+
+model OutcomeRecord {
+  id             String   @id @default(cuid())
+  forecastId     String   @unique
+  forecast       Forecast @relation(fields: [forecastId], references: [id], onDelete: Cascade)
+
+  actualOutcome  String
+  outcomeDate    DateTime
+  userResponse   String?
+  result         String?
+  whatWentRight  Json?
+  whatWasMissed  Json?
+  wrongAssumptions Json?
+
+  createdAt      DateTime @default(now())
+}
+
+model BusinessForecast {
+  id            String   @id @default(cuid())
+  forecastId    String   @unique
+  forecast      Forecast @relation(fields: [forecastId], references: [id], onDelete: Cascade)
+
+  facts         Json?
+  assumptions   Json?
+  estimates     Json?
+  breakEven     Json?
+  sensitivity   Json?
+  createdAt     DateTime @default(now())
+}
+
+model UserInsight {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  tendencyKey String   // e.g. "negative_interpretation", "overthinking"
+  explanation String
+  confirmedByUser Boolean? // user can inspect/correct learned patterns
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+}
+
+// ---------- AI usage / cost tracking ----------
+
+model AIRequest {
+  id                 String   @id @default(cuid())
+  userId             String?
+  user               User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  forecastId         String?
+  forecast           Forecast? @relation(fields: [forecastId], references: [id], onDelete: SetNull)
+
+  provider           String   // "anthropic" | "openai" | "google" | ...
+  model              String
+  requestType        String   // "fact_extraction" | "scenario_generation" | ...
+  inputTokens        Int      @default(0)
+  outputTokens       Int      @default(0)
+  cachedTokens       Int      @default(0)
+  cacheCreationTokens Int     @default(0)
+  estimatedCostUsd   Decimal  @default(0) @db.Decimal(10, 6)
+  latencyMs          Int?
+  createdAt          DateTime @default(now())
+
+  @@index([userId])
+  @@index([forecastId])
+  @@index([provider, model])
+}
+
+// ---------- Billing ----------
+
+model UsageCredit {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  granted     Int      @default(0)
+  consumed    Int      @default(0)
+  refunded    Int      @default(0)
+  purchased   Int      @default(0)
+  reason      String?
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Subscription {
+  id                   String   @id @default(cuid())
+  userId               String   @unique
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  plan                 String   // "free" | "pro" | "premium" | "business"
+  status               String   // "active" | "past_due" | "canceled" | ...
+  stripeCustomerId     String?
+  stripeSubscriptionId String?
+  currentPeriodEnd     DateTime?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+model Payment {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  amountCents     Int
+  currency        String
+  stripePaymentId String?  @unique
+  status          String
+  createdAt       DateTime @default(now())
+
+  @@index([userId])
+}
+
+// ---------- Referrals ----------
+
+model Referral {
+  id            String   @id @default(cuid())
+  senderId      String
+  sender        User     @relation("ReferralSender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiverId    String?
+  receiver      User?    @relation("ReferralReceiver", fields: [receiverId], references: [id], onDelete: SetNull)
+
+  code          String   @unique
+  status        String   @default("pending") // "pending" | "completed" | "blocked"
+  createdAt     DateTime @default(now())
+
+  rewards       ReferralReward[]
+}
+
+model ReferralReward {
+  id           String   @id @default(cuid())
+  referralId   String
+  referral     Referral @relation(fields: [referralId], references: [id], onDelete: Cascade)
+
+  creditsGranted Int
+  createdAt      DateTime @default(now())
+}
+
+// ---------- Feedback / analytics ----------
+
+model Feedback {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  content   String
+  rating    Int?
+  createdAt DateTime @default(now())
+}
+
+model AnalyticsEvent {
+  id         String   @id @default(cuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  eventName  String
+  properties Json?
+  source     String?  // "organic" | "seo" | "tiktok" | "referral" | ...
+  createdAt  DateTime @default(now())
+
+  @@index([eventName])
+  @@index([userId])
+}
+
+// ---------- B2B / Teams ----------
+
+model Team {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+
+  members   TeamMember[]
+}
+
+model TeamMember {
+  id       String   @id @default(cuid())
+  teamId   String
+  team     Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  userId   String
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role     String   @default("member") // "owner" | "admin" | "member"
+
+  @@unique([teamId, userId])
+}
