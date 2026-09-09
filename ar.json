@@ -1,0 +1,32 @@
+{
+  "nav": {
+    "home": "الرئيسية",
+    "howItWorks": "كيف يعمل",
+    "pricing": "الأسعار",
+    "login": "تسجيل الدخول",
+    "signup": "إنشاء حساب"
+  },
+  "hero": {
+    "title": "ماذا يمكن أن يحدث بعد ذلك؟",
+    "subtitle": "ذكاء سلوكي للتنبؤ بالسيناريوهات",
+    "tagline": "فوركاست لا يتنبأ بالمستقبل، بل يساعدك على الاستعداد لما قد يحدث بعد ذلك.",
+    "ctaPrimary": "جرّب توقعًا مجانيًا",
+    "ctaSecondary": "شاهد كيف يعمل"
+  },
+  "forecast": {
+    "situationLabel": "صف موقفك",
+    "factsHeading": "الحقائق",
+    "assumptionsHeading": "الافتراضات",
+    "unknownsHeading": "المجاهيل",
+    "scenariosHeading": "السيناريوهات المحتملة",
+    "likelihood": "الاحتمالية",
+    "confidence": "درجة الثقة",
+    "impact": "الأثر",
+    "recommendedResponse": "الاستجابة الموصى بها",
+    "contingencyPlan": "خطة الطوارئ"
+  },
+  "errors": {
+    "generic": "حدث خطأ ما. حاول مرة أخرى.",
+    "rateLimited": "لقد وصلت إلى الحد الأقصى للتوقعات المجانية. أنشئ حسابًا للمتابعة."
+  }
+}
