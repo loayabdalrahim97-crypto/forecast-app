@@ -8,6 +8,11 @@ export default function LocaleHome({ params: { locale } }: { params: { locale: s
     <main style={{ padding: "2rem" }}>
       <h1>FORECAST</h1>
       <p>Phase 1 scaffold — locale: {locale}</p>
+      <p>
+        <a href={`/${locale}/onboarding`} style={{ color: "var(--fc-accent)" }}>
+          Behavioral Profile onboarding (Phase 2) →
+        </a>
+      </p>
     </main>
   );
 }
