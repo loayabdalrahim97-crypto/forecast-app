@@ -5,6 +5,7 @@ import {
   FollowUpQuestionsSchema,
   OutcomeComparisonSchema,
   DecisionAnalysisOutputSchema,
+  BusinessAnalysisOutputSchema,
 } from "./scenario";
 
 describe("ScenarioGenerationOutputSchema", () => {
@@ -158,6 +159,44 @@ describe("DecisionAnalysisOutputSchema", () => {
       recommendation: "R",
       contingencyPlan: "C",
     });
+    expect(result.success).toBe(false);
+  });
+});
+
+describe("BusinessAnalysisOutputSchema", () => {
+  const valid = {
+    facts: ["User has $500 starting capital"],
+    assumptions: ["User believes there's demand for handmade candles"],
+    estimates: [
+      {
+        label: "Typical customer acquisition cost for a small e-commerce store",
+        value: "$5-15 per customer",
+        basis: "general industry heuristic, not specific market research",
+      },
+    ],
+    breakEvenDescription: "Roughly 50 units at current cost/price assumptions.",
+    sensitivity: ["Cost of materials"],
+    upside: ["Low overhead"],
+    downside: ["Saturated market"],
+    executionRisk: "moderate",
+    recommendation: "Start with a small batch to validate demand before scaling.",
+  };
+
+  it("accepts a well-formed business analysis", () => {
+    const result = BusinessAnalysisOutputSchema.safeParse(valid);
+    expect(result.success).toBe(true);
+  });
+
+  it("requires every estimate to state its basis (section 16 - never fabricate market data)", () => {
+    const result = BusinessAnalysisOutputSchema.safeParse({
+      ...valid,
+      estimates: [{ label: "Market size", value: "$1B" }],
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects a fabricated numeric executionRisk instead of a band", () => {
+    const result = BusinessAnalysisOutputSchema.safeParse({ ...valid, executionRisk: "62%" });
     expect(result.success).toBe(false);
   });
 });
