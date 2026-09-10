@@ -43,3 +43,40 @@ export function analysisToVariableRows(analysis: SituationAnalysis): ForecastVar
   }
   return rows;
 }
+
+/**
+ * Inverse of analysisToVariableRows: groups stored ForecastVariable rows
+ * back into flat string lists by kind, for handing to the Scenario
+ * Engine prompt. Unknown/unrecognized kinds are ignored rather than
+ * throwing — a forecast should never fail to generate scenarios because
+ * of one stray row.
+ */
+export function groupVariablesByKind(
+  rows: ForecastVariableRow[]
+): Record<
+  "facts" | "assumptions" | "unknowns" | "behavioralVariables" | "externalVariables",
+  string[]
+> {
+  const grouped = {
+    facts: [] as string[],
+    assumptions: [] as string[],
+    unknowns: [] as string[],
+    behavioralVariables: [] as string[],
+    externalVariables: [] as string[],
+  };
+
+  const kindToGroup: Record<string, keyof typeof grouped> = {
+    fact: "facts",
+    assumption: "assumptions",
+    unknown: "unknowns",
+    behavioral: "behavioralVariables",
+    external: "externalVariables",
+  };
+
+  for (const row of rows) {
+    const group = kindToGroup[row.kind];
+    if (group) grouped[group].push(row.content);
+  }
+
+  return grouped;
+}
