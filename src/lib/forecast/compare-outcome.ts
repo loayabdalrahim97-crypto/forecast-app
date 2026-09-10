@@ -22,6 +22,6 @@ export async function compareOutcomeToForecast(params: {
     systemPrompt: OUTCOME_COMPARISON_SYSTEM_PROMPT_V1,
     userPrompt: buildOutcomeComparisonUserPrompt({ ...params, languageName }),
     schema: OutcomeComparisonSchema,
-    maxOutputTokens: 1536,
+    maxOutputTokens: 3072, // raised proactively — same truncation bug class hit two other endpoints already
   });
 }
