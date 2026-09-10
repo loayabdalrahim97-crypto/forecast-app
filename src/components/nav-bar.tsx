@@ -29,15 +29,7 @@ export function NavBar({ locale }: { locale: string }) {
   const { data: session, status } = useSession();
 
   return (
-    <nav
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        padding: "1.1rem 2rem",
-        borderBottom: "1px solid var(--fc-border)",
-      }}
-    >
+    <nav className="fc-nav">
       <a
         href={`/${locale}`}
         style={{
@@ -54,7 +46,7 @@ export function NavBar({ locale }: { locale: string }) {
         <Logo size={22} />
         Foresee
       </a>
-      <div style={{ display: "flex", gap: "1.5rem", alignItems: "center" }}>
+      <div className="fc-nav-links">
         <LanguageSwitcher locale={locale} />
         <a href={`/${locale}/forecast/new`} style={linkStyle}>
           {t(locale, "hero.ctaPrimary")}
@@ -64,11 +56,23 @@ export function NavBar({ locale }: { locale: string }) {
         </a>
         {status === "authenticated" ? (
           <>
-            <span style={{ ...linkStyle, color: "var(--fc-text-muted)" }}>{session.user?.email}</span>
+            <span
+              className="fc-nav-email"
+              style={{
+                ...linkStyle,
+                color: "var(--fc-text-muted)",
+                maxWidth: 160,
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {session.user?.email}
+            </span>
             <button
               onClick={() => signOut({ callbackUrl: `/${locale}` })}
               className="fc-btn fc-btn-secondary"
-              style={{ padding: "0.4rem 0.85rem", fontSize: "0.82rem" }}
+              style={{ padding: "0.4rem 0.85rem", fontSize: "0.82rem", minHeight: "auto" }}
             >
               {t(locale, "nav.login") === "Log in" ? "Log out" : "تسجيل خروج"}
             </button>
@@ -78,7 +82,11 @@ export function NavBar({ locale }: { locale: string }) {
             <a href={`/${locale}/login`} style={linkStyle}>
               {t(locale, "nav.login")}
             </a>
-            <a href={`/${locale}/signup`} className="fc-btn fc-btn-primary" style={{ padding: "0.45rem 0.9rem", fontSize: "0.82rem" }}>
+            <a
+              href={`/${locale}/signup`}
+              className="fc-btn fc-btn-primary"
+              style={{ padding: "0.45rem 0.9rem", fontSize: "0.82rem", minHeight: "auto" }}
+            >
               {t(locale, "nav.signup")}
             </a>
           </>
