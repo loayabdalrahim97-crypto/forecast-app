@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { RealityCheckBarometer } from "@/components/reality-check-barometer";
 import { ExecutiveSummary } from "@/components/executive-summary";
 import { ScenarioAccordion, type AccordionScenario } from "@/components/scenario-accordion";
+import { DownloadPdfButton } from "@/components/download-pdf-button";
 import enUs from "../../../../../messages/en-us.json";
 import ar from "../../../../../messages/ar.json";
 
@@ -126,6 +127,8 @@ export default function NewForecastPage({ params }: { params: { locale: string }
   const [additionalInfo, setAdditionalInfo] = useState("");
   const [updateStatus, setUpdateStatus] = useState<"idle" | "loading" | "error">("idle");
   const [scenariosStale, setScenariosStale] = useState(false);
+
+  const resultsRef = useRef<HTMLDivElement>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -298,6 +301,11 @@ export default function NewForecastPage({ params }: { params: { locale: string }
 
       {status === "done" && result && (
         <div style={{ marginTop: "1.5rem" }}>
+          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "0.75rem" }}>
+            <DownloadPdfButton targetRef={resultsRef} filename="foresee-forecast.pdf" locale={locale} />
+          </div>
+
+          <div ref={resultsRef}>
           {scenarioStatus === "done" && scenarios.length > 0 && mostLikely && (
             <ExecutiveSummary
               locale={locale}
@@ -486,6 +494,7 @@ export default function NewForecastPage({ params }: { params: { locale: string }
               )}
             </section>
           )}
+          </div>
         </div>
       )}
     </main>
