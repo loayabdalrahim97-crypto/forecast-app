@@ -23,6 +23,8 @@
     "unknownsHeading": "Unknowns",
     "followUpHeading": "A couple of things that would help",
     "scenariosHeading": "Possible scenarios",
+    "generateScenariosButton": "Generate scenarios",
+    "generatingScenariosText": "Generating scenarios...",
     "likelihood": "Likelihood",
     "confidence": "Confidence",
     "impact": "Impact",
