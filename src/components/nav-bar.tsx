@@ -60,7 +60,7 @@ export function NavBar({ locale }: { locale: string }) {
             boxShadow: "0 0 0 3px var(--fc-accent-soft)",
           }}
         />
-        FORECAST
+        Foresee
       </a>
       <div style={{ display: "flex", gap: "1.5rem", alignItems: "center" }}>
         <LanguageSwitcher locale={locale} />
