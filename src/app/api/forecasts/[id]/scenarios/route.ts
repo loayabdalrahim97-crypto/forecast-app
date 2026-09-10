@@ -22,8 +22,8 @@ const BodySchema = z.object({
 /**
  * POST /api/forecasts/:id/scenarios
  *
- * §13/§14: generates 3-6 scenarios for a forecast that already has a
- * Situation Analysis. §9/§19: if the requester is signed in and has a
+ * §13/§14: generates exactly 3 scenarios (best/most likely/worst) for
+ * a forecast that already has a Situation Analysis. §9/§19: if the requester is signed in and has a
  * Behavioral Profile, it's folded into the prompt so
  * "likelyUserResponse" reflects their actual tendencies — anonymous
  * Free Forecast users just don't get that personalization (§8, still
@@ -100,9 +100,14 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   }
 
   try {
+    // Regenerating replaces the previous set rather than accumulating
+    // duplicates — the accordion always shows exactly one best/likely/
+    // worst set.
+    await prisma.scenario.deleteMany({ where: { forecastId: forecast.id } });
     await prisma.scenario.createMany({
       data: result.data.scenarios.map((s) => ({
         forecastId: forecast.id,
+        outcomeType: s.outcomeType,
         title: s.title,
         description: s.description,
         likelihood: s.likelihood,
