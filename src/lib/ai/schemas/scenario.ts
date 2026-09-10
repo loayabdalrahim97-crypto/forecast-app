@@ -6,7 +6,10 @@ const LikelihoodBand = z.enum(["low", "moderate", "high"]);
 const ConfidenceBand = z.enum(["low", "moderate", "high"]);
 const ImpactBand = z.enum(["low", "moderate", "high"]);
 
+export const ScenarioOutcomeType = z.enum(["best_case", "most_likely", "worst_case"]);
+
 export const ScenarioSchema = z.object({
+  outcomeType: ScenarioOutcomeType,
   title: z.string().min(1).max(120),
   description: z.string().min(1).max(1000),
   likelihood: LikelihoodBand,
@@ -23,8 +26,21 @@ export const ScenarioSchema = z.object({
   contingencyPlan: z.string().max(500).nullable().default(null),
 });
 
+// Exactly 3 scenarios, one of each outcome type — this replaced the
+// earlier "3 to 6 generic scenarios" design at the product's request,
+// to match a fixed 3-card accordion (best / most likely / worst) in
+// the UI rather than a variable-length list.
 export const ScenarioGenerationOutputSchema = z.object({
-  scenarios: z.array(ScenarioSchema).min(3).max(6),
+  scenarios: z
+    .array(ScenarioSchema)
+    .length(3)
+    .refine(
+      (scenarios) => {
+        const types = scenarios.map((s) => s.outcomeType).sort();
+        return JSON.stringify(types) === JSON.stringify(["best_case", "most_likely", "worst_case"]);
+      },
+      { message: "Scenarios must contain exactly one best_case, one most_likely, and one worst_case" }
+    ),
 });
 
 export type Scenario = z.infer<typeof ScenarioSchema>;
