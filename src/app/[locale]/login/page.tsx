@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
+import { GoogleSignInButton } from "@/components/google-signin-button";
 import enUs from "../../../../messages/en-us.json";
 import ar from "../../../../messages/ar.json";
 
@@ -41,6 +42,7 @@ export default function LoginPage({ params }: { params: { locale: string } }) {
   return (
     <main style={{ padding: "2.5rem 2rem", maxWidth: 400, margin: "0 auto" }}>
       <h1>{t(locale, "nav.login")}</h1>
+      <GoogleSignInButton locale={locale} callbackUrl={`/${locale}`} />
       <form onSubmit={handleSubmit}>
         <label htmlFor="email" className="fc-label">
           Email
