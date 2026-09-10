@@ -15,9 +15,13 @@
   },
   "forecast": {
     "situationLabel": "صف موقفك",
+    "situationPlaceholder": "مثال: مديري طلب مني اجتماع بكرة بدون ما يوضح السبب...",
+    "submitButton": "حلل الموقف",
+    "analyzingText": "جاري التحليل...",
     "factsHeading": "الحقائق",
     "assumptionsHeading": "الافتراضات",
     "unknownsHeading": "المجاهيل",
+    "followUpHeading": "كم شي بيساعد لو عرفناهم",
     "scenariosHeading": "السيناريوهات المحتملة",
     "likelihood": "الاحتمالية",
     "confidence": "درجة الثقة",
