@@ -102,3 +102,24 @@ export const DecisionAnalysisOutputSchema = z.object({
   recommendation: z.string().min(1).max(1000),
   contingencyPlan: z.string().min(1).max(1000),
 });
+
+// §16: Business Decision Mode. "estimates" are explicitly distinct from
+// facts/assumptions — each one must state its basis, since §16
+// forbids fabricating market data as if it were established fact.
+export const BusinessEstimateSchema = z.object({
+  label: z.string().min(1).max(150),
+  value: z.string().min(1).max(200),
+  basis: z.string().min(1).max(300),
+});
+
+export const BusinessAnalysisOutputSchema = z.object({
+  facts: z.array(z.string()).default([]),
+  assumptions: z.array(z.string()).default([]),
+  estimates: z.array(BusinessEstimateSchema).default([]),
+  breakEvenDescription: z.string().min(1).max(500),
+  sensitivity: z.array(z.string()).default([]),
+  upside: z.array(z.string()).default([]),
+  downside: z.array(z.string()).default([]),
+  executionRisk: z.enum(["low", "moderate", "high"]),
+  recommendation: z.string().min(1).max(1000),
+});
