@@ -30,6 +30,23 @@ export const ScenarioSchema = z.object({
 // earlier "3 to 6 generic scenarios" design at the product's request,
 // to match a fixed 3-card accordion (best / most likely / worst) in
 // the UI rather than a variable-length list.
+//
+// recommendedAction / whatCouldChangeForecast were added so the
+// product answers "what should I do now?" and "what would change this
+// forecast?" directly, as one synthesized answer rather than making
+// the person infer it from three separate scenario cards.
+export const RecommendedActionSchema = z.object({
+  summary: z.string().min(1).max(500),
+  conditionalBranches: z
+    .array(
+      z.object({
+        condition: z.string().min(1).max(200),
+        action: z.string().min(1).max(300),
+      })
+    )
+    .default([]),
+});
+
 export const ScenarioGenerationOutputSchema = z.object({
   scenarios: z
     .array(ScenarioSchema)
@@ -41,6 +58,8 @@ export const ScenarioGenerationOutputSchema = z.object({
       },
       { message: "Scenarios must contain exactly one best_case, one most_likely, and one worst_case" }
     ),
+  recommendedAction: RecommendedActionSchema,
+  whatCouldChangeForecast: z.array(z.string().min(1).max(300)).max(3).default([]),
 });
 
 export type Scenario = z.infer<typeof ScenarioSchema>;
