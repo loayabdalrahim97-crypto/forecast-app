@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { BandGauge, normalizeBand } from "@/components/band-gauge";
 import enUs from "../../../../../messages/en-us.json";
 import ar from "../../../../../messages/ar.json";
 
@@ -17,25 +18,6 @@ function t(locale: string, path: string): string {
   return typeof value === "string" ? value : path;
 }
 
-type Band = "low" | "moderate" | "high";
-
-function normalizeBand(value: string): Band {
-  const v = value.toLowerCase();
-  if (v === "low" || v === "moderate" || v === "high") return v;
-  return "moderate";
-}
-
-function BandPill({ locale, labelKey, value }: { locale: string; labelKey: string; value: string }) {
-  const band = normalizeBand(value);
-  return (
-    <span
-      className="fc-pill"
-      style={{ color: `var(--fc-band-${band})`, background: `var(--fc-band-${band}-soft)` }}
-    >
-      {t(locale, labelKey)}: {value}
-    </span>
-  );
-}
 
 interface ForecastVariable {
   kind: string;
@@ -86,30 +68,42 @@ function ScenarioCard({ locale, scenario }: { locale: string; scenario: Scenario
       className="fc-strip"
       style={{ ["--fc-strip-color" as string]: `var(--fc-band-${normalizeBand(scenario.impact)})`, marginBottom: "1rem" }}
     >
-      <h3 style={{ margin: "0 0 0.4rem", fontSize: "1.05rem" }}>{scenario.title}</h3>
-      <p style={{ color: "var(--fc-text-secondary)", lineHeight: 1.55, margin: "0 0 0.75rem" }}>
+      <h3 style={{ margin: "0 0 0.75rem", fontSize: "1.05rem" }}>{scenario.title}</h3>
+
+      <div style={{ display: "flex", gap: "1.25rem", flexWrap: "wrap", marginBottom: "0.9rem" }}>
+        <BandGauge label={t(locale, "forecast.likelihood")} value={scenario.likelihood} />
+        <BandGauge label={t(locale, "forecast.confidence")} value={scenario.confidence} />
+        <BandGauge label={t(locale, "forecast.impact")} value={scenario.impact} />
+      </div>
+
+      <p style={{ color: "var(--fc-text-secondary)", lineHeight: 1.55, margin: "0 0 0.9rem", fontSize: "0.92rem" }}>
         {scenario.description}
       </p>
-      <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginBottom: "0.75rem" }}>
-        <BandPill locale={locale} labelKey="forecast.likelihood" value={scenario.likelihood} />
-        <BandPill locale={locale} labelKey="forecast.confidence" value={scenario.confidence} />
-        <BandPill locale={locale} labelKey="forecast.impact" value={scenario.impact} />
-      </div>
-      {scenario.recommendedResponse && (
-        <p style={{ margin: "0 0 0.5rem", fontSize: "0.92rem" }}>
-          <strong style={{ color: "var(--fc-text-secondary)", fontWeight: 600 }}>
-            {t(locale, "forecast.recommendedResponse")}:
-          </strong>{" "}
-          {scenario.recommendedResponse}
-        </p>
-      )}
-      {scenario.contingencyPlan && (
-        <p style={{ margin: 0, fontSize: "0.92rem" }}>
-          <strong style={{ color: "var(--fc-text-secondary)", fontWeight: 600 }}>
-            {t(locale, "forecast.contingencyPlan")}:
-          </strong>{" "}
-          {scenario.contingencyPlan}
-        </p>
+
+      {(scenario.recommendedResponse || scenario.contingencyPlan) && (
+        <div
+          style={{
+            borderTop: "1px solid var(--fc-border)",
+            paddingTop: "0.75rem",
+            display: "grid",
+            gap: "0.5rem",
+          }}
+        >
+          {scenario.recommendedResponse && (
+            <p style={{ margin: 0, fontSize: "0.88rem" }}>
+              <span style={{ color: "var(--fc-text-muted)" }}>{t(locale, "forecast.recommendedResponse")}</span>
+              <br />
+              {scenario.recommendedResponse}
+            </p>
+          )}
+          {scenario.contingencyPlan && (
+            <p style={{ margin: 0, fontSize: "0.88rem" }}>
+              <span style={{ color: "var(--fc-text-muted)" }}>{t(locale, "forecast.contingencyPlan")}</span>
+              <br />
+              {scenario.contingencyPlan}
+            </p>
+          )}
+        </div>
       )}
     </div>
   );
@@ -139,22 +133,43 @@ function DecisionOptionCard({ locale, opt }: { locale: string; opt: DecisionOpti
       className="fc-strip"
       style={{ ["--fc-strip-color" as string]: `var(--fc-band-${normalizeBand(opt.risk)})`, marginBottom: "1rem" }}
     >
-      <h3 style={{ margin: "0 0 0.5rem", fontSize: "1.05rem" }}>{opt.option}</h3>
-      <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginBottom: "0.75rem" }}>
-        <BandPill locale={locale} labelKey="decision.risk" value={opt.risk} />
-        <BandPill locale={locale} labelKey="decision.reversibility" value={opt.reversibility} />
+      <h3 style={{ margin: "0 0 0.75rem", fontSize: "1.05rem" }}>{opt.option}</h3>
+
+      <div style={{ display: "flex", gap: "1.25rem", flexWrap: "wrap", marginBottom: "0.9rem" }}>
+        <BandGauge label={t(locale, "decision.risk")} value={opt.risk} />
+        <BandGauge label={t(locale, "decision.reversibility")} value={opt.reversibility} />
       </div>
-      <SectionList locale={locale} headingKey="decision.upside" items={opt.upside} />
-      <SectionList locale={locale} headingKey="decision.downside" items={opt.downside} />
-      <p style={{ margin: "0 0 0.35rem", fontSize: "0.9rem" }}>
-        <strong style={{ color: "var(--fc-text-secondary)" }}>{t(locale, "decision.bestCase")}:</strong> {opt.bestCase}
-      </p>
-      <p style={{ margin: "0 0 0.35rem", fontSize: "0.9rem" }}>
-        <strong style={{ color: "var(--fc-text-secondary)" }}>{t(locale, "decision.baseCase")}:</strong> {opt.baseCase}
-      </p>
-      <p style={{ margin: 0, fontSize: "0.9rem" }}>
-        <strong style={{ color: "var(--fc-text-secondary)" }}>{t(locale, "decision.worstCase")}:</strong> {opt.worstCase}
-      </p>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "0.9rem" }}>
+        <SectionList locale={locale} headingKey="decision.upside" items={opt.upside} />
+        <SectionList locale={locale} headingKey="decision.downside" items={opt.downside} />
+      </div>
+
+      <div
+        style={{
+          borderTop: "1px solid var(--fc-border)",
+          paddingTop: "0.75rem",
+          display: "grid",
+          gap: "0.4rem",
+          fontSize: "0.88rem",
+        }}
+      >
+        <p style={{ margin: 0 }}>
+          <span style={{ color: "var(--fc-text-muted)" }}>{t(locale, "decision.bestCase")}</span>
+          <br />
+          {opt.bestCase}
+        </p>
+        <p style={{ margin: 0 }}>
+          <span style={{ color: "var(--fc-text-muted)" }}>{t(locale, "decision.baseCase")}</span>
+          <br />
+          {opt.baseCase}
+        </p>
+        <p style={{ margin: 0 }}>
+          <span style={{ color: "var(--fc-text-muted)" }}>{t(locale, "decision.worstCase")}</span>
+          <br />
+          {opt.worstCase}
+        </p>
+      </div>
     </div>
   );
 }
