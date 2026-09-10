@@ -8,6 +8,7 @@ import { analysisToVariableRows } from "@/lib/forecast/variable-rows";
 import { AIValidationError } from "@/lib/ai/orchestrator";
 import { isWithinRateLimit, FREE_FORECAST_RATE_LIMIT } from "@/lib/rate-limit/free-forecast-limit";
 import { getClientIp } from "@/lib/rate-limit/get-client-ip";
+import { logAIRequest } from "@/lib/ai/log-request";
 
 const RATE_LIMIT_EVENT_NAME = "anonymous_forecast_created";
 
@@ -95,6 +96,11 @@ export async function POST(req: NextRequest) {
     },
     include: { variables: true },
   });
+
+  await logAIRequest(analysisResult.meta, { userId, forecastId: forecast.id });
+  if (followUp.meta) {
+    await logAIRequest(followUp.meta, { userId, forecastId: forecast.id });
+  }
 
   if (!userId) {
     await prisma.analyticsEvent.create({
