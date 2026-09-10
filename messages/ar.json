@@ -23,6 +23,8 @@
     "unknownsHeading": "المجاهيل",
     "followUpHeading": "كم شي بيساعد لو عرفناهم",
     "scenariosHeading": "السيناريوهات المحتملة",
+    "generateScenariosButton": "ولّد السيناريوهات",
+    "generatingScenariosText": "جاري توليد السيناريوهات...",
     "likelihood": "الاحتمالية",
     "confidence": "درجة الثقة",
     "impact": "الأثر",
