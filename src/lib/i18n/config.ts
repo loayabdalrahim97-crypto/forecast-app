@@ -23,6 +23,31 @@ export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
 
 export const RTL_LOCALES: SupportedLocale[] = ["ar"];
 
+// §3: "AI responses must use the user's selected language." This is the
+// mapping AI prompts use to tell the model which language to answer in
+// — the model must never infer output language from the input text,
+// since a user can type in one language while browsing in another.
+export const LOCALE_LANGUAGE_NAMES: Record<SupportedLocale, string> = {
+  "en-us": "English",
+  "en-gb": "English",
+  de: "German",
+  fr: "French",
+  es: "Spanish",
+  it: "Italian",
+  nl: "Dutch",
+  pt: "Portuguese",
+  pl: "Polish",
+  sv: "Swedish",
+  da: "Danish",
+  no: "Norwegian",
+  fi: "Finnish",
+  ar: "Arabic",
+};
+
+export function languageNameForLocale(locale: string): string {
+  return LOCALE_LANGUAGE_NAMES[locale as SupportedLocale] ?? LOCALE_LANGUAGE_NAMES[DEFAULT_LOCALE];
+}
+
 export const DEFAULT_LOCALE: SupportedLocale = "en-us";
 
 export function isRtl(locale: string): boolean {
