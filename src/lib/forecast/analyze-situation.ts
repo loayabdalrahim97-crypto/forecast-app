@@ -6,15 +6,23 @@ import {
   buildFollowUpQuestionsUserPrompt,
 } from "@/lib/ai/prompts/situation-analysis";
 import { SituationAnalysisSchema, FollowUpQuestionsSchema } from "@/lib/ai/schemas/scenario";
+import { languageNameForLocale } from "@/lib/i18n/config";
 import type { z } from "zod";
 
 export type SituationAnalysis = z.infer<typeof SituationAnalysisSchema>;
 
-export async function analyzeSituation(situationText: string) {
+/**
+ * §3: "AI responses must use the user's selected language" — not the
+ * language the user happened to type in. `locale` is the site locale
+ * (e.g. "ar", "en-us"), resolved by the caller the same way any other
+ * page content is.
+ */
+export async function analyzeSituation(situationText: string, locale: string) {
+  const languageName = languageNameForLocale(locale);
   return AIOrchestrator.run<SituationAnalysis>({
     requestType: "situation_analysis",
     systemPrompt: SITUATION_ANALYSIS_SYSTEM_PROMPT_V1,
-    userPrompt: buildSituationAnalysisUserPrompt(situationText),
+    userPrompt: buildSituationAnalysisUserPrompt(situationText, languageName),
     schema: SituationAnalysisSchema,
     maxOutputTokens: 1024,
   });
@@ -29,15 +37,21 @@ export async function analyzeSituation(situationText: string) {
 export async function generateFollowUpQuestions(params: {
   situationText: string;
   unknowns: string[];
+  locale: string;
 }) {
   if (params.unknowns.length === 0) {
     return { data: { questions: [] as string[] }, meta: null };
   }
 
+  const languageName = languageNameForLocale(params.locale);
   return AIOrchestrator.run<{ questions: string[] }>({
     requestType: "question_generation",
     systemPrompt: FOLLOW_UP_QUESTIONS_SYSTEM_PROMPT_V1,
-    userPrompt: buildFollowUpQuestionsUserPrompt(params),
+    userPrompt: buildFollowUpQuestionsUserPrompt({
+      situationText: params.situationText,
+      unknowns: params.unknowns,
+      languageName,
+    }),
     schema: FollowUpQuestionsSchema,
     maxOutputTokens: 512,
   });
