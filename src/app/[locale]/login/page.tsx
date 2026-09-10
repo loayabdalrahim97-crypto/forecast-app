@@ -39,10 +39,10 @@ export default function LoginPage({ params }: { params: { locale: string } }) {
   }
 
   return (
-    <main style={{ padding: "2rem", maxWidth: 400 }}>
+    <main style={{ padding: "2.5rem 2rem", maxWidth: 400, margin: "0 auto" }}>
       <h1>{t(locale, "nav.login")}</h1>
       <form onSubmit={handleSubmit}>
-        <label htmlFor="email" style={{ display: "block", marginBottom: "0.25rem" }}>
+        <label htmlFor="email" className="fc-label">
           Email
         </label>
         <input
@@ -51,9 +51,9 @@ export default function LoginPage({ params }: { params: { locale: string } }) {
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          style={inputStyle}
+          className="fc-input"
         />
-        <label htmlFor="password" style={{ display: "block", marginBottom: "0.25rem" }}>
+        <label htmlFor="password" className="fc-label">
           Password
         </label>
         <input
@@ -62,9 +62,9 @@ export default function LoginPage({ params }: { params: { locale: string } }) {
           required
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          style={inputStyle}
+          className="fc-input"
         />
-        <button type="submit" disabled={status === "loading"}>
+        <button type="submit" className="fc-btn fc-btn-primary" disabled={status === "loading"} style={{ marginTop: "0.25rem" }}>
           {t(locale, "nav.login")}
         </button>
       </form>
@@ -80,12 +80,4 @@ export default function LoginPage({ params }: { params: { locale: string } }) {
   );
 }
 
-const inputStyle = {
-  width: "100%",
-  padding: "0.5rem",
-  borderRadius: "var(--fc-radius-md)",
-  border: "1px solid var(--fc-border)",
-  background: "var(--fc-bg-card)",
-  color: "var(--fc-text-primary)",
-  marginBottom: "1rem",
-};
+
