@@ -25,6 +25,11 @@ export async function generateScenarios(params: {
     systemPrompt: SCENARIO_GENERATION_SYSTEM_PROMPT_V1,
     userPrompt: buildScenarioGenerationUserPrompt({ ...params, languageName }),
     schema: ScenarioGenerationOutputSchema,
-    maxOutputTokens: 2048,
+    // 3-6 scenarios, each with title/description/evidence/triggers/
+    // earlyWarningSigns/likelihoodIncreasesIf/likelihoodDecreasesIf/
+    // likelyUserResponse/recommendedResponse/contingencyPlan, adds up
+    // fast — 2048 was cutting the response off mid-JSON (confirmed via
+    // the AIValidationError raw output in production logs).
+    maxOutputTokens: 4096,
   });
 }
