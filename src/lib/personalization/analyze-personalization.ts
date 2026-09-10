@@ -28,6 +28,6 @@ export async function analyzePersonalization(params: {
     systemPrompt: PERSONALIZATION_ANALYSIS_SYSTEM_PROMPT_V1,
     userPrompt: buildPersonalizationAnalysisUserPrompt({ ...params, languageName }),
     schema: PersonalizationInsightsSchema,
-    maxOutputTokens: 1024,
+    maxOutputTokens: 2048, // raised proactively — same truncation bug class hit two other endpoints already
   });
 }
