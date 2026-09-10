@@ -189,7 +189,9 @@ export default function NewForecastPage({ params }: { params: { locale: string }
         body: JSON.stringify({ situationText, locale }),
       });
       if (!res.ok) {
-        setErrorMessage(t(locale, "errors.generic"));
+        setErrorMessage(
+          res.status === 429 ? t(locale, "errors.rateLimited") : t(locale, "errors.generic")
+        );
         setStatus("error");
         return;
       }
