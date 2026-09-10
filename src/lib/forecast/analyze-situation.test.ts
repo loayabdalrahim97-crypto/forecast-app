@@ -9,6 +9,7 @@ describe("generateFollowUpQuestions", () => {
     const result = await generateFollowUpQuestions({
       situationText: "Everything about this is already clear.",
       unknowns: [],
+      locale: "en-us",
     });
     expect(result.data.questions).toEqual([]);
     expect(result.meta).toBeNull();
