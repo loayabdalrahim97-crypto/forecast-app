@@ -47,3 +47,14 @@ export const FollowUpQuestionsSchema = z.object({
   questions: z.array(z.string().min(1).max(300)).max(3),
 });
 
+
+// §18: compares what was forecast against what actually happened.
+// "matchedScenarioTitle" is null when no generated scenario matches
+// reality well — that's a valid and useful outcome to record (it means
+// the Scenario Engine missed something), never forced to pick one.
+export const OutcomeComparisonSchema = z.object({
+  matchedScenarioTitle: z.string().nullable(),
+  whatWentRight: z.array(z.string()).default([]),
+  whatWasMissed: z.array(z.string()).default([]),
+  wrongAssumptions: z.array(z.string()).default([]),
+});
