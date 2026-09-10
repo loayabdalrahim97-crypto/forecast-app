@@ -14,76 +14,92 @@ function t(locale: string, path: string): string {
   return typeof value === "string" ? value : path;
 }
 
-function FeatureCard({ href, title, description }: { href: string; title: string; description: string }) {
+function BandPill({ label, band }: { label: string; band: "low" | "moderate" | "high" }) {
+  const colorVar = `var(--fc-band-${band})`;
+  const bgVar = `var(--fc-band-${band}-soft)`;
   return (
-    <a
-      href={href}
-      style={{
-        display: "block",
-        border: "1px solid var(--fc-border)",
-        borderRadius: "var(--fc-radius-lg)",
-        background: "var(--fc-bg-card)",
-        padding: "1.5rem",
-        textDecoration: "none",
-        color: "var(--fc-text-primary)",
-      }}
-    >
-      <h3 style={{ marginTop: 0 }}>{title}</h3>
-      <p style={{ color: "var(--fc-text-secondary)", margin: 0 }}>{description}</p>
-    </a>
+    <span className="fc-pill" style={{ color: colorVar, background: bgVar }}>
+      {label}
+    </span>
   );
 }
 
 export default function LocaleHome({ params: { locale } }: { params: { locale: string } }) {
-  return (
-    <main style={{ padding: "3rem 2rem", maxWidth: 900, margin: "0 auto" }}>
-      <section style={{ textAlign: "center", marginBottom: "3rem" }}>
-        <h1 style={{ fontSize: "2.5rem", marginBottom: "0.5rem" }}>{t(locale, "hero.title")}</h1>
-        <p style={{ color: "var(--fc-accent)", fontWeight: 600, letterSpacing: "0.05em" }}>
-          {t(locale, "hero.subtitle")}
-        </p>
-        <p style={{ color: "var(--fc-text-secondary)", maxWidth: 500, margin: "1rem auto" }}>
-          {t(locale, "hero.tagline")}
-        </p>
-        <a
-          href={`/${locale}/forecast/new`}
-          style={{
-            display: "inline-block",
-            marginTop: "1rem",
-            padding: "0.75rem 1.5rem",
-            borderRadius: "var(--fc-radius-md)",
-            background: "var(--fc-accent)",
-            color: "white",
-            textDecoration: "none",
-            fontWeight: 600,
-          }}
-        >
-          {t(locale, "hero.ctaPrimary")}
-        </a>
-      </section>
+  const isRtlLocale = locale === "ar";
 
+  return (
+    <main style={{ padding: "3.5rem 2rem 4rem", maxWidth: 980, margin: "0 auto" }}>
       <section
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-          gap: "1rem",
+          gridTemplateColumns: "1.1fr 1fr",
+          gap: "2.5rem",
+          alignItems: "center",
         }}
       >
-        <FeatureCard
-          href={`/${locale}/forecast/new`}
-          title={t(locale, "hero.ctaPrimary")}
-          description={t(locale, "forecast.situationLabel")}
-        />
-        <FeatureCard
-          href={`/${locale}/onboarding`}
-          title={t(locale, "onboarding.title")}
-          description={t(locale, "onboarding.intro")}
-        />
-        <FeatureCard
-          href={`/${locale}/signup`}
-          title={t(locale, "nav.signup")}
-          description={t(locale, "outcome.heading")}
-        />
+        <div>
+          <h1 style={{ fontSize: "2.4rem", margin: "0 0 0.75rem" }}>{t(locale, "hero.title")}</h1>
+          <p
+            style={{
+              color: "var(--fc-accent)",
+              fontFamily: "var(--fc-font-heading)",
+              fontWeight: 500,
+              margin: "0 0 1rem",
+            }}
+          >
+            {t(locale, "hero.subtitle")}
+          </p>
+          <p style={{ color: "var(--fc-text-secondary)", maxWidth: 440, lineHeight: 1.6, margin: "0 0 1.75rem" }}>
+            {t(locale, "hero.tagline")}
+          </p>
+          <a href={`/${locale}/forecast/new`} className="fc-btn fc-btn-primary" style={{ fontSize: "0.95rem" }}>
+            {t(locale, "hero.ctaPrimary")}
+          </a>
+        </div>
+
+        {/* The hero visual is a real example of the product's output —
+            a scenario card, not a decorative icon grid — so the first
+            thing a visitor sees is what FORECAST actually produces. */}
+        <div className="fc-strip" style={{ ["--fc-strip-color" as string]: "var(--fc-band-moderate)" }}>
+          <p style={{ fontSize: "0.8rem", color: "var(--fc-text-muted)", margin: "0 0 0.4rem" }}>
+            {isRtlLocale ? "مثال على النتيجة" : "Example output"}
+          </p>
+          <h3 style={{ margin: "0 0 0.5rem", fontSize: "1.05rem" }}>
+            {isRtlLocale ? "عرض مشروط بمراجعة أداء" : "Conditional offer, tied to a review"}
+          </h3>
+          <p style={{ color: "var(--fc-text-secondary)", fontSize: "0.9rem", lineHeight: 1.55, margin: "0 0 0.9rem" }}>
+            {isRtlLocale
+              ? "المدير بيوافق على زيادة، بس بربطها بمراجعة أداء بعد ثلاث شهور بدل ما يوافق فوراً."
+              : "The manager agrees to a raise, but ties it to a performance check-in in three months rather than approving it outright."}
+          </p>
+          <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+            <BandPill label={isRtlLocale ? "احتمالية: متوسطة" : "Likelihood: moderate"} band="moderate" />
+            <BandPill label={isRtlLocale ? "تأثير: مرتفع" : "Impact: high"} band="high" />
+          </div>
+        </div>
+      </section>
+
+      <section style={{ marginTop: "4rem" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "1rem" }}>
+          <a href={`/${locale}/forecast/new`} className="fc-strip" style={{ textDecoration: "none", color: "inherit" }}>
+            <h3 style={{ margin: "0 0 0.4rem", fontSize: "1rem" }}>{t(locale, "hero.ctaPrimary")}</h3>
+            <p style={{ color: "var(--fc-text-secondary)", margin: 0, fontSize: "0.88rem" }}>
+              {t(locale, "forecast.situationLabel")}
+            </p>
+          </a>
+          <a href={`/${locale}/onboarding`} className="fc-strip" style={{ textDecoration: "none", color: "inherit" }}>
+            <h3 style={{ margin: "0 0 0.4rem", fontSize: "1rem" }}>{t(locale, "onboarding.title")}</h3>
+            <p style={{ color: "var(--fc-text-secondary)", margin: 0, fontSize: "0.88rem" }}>
+              {t(locale, "onboarding.intro")}
+            </p>
+          </a>
+          <a href={`/${locale}/signup`} className="fc-strip" style={{ textDecoration: "none", color: "inherit" }}>
+            <h3 style={{ margin: "0 0 0.4rem", fontSize: "1rem" }}>{t(locale, "nav.signup")}</h3>
+            <p style={{ color: "var(--fc-text-secondary)", margin: 0, fontSize: "0.88rem" }}>
+              {t(locale, "outcome.heading")}
+            </p>
+          </a>
+        </div>
       </section>
     </main>
   );
