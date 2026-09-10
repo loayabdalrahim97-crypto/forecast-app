@@ -93,6 +93,56 @@ function ScenarioCard({ locale, scenario }: { locale: string; scenario: Scenario
   );
 }
 
+interface DecisionOption {
+  option: string;
+  upside: string[];
+  downside: string[];
+  risk: string;
+  reversibility: string;
+  bestCase: string;
+  baseCase: string;
+  worstCase: string;
+}
+
+interface DecisionAnalysisResult {
+  options: DecisionOption[];
+  keyVariables: string[];
+  recommendation: string;
+  contingencyPlan: string;
+}
+
+function DecisionOptionCard({ locale, opt }: { locale: string; opt: DecisionOption }) {
+  return (
+    <div
+      style={{
+        border: "1px solid var(--fc-border)",
+        borderRadius: "var(--fc-radius-md)",
+        background: "var(--fc-bg-card)",
+        padding: "1rem",
+        marginBottom: "1rem",
+      }}
+    >
+      <h3 style={{ marginTop: 0 }}>{opt.option}</h3>
+      <p style={{ fontSize: "0.85rem" }}>
+        {t(locale, "decision.risk")}: <strong>{opt.risk}</strong>
+        {"  ·  "}
+        {t(locale, "decision.reversibility")}: <strong>{opt.reversibility}</strong>
+      </p>
+      {section(locale, "decision.upside", opt.upside)}
+      {section(locale, "decision.downside", opt.downside)}
+      <p>
+        <strong>{t(locale, "decision.bestCase")}:</strong> {opt.bestCase}
+      </p>
+      <p>
+        <strong>{t(locale, "decision.baseCase")}:</strong> {opt.baseCase}
+      </p>
+      <p>
+        <strong>{t(locale, "decision.worstCase")}:</strong> {opt.worstCase}
+      </p>
+    </div>
+  );
+}
+
 export default function NewForecastPage({ params }: { params: { locale: string } }) {
   const { locale } = params;
   const [situationText, setSituationText] = useState("");
@@ -117,6 +167,12 @@ export default function NewForecastPage({ params }: { params: { locale: string }
       wrongAssumptions: string[];
     };
   } | null>(null);
+
+  const [decisionOptionsInput, setDecisionOptionsInput] = useState("");
+  const [decisionStatus, setDecisionStatus] = useState<"idle" | "loading" | "done" | "error">(
+    "idle"
+  );
+  const [decisionResult, setDecisionResult] = useState<DecisionAnalysisResult | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -169,6 +225,33 @@ export default function NewForecastPage({ params }: { params: { locale: string }
 
   const byKind = (kind: string) =>
     result?.forecast.variables.filter((v) => v.kind === kind).map((v) => v.content) ?? [];
+
+  async function handleAnalyzeDecision(e: React.FormEvent) {
+    e.preventDefault();
+    if (!result) return;
+
+    setDecisionStatus("loading");
+    try {
+      const options = decisionOptionsInput
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+      const res = await fetch(`/api/forecasts/${result.forecast.id}/decision`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ locale, options }),
+      });
+      if (!res.ok) {
+        setDecisionStatus("error");
+        return;
+      }
+      const data = await res.json();
+      setDecisionResult(data.decisionAnalysis);
+      setDecisionStatus("done");
+    } catch {
+      setDecisionStatus("error");
+    }
+  }
 
   async function handleRecordOutcome(e: React.FormEvent) {
     e.preventDefault();
@@ -233,6 +316,59 @@ export default function NewForecastPage({ params }: { params: { locale: string }
           {section(locale, "forecast.unknownsHeading", byKind("unknown"))}
           {result.followUpQuestions.length > 0 &&
             section(locale, "forecast.followUpHeading", result.followUpQuestions)}
+
+          <section style={{ marginTop: "1.5rem", marginBottom: "1.5rem" }}>
+            <h2 style={{ fontSize: "1rem", color: "var(--fc-text-secondary)" }}>
+              {t(locale, "decision.heading")}
+            </h2>
+            <form onSubmit={handleAnalyzeDecision}>
+              <label htmlFor="options" style={{ display: "block", marginBottom: "0.5rem" }}>
+                {t(locale, "decision.optionsLabel")}
+              </label>
+              <input
+                id="options"
+                type="text"
+                value={decisionOptionsInput}
+                onChange={(e) => setDecisionOptionsInput(e.target.value)}
+                placeholder={t(locale, "decision.optionsPlaceholder")}
+                style={{
+                  width: "100%",
+                  padding: "0.5rem",
+                  borderRadius: "var(--fc-radius-md)",
+                  border: "1px solid var(--fc-border)",
+                  background: "var(--fc-bg-card)",
+                  color: "var(--fc-text-primary)",
+                  marginBottom: "0.75rem",
+                }}
+              />
+              <button type="submit" disabled={decisionStatus === "loading"}>
+                {decisionStatus === "loading"
+                  ? t(locale, "decision.analyzingText")
+                  : t(locale, "decision.submitButton")}
+              </button>
+            </form>
+
+            {decisionStatus === "error" && (
+              <p style={{ color: "var(--fc-band-high)" }}>{t(locale, "errors.generic")}</p>
+            )}
+
+            {decisionStatus === "done" && decisionResult && (
+              <div style={{ marginTop: "1rem" }}>
+                {decisionResult.options.map((opt, i) => (
+                  <DecisionOptionCard key={i} locale={locale} opt={opt} />
+                ))}
+                {section(locale, "decision.keyVariables", decisionResult.keyVariables)}
+                <p>
+                  <strong>{t(locale, "decision.recommendation")}:</strong>{" "}
+                  {decisionResult.recommendation}
+                </p>
+                <p>
+                  <strong>{t(locale, "forecast.contingencyPlan")}:</strong>{" "}
+                  {decisionResult.contingencyPlan}
+                </p>
+              </div>
+            )}
+          </section>
 
           {scenarioStatus !== "done" && (
             <button type="button" onClick={handleGenerateScenarios} disabled={scenarioStatus === "loading"}>
