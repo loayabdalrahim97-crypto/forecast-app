@@ -76,6 +76,19 @@
   box-sizing: border-box;
 }
 
+/* Browsers apply their own default text color to <button> (and other
+   form controls) regardless of an inherited `color` — this is exactly
+   why button text can render nearly invisible on a dark background
+   even when the parent's color looks correct. Force real inheritance
+   everywhere instead of trusting each component to override it. */
+button,
+input,
+textarea,
+select {
+  font-family: inherit;
+  color: inherit;
+}
+
 body {
   background: var(--fc-bg-base);
   color: var(--fc-text-primary);
@@ -173,6 +186,7 @@ a {
   border-left: 3px solid var(--fc-strip-color, var(--fc-border-strong));
   border-radius: var(--fc-radius-md);
   padding: 1.1rem 1.25rem;
+  color: var(--fc-text-primary);
 }
 
 /* Small pill for a band value (low/moderate/high), colored via
