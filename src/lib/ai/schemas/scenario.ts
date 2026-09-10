@@ -79,3 +79,26 @@ export const PersonalizationInsightsSchema = z.object({
     )
     .max(3),
 });
+
+// §15: Decision Mode. Each option gets best/base/worst cases and a
+// qualitative risk/reversibility rating — no fabricated numbers.
+const RiskBand = z.enum(["low", "moderate", "high"]);
+const ReversibilityBand = z.enum(["low", "moderate", "high"]);
+
+export const DecisionOptionSchema = z.object({
+  option: z.string().min(1).max(200),
+  upside: z.array(z.string()).default([]),
+  downside: z.array(z.string()).default([]),
+  risk: RiskBand,
+  reversibility: ReversibilityBand,
+  bestCase: z.string().min(1).max(500),
+  baseCase: z.string().min(1).max(500),
+  worstCase: z.string().min(1).max(500),
+});
+
+export const DecisionAnalysisOutputSchema = z.object({
+  options: z.array(DecisionOptionSchema).min(2).max(6),
+  keyVariables: z.array(z.string()).default([]),
+  recommendation: z.string().min(1).max(1000),
+  contingencyPlan: z.string().min(1).max(1000),
+});
