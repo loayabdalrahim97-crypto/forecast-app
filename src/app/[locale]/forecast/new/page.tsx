@@ -185,6 +185,7 @@ export default function NewForecastPage({ params }: { params: { locale: string }
     "idle"
   );
   const [scenarios, setScenarios] = useState<Scenario[]>([]);
+  const [scenarioErrorMessage, setScenarioErrorMessage] = useState<string | null>(null);
 
   const [actualOutcome, setActualOutcome] = useState("");
   const [outcomeStatus, setOutcomeStatus] = useState<"idle" | "loading" | "done" | "error">(
@@ -238,6 +239,7 @@ export default function NewForecastPage({ params }: { params: { locale: string }
   async function handleGenerateScenarios() {
     if (!result) return;
     setScenarioStatus("loading");
+    setScenarioErrorMessage(null);
     try {
       const res = await fetch(`/api/forecasts/${result.forecast.id}/scenarios`, {
         method: "POST",
@@ -245,6 +247,9 @@ export default function NewForecastPage({ params }: { params: { locale: string }
         body: JSON.stringify({ locale }),
       });
       if (!res.ok) {
+        setScenarioErrorMessage(
+          res.status === 429 ? t(locale, "errors.rateLimited") : t(locale, "errors.generic")
+        );
         setScenarioStatus("error");
         return;
       }
@@ -252,6 +257,7 @@ export default function NewForecastPage({ params }: { params: { locale: string }
       setScenarios(data.scenarios);
       setScenarioStatus("done");
     } catch {
+      setScenarioErrorMessage(t(locale, "errors.generic"));
       setScenarioStatus("error");
     }
   }
@@ -402,7 +408,9 @@ export default function NewForecastPage({ params }: { params: { locale: string }
           )}
 
           {scenarioStatus === "error" && (
-            <p style={{ color: "var(--fc-band-high)", marginTop: "0.75rem" }}>{t(locale, "errors.generic")}</p>
+            <p style={{ color: "var(--fc-band-high)", marginTop: "0.75rem" }}>
+              {scenarioErrorMessage ?? t(locale, "errors.generic")}
+            </p>
           )}
 
           {scenarioStatus === "done" && scenarios.length > 0 && (
