@@ -44,6 +44,22 @@
     "wrongAssumptions": "افتراضات طلعت غلط",
     "alreadyRecorded": "سجلت نتيجة لهاد التوقع قبل هيك."
   },
+  "decision": {
+    "heading": "بتواجه قرار؟",
+    "optionsLabel": "اكتب خياراتك مفصولة بفاصلة (اختياري — اتركه فاضي وخلي فوركاست يستنتجهم)",
+    "optionsPlaceholder": "مثال: استقالة، بقاء",
+    "submitButton": "حلل القرار",
+    "analyzingText": "جاري تحليل القرار...",
+    "recommendation": "التوصية",
+    "keyVariables": "المتغيرات الأساسية",
+    "bestCase": "أفضل احتمال",
+    "baseCase": "الاحتمال الأرجح",
+    "worstCase": "أسوأ احتمال",
+    "risk": "المخاطرة",
+    "reversibility": "قابلية التراجع",
+    "upside": "الإيجابيات",
+    "downside": "السلبيات"
+  },
   "errors": {
     "generic": "حدث خطأ ما. حاول مرة أخرى.",
     "rateLimited": "لقد وصلت إلى الحد الأقصى للتوقعات المجانية. أنشئ حسابًا للمتابعة.",
