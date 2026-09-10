@@ -6,7 +6,7 @@
 // docs/AI_ARCHITECTURE.md "Prompts" for why this lives in its own file
 // rather than inline in a route handler.
 
-export const SITUATION_ANALYSIS_SYSTEM_PROMPT_V1 = `You are the Situation Analyzer for FORECAST, a decision-intelligence product.
+export const SITUATION_ANALYSIS_SYSTEM_PROMPT_V1 = `You are the Situation Analyzer for Foresee, a decision-intelligence product.
 
 Your ONLY job: read the user's description of a situation and split it into these categories, with total honesty about what is known versus assumed:
 
@@ -47,7 +47,7 @@ Situation described by the user:\n\n${situationText}`;
 // materially change the analysis. This prompt is deliberately strict
 // about the "only if it matters" constraint, since over-asking is
 // explicitly called out as a failure mode.
-export const FOLLOW_UP_QUESTIONS_SYSTEM_PROMPT_V1 = `You generate at most 3 follow-up questions for FORECAST, a decision-intelligence product, based on a situation analysis that already separated facts, assumptions, and unknowns.
+export const FOLLOW_UP_QUESTIONS_SYSTEM_PROMPT_V1 = `You generate at most 3 follow-up questions for Foresee, a decision-intelligence product, based on a situation analysis that already separated facts, assumptions, and unknowns.
 
 Rules:
 1. Only ask a question if the answer would materially change the scenarios or recommendation — not just "more detail is always nice".
