@@ -23,6 +23,7 @@ export const ROUTING_TABLE: Record<AIRequestType, "cheap" | "standard" | "premiu
   response_prediction: "standard",
   recommendation: "standard",
   sensitivity_analysis: "standard",
+  outcome_comparison: "standard",
 
   complex_decision_analysis: "premium",
 };
