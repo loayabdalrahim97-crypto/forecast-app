@@ -40,3 +40,10 @@ export const SituationAnalysisSchema = z.object({
   controllableVariables: z.array(z.string()).default([]),
   uncontrollableVariables: z.array(z.string()).default([]),
 });
+
+// §12: at most 3 follow-up questions, 0 is valid (over-asking is a
+// failure mode, not a safe default).
+export const FollowUpQuestionsSchema = z.object({
+  questions: z.array(z.string().min(1).max(300)).max(3),
+});
+
