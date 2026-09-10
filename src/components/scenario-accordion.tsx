@@ -51,7 +51,7 @@ function ScenarioAccordionItem({
   const heading = isRtl ? HEADING[outcomeType]?.ar : HEADING[outcomeType]?.en;
   const stripColor =
     outcomeType === "best_case"
-      ? "var(--fc-band-low)"
+      ? "var(--fc-positive)"
       : outcomeType === "worst_case"
         ? "var(--fc-band-high)"
         : "var(--fc-band-moderate)";
