@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import { RecordOutcomeSchema } from "@/lib/forecast/outcome-schema";
 import { compareOutcomeToForecast } from "@/lib/forecast/compare-outcome";
 import { AIValidationError } from "@/lib/ai/orchestrator";
+import { logAIRequest } from "@/lib/ai/log-request";
 
 /**
  * POST /api/forecasts/:id/outcome
@@ -91,6 +92,8 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       wrongAssumptions: comparison.data.wrongAssumptions,
     },
   });
+
+  await logAIRequest(comparison.meta, { userId: forecast.userId, forecastId: forecast.id });
 
   return NextResponse.json(
     {
