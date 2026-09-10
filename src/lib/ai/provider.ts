@@ -9,6 +9,7 @@ export type AIRequestType =
   | "summarization"
   | "question_generation"
   | "json_conversion"
+  | "situation_analysis"
   | "scenario_generation"
   | "behavioral_analysis"
   | "likelihood_estimation"
