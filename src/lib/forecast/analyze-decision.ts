@@ -22,6 +22,6 @@ export async function analyzeDecision(params: {
     systemPrompt: DECISION_ANALYSIS_SYSTEM_PROMPT_V1,
     userPrompt: buildDecisionAnalysisUserPrompt({ ...params, languageName }),
     schema: DecisionAnalysisOutputSchema,
-    maxOutputTokens: 3072,
+    maxOutputTokens: 4096, // raised proactively — same truncation bug class hit two other endpoints already
   });
 }
