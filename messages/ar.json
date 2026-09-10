@@ -27,6 +27,83 @@
   },
   "errors": {
     "generic": "حدث خطأ ما. حاول مرة أخرى.",
-    "rateLimited": "لقد وصلت إلى الحد الأقصى للتوقعات المجانية. أنشئ حسابًا للمتابعة."
+    "rateLimited": "لقد وصلت إلى الحد الأقصى للتوقعات المجانية. أنشئ حسابًا للمتابعة.",
+    "notAuthenticated": "الرجاء تسجيل الدخول لحفظ ملفك السلوكي."
+  },
+  "onboarding": {
+    "title": "تعرّف على أسلوبك في اتخاذ القرار",
+    "intro": "بضعة أسئلة سريعة — بدون تشخيص، فقط أنماط تساعد فوركاست يخصص سيناريوهاتك.",
+    "progress": "سؤال {current} من {total}",
+    "finishButton": "إنهاء",
+    "nextButton": "التالي",
+    "backButton": "رجوع",
+    "completeTitle": "تم الحفظ",
+    "completeBody": "تم حفظ ملفك السلوكي. يمكنك تحديثه في أي وقت.",
+    "questions": {
+      "decision_style": {
+        "prompt": "عند اتخاذ قرار، أنت أقرب إلى...",
+        "options": { "analytical": "تحليلي — أزن الإيجابيات والسلبيات", "intuitive": "حدسي — أعتمد على شعوري", "mixed": "مزيج من الاثنين" }
+      },
+      "risk_tolerance": {
+        "prompt": "ما مدى راحتك في تحمل المخاطر؟",
+        "options": { "low": "أفضّل الأمان", "moderate": "بعض المخاطرة مقبول", "high": "مرتاح مع المخاطرة" }
+      },
+      "conflict_style": {
+        "prompt": "عند وجود خلاف، عادة...",
+        "options": { "direct": "أتعامل معه مباشرة", "diplomatic": "أبحث عن حل وسط", "avoidant": "أحاول تجنبه" }
+      },
+      "communication_style": {
+        "prompt": "أسلوبك بالتواصل أقرب إلى...",
+        "options": { "direct": "مباشر وواضح", "indirect": "غير مباشر ومرتبط بالسياق", "expressive": "تعبيري ومفصّل" }
+      },
+      "uncertainty_tolerance": {
+        "prompt": "كيف تتعامل مع عدم معرفة ما سيحدث؟",
+        "options": { "low": "يزعجني الأمر", "moderate": "أقدر أتعامل معه", "high": "مرتاح معه" }
+      },
+      "planning_style": {
+        "prompt": "تفضّل أن...",
+        "options": { "structured": "تخطط بالتفصيل", "flexible": "يكون عندك خطة مرنة", "spontaneous": "تسير مع الأحداث" }
+      },
+      "decision_speed": {
+        "prompt": "عند اتخاذ قرار، عادة...",
+        "options": { "fast": "تقرر بسرعة", "deliberate": "تأخذ وقتك", "slow": "تحتاج وقت طويل" }
+      },
+      "pressure_response": {
+        "prompt": "تحت الضغط، تصير...",
+        "options": { "focused": "أكثر تركيزاً", "stressed": "أكثر توتراً", "variable": "يعتمد على الموقف" }
+      },
+      "social_interpretation": {
+        "prompt": "لما تكون رسالة شخص غامضة، عادة تفسرها...",
+        "options": { "neutral": "بشكل محايد لحد ما أعرف أكتر", "positive": "غالباً إشي عادي", "cautious": "يستاهل الحذر" }
+      },
+      "negative_interpretation": {
+        "prompt": "هل تميل تفترض الأسوأ لما تكون المعلومات ناقصة؟",
+        "options": { "yes": "إي، كثير", "no": "لأ مش كثير" }
+      },
+      "overthinking": {
+        "prompt": "هل تميل تعيد التفكير بالقرارات كثير؟",
+        "options": { "yes": "إي، كثير", "no": "لأ مش كثير" }
+      },
+      "conflict_avoidance": {
+        "prompt": "هل تميل تتجنب الخلاف حتى لو في إشي يزعجك؟",
+        "options": { "yes": "إي، كثير", "no": "لأ مش كثير" }
+      },
+      "catastrophizing": {
+        "prompt": "هل تميل تتخيل أسوأ احتمال الأول؟",
+        "options": { "yes": "إي، كثير", "no": "لأ مش كثير" }
+      },
+      "risk_sensitivity": {
+        "prompt": "قد إيش الاحتمالات السلبية بتأثر على قراراتك؟",
+        "options": { "low": "مش كثير", "moderate": "بشكل معتدل", "high": "كثير" }
+      },
+      "need_for_certainty": {
+        "prompt": "قد إيش مهم إلك تكون متأكد قبل ما تتصرف؟",
+        "options": { "low": "مش مهم كثير", "moderate": "مهم شوي", "high": "مهم كثير" }
+      },
+      "adaptability": {
+        "prompt": "لما الخطط تتغير فجأة...",
+        "options": { "low": "بصعب علي أتأقلم", "moderate": "بتأقلم بجهد", "high": "بتأقلم بسهولة" }
+      }
+    }
   }
 }
