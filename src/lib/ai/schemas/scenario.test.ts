@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ScenarioGenerationOutputSchema, SituationAnalysisSchema } from "./scenario";
+import { ScenarioGenerationOutputSchema, SituationAnalysisSchema, FollowUpQuestionsSchema } from "./scenario";
 
 describe("ScenarioGenerationOutputSchema", () => {
   const validScenario = {
@@ -60,5 +60,26 @@ describe("SituationAnalysisSchema", () => {
     const result = SituationAnalysisSchema.safeParse({ facts: ["A fact."] });
     expect(result.success).toBe(true);
     expect(result.data?.assumptions).toEqual([]);
+  });
+});
+
+describe("FollowUpQuestionsSchema", () => {
+  it("accepts zero questions as valid (section 12 - over-asking is the failure mode)", () => {
+    const result = FollowUpQuestionsSchema.safeParse({ questions: [] });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts up to 3 questions", () => {
+    const result = FollowUpQuestionsSchema.safeParse({
+      questions: ["Q1?", "Q2?", "Q3?"],
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects more than 3 questions", () => {
+    const result = FollowUpQuestionsSchema.safeParse({
+      questions: ["Q1?", "Q2?", "Q3?", "Q4?"],
+    });
+    expect(result.success).toBe(false);
   });
 });
