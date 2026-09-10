@@ -124,6 +124,13 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
         contingencyPlan: s.contingencyPlan,
       })),
     });
+    await prisma.forecast.update({
+      where: { id: forecast.id },
+      data: {
+        recommendedAction: result.data.recommendedAction,
+        whatCouldChangeForecast: result.data.whatCouldChangeForecast,
+      },
+    });
   } catch (err) {
     console.error("[scenarios] failed to persist scenarios:", err);
     return NextResponse.json({ error: "Failed to save scenarios" }, { status: 500 });
@@ -139,5 +146,12 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     });
   }
 
-  return NextResponse.json({ scenarios }, { status: 201 });
+  return NextResponse.json(
+    {
+      scenarios,
+      recommendedAction: result.data.recommendedAction,
+      whatCouldChangeForecast: result.data.whatCouldChangeForecast,
+    },
+    { status: 201 }
+  );
 }
