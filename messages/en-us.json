@@ -31,6 +31,19 @@
     "recommendedResponse": "Recommended response",
     "contingencyPlan": "Contingency plan"
   },
+  "outcome": {
+    "heading": "What actually happened?",
+    "label": "Describe the actual outcome",
+    "placeholder": "e.g. My manager offered a raise contingent on a performance review in 3 months...",
+    "submitButton": "Record outcome",
+    "recordingText": "Recording...",
+    "matchedScenario": "Closest matching scenario",
+    "noMatch": "None of the generated scenarios matched closely",
+    "whatWentRight": "What the forecast got right",
+    "whatWasMissed": "What the forecast missed",
+    "wrongAssumptions": "Assumptions that turned out wrong",
+    "alreadyRecorded": "You've already recorded an outcome for this forecast."
+  },
   "errors": {
     "generic": "Something went wrong. Please try again.",
     "rateLimited": "You've reached the limit for free forecasts. Sign up to continue.",
