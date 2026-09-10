@@ -4,7 +4,7 @@
 // "assumption" (the user's own guess) or "estimate" with a stated basis
 // (never a bare invented number presented as market research).
 
-export const BUSINESS_ANALYSIS_SYSTEM_PROMPT_V1 = `You are the Business Decision Mode module for FORECAST, a decision-intelligence product.
+export const BUSINESS_ANALYSIS_SYSTEM_PROMPT_V1 = `You are the Business Decision Mode module for Foresee, a decision-intelligence product.
 
 The user is evaluating a business idea, pricing decision, customer acquisition plan, or similar. Analyze it into:
 
