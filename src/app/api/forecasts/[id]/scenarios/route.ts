@@ -9,6 +9,10 @@ import type { ForecastVariableRow } from "@/lib/forecast/variable-rows";
 import { summarizeBehavioralProfile } from "@/lib/forecast/behavioral-summary";
 import { SUPPORTED_LOCALES } from "@/lib/i18n/config";
 import { AIValidationError } from "@/lib/ai/orchestrator";
+import { isWithinRateLimit, FREE_FORECAST_RATE_LIMIT } from "@/lib/rate-limit/free-forecast-limit";
+import { getClientIp } from "@/lib/rate-limit/get-client-ip";
+
+const RATE_LIMIT_EVENT_NAME = "anonymous_scenarios_generated";
 
 const BodySchema = z.object({
   locale: z.enum(SUPPORTED_LOCALES).default("en-us"),
@@ -62,6 +66,19 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   if (userId) {
     const profile = await prisma.behavioralProfile.findUnique({ where: { userId } });
     behavioralProfileSummary = summarizeBehavioralProfile(profile);
+  } else {
+    const ip = getClientIp(req);
+    const since = new Date(Date.now() - FREE_FORECAST_RATE_LIMIT.windowMs);
+    const recentEvents = await prisma.analyticsEvent.findMany({
+      where: { eventName: RATE_LIMIT_EVENT_NAME, source: ip, createdAt: { gte: since } },
+      select: { createdAt: true },
+    });
+    if (!isWithinRateLimit(recentEvents.map((e: { createdAt: Date }) => e.createdAt), new Date())) {
+      return NextResponse.json(
+        { error: "Free forecast limit reached. Sign up to continue." },
+        { status: 429 }
+      );
+    }
   }
 
   let result;
@@ -107,6 +124,12 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   }
 
   const scenarios = await prisma.scenario.findMany({ where: { forecastId: forecast.id } });
+
+  if (!userId) {
+    await prisma.analyticsEvent.create({
+      data: { eventName: RATE_LIMIT_EVENT_NAME, source: getClientIp(req) },
+    });
+  }
 
   return NextResponse.json({ scenarios }, { status: 201 });
 }
