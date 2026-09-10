@@ -1,6 +1,7 @@
 "use client";
 
 import { useSession, signOut } from "next-auth/react";
+import { LanguageSwitcher } from "./language-switcher";
 import enUs from "../../messages/en-us.json";
 import ar from "../../messages/ar.json";
 
@@ -62,6 +63,7 @@ export function NavBar({ locale }: { locale: string }) {
         FORECAST
       </a>
       <div style={{ display: "flex", gap: "1.5rem", alignItems: "center" }}>
+        <LanguageSwitcher locale={locale} />
         <a href={`/${locale}/forecast/new`} style={linkStyle}>
           {t(locale, "hero.ctaPrimary")}
         </a>
