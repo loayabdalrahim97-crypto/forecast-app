@@ -74,6 +74,8 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     await tx.forecast.update({ where: { id: forecast.id }, data: { situationText: combinedText } });
     // Stale — the person must regenerate deliberately.
     await tx.scenario.deleteMany({ where: { forecastId: forecast.id } });
+    // Any recorded outcome referred to the now-stale scenarios too.
+    await tx.outcomeRecord.deleteMany({ where: { forecastId: forecast.id } });
     await tx.forecastVariable.deleteMany({ where: { forecastId: forecast.id } });
     await tx.forecastVariable.createMany({
       data: analysisToVariableRows(analysis).map((v) => ({ ...v, forecastId: forecast.id })),
