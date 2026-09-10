@@ -6,6 +6,7 @@ import { prisma } from "@/lib/db";
 import { analyzePersonalization } from "@/lib/personalization/analyze-personalization";
 import { SUPPORTED_LOCALES } from "@/lib/i18n/config";
 import { AIValidationError } from "@/lib/ai/orchestrator";
+import { logAIRequest } from "@/lib/ai/log-request";
 
 const BodySchema = z.object({
   locale: z.enum(SUPPORTED_LOCALES).default("en-us"),
@@ -100,6 +101,10 @@ export async function POST(req: NextRequest) {
         data: { userId, tendencyKey: insight.tendencyKey, explanation: insight.explanation },
       });
     }
+  }
+
+  if (result.meta) {
+    await logAIRequest(result.meta, { userId, forecastId: null });
   }
 
   const insights = await prisma.userInsight.findMany({
