@@ -1,30 +1,54 @@
 /*
-  FORECAST design tokens — "behavioral science lab" aesthetic.
-  Dark-first, restrained, scientific. No crystal-ball/mystical imagery,
-  no cheap neon (§6). Scenario cards, confidence bands, and probability
-  ranges are the primary visual vocabulary — not fortune-telling motifs.
+  FORECAST design system.
+
+  Design plan (per the frontend-design brief):
+  - Color: near-black observation-deck background, not pure black;
+    a signal-teal accent (evokes radar/sonar detection — literally
+    "picking up a signal" — rather than generic SaaS blue or the
+    common AI-generated terracotta/cream palette). Likelihood/risk
+    bands stay a separate grey -> amber -> coral scale so severity
+    is legible without relying on the accent color.
+  - Type: Space Grotesk for headings (geometric, technical, a
+    genuine point of view rather than a default system font) paired
+    with IBM Plex Sans for body copy — the Plex family reads as
+    engineering/instrumentation, which fits a decision-intelligence
+    tool. Loaded via next/font/google in the locale layout, exposed
+    here as CSS custom properties.
+  - Layout: left-aligned, dashboard/console feel rather than a
+    centered marketing page. Data (scenarios, options, insights) is
+    marked with a left accent strip keyed to its band color instead
+    of a uniform drop-shadow card kit — the border tells you
+    something, it isn't decoration.
+  - Principle: restraint. One accent color, used sparingly. No stock
+    icon set, no gradient washes, no tracked-out uppercase eyebrows.
 */
 
 :root {
   /* Surface */
-  --fc-bg-base: #0a0b0d;
-  --fc-bg-elevated: #111318;
-  --fc-bg-card: #16181f;
-  --fc-border: #262a33;
+  --fc-bg-base: #0a0c10;
+  --fc-bg-elevated: #10131a;
+  --fc-bg-card: #141821;
+  --fc-border: #232833;
+  --fc-border-strong: #323947;
 
   /* Text */
-  --fc-text-primary: #eef0f3;
-  --fc-text-secondary: #9aa2b1;
-  --fc-text-muted: #5c6474;
+  --fc-text-primary: #edf0f3;
+  --fc-text-secondary: #98a2b0;
+  --fc-text-muted: #5c6472;
 
-  /* Accent — restrained signal blue, not neon */
-  --fc-accent: #4f7cff;
-  --fc-accent-soft: #1c2a4d;
+  /* Accent — signal teal, used sparingly (links, primary actions, focus) */
+  --fc-accent: #45d6c2;
+  --fc-accent-strong: #2fb8a5;
+  --fc-accent-soft: rgba(69, 214, 194, 0.12);
 
-  /* Confidence / likelihood bands */
+  /* Likelihood / risk / confidence bands — independent of accent so
+     severity reads correctly even for someone who can't see teal */
   --fc-band-low: #6b7280;
-  --fc-band-moderate: #d9a441;
-  --fc-band-high: #e0563f;
+  --fc-band-low-soft: rgba(107, 114, 128, 0.14);
+  --fc-band-moderate: #dba549;
+  --fc-band-moderate-soft: rgba(219, 165, 73, 0.14);
+  --fc-band-high: #e2604f;
+  --fc-band-high-soft: rgba(226, 96, 79, 0.14);
 
   /* Radius / spacing scale */
   --fc-radius-sm: 6px;
@@ -36,15 +60,20 @@
   --fc-space-4: 24px;
   --fc-space-5: 40px;
 
-  /* Type */
-  --fc-font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  /* Type — set as vars by next/font in the locale layout; these are
+     the fallback stacks if that hasn't loaded yet. */
+  --fc-font-heading: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --fc-font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
   --fc-font-mono: "IBM Plex Mono", ui-monospace, monospace;
 }
 
-[dir="rtl"] {
-  /* Placeholder for RTL-specific overrides (mirrored icons, spacing) —
-     proper RTL means restructuring layout direction, not just flipping
-     text (§4), so this is intentionally its own scope. */
+[dir="rtl"] .fc-strip {
+  border-left: none;
+  border-right: 3px solid var(--fc-strip-color, var(--fc-border-strong));
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
@@ -52,4 +81,115 @@ body {
   color: var(--fc-text-primary);
   font-family: var(--fc-font-sans);
   margin: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-family: var(--fc-font-heading);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+}
+
+a {
+  color: var(--fc-accent);
+}
+
+/* ---- Shared primitives (used via className, not re-implemented per page) ---- */
+
+.fc-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--fc-font-sans);
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.65rem 1.1rem;
+  border-radius: var(--fc-radius-md);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color 120ms ease, border-color 120ms ease;
+}
+
+.fc-btn-primary {
+  background: var(--fc-accent);
+  color: #06110f;
+}
+.fc-btn-primary:hover:not(:disabled) {
+  background: var(--fc-accent-strong);
+}
+
+.fc-btn-secondary {
+  background: transparent;
+  color: var(--fc-text-primary);
+  border-color: var(--fc-border-strong);
+}
+.fc-btn-secondary:hover:not(:disabled) {
+  border-color: var(--fc-accent);
+  color: var(--fc-accent);
+}
+
+.fc-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.fc-input,
+.fc-textarea {
+  width: 100%;
+  font-family: var(--fc-font-sans);
+  font-size: 0.95rem;
+  padding: 0.65rem 0.8rem;
+  border-radius: var(--fc-radius-sm);
+  border: 1px solid var(--fc-border);
+  background: var(--fc-bg-elevated);
+  color: var(--fc-text-primary);
+  margin-bottom: 1rem;
+}
+.fc-input:focus,
+.fc-textarea:focus {
+  outline: none;
+  border-color: var(--fc-accent);
+  box-shadow: 0 0 0 3px var(--fc-accent-soft);
+}
+.fc-input::placeholder,
+.fc-textarea::placeholder {
+  color: var(--fc-text-muted);
+}
+
+.fc-label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--fc-text-secondary);
+  margin-bottom: 0.4rem;
+}
+
+/* Data card: left accent strip instead of a uniform shadow card kit.
+   --fc-strip-color decides the strip's color per card (band color, or
+   the neutral border for non-banded content). */
+.fc-strip {
+  background: var(--fc-bg-card);
+  border: 1px solid var(--fc-border);
+  border-left: 3px solid var(--fc-strip-color, var(--fc-border-strong));
+  border-radius: var(--fc-radius-md);
+  padding: 1.1rem 1.25rem;
+}
+
+/* Small pill for a band value (low/moderate/high), colored via
+   inline style using the matching --fc-band-* pair. */
+.fc-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+}
+.fc-pill::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
 }
