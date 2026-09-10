@@ -27,6 +27,83 @@
   },
   "errors": {
     "generic": "Something went wrong. Please try again.",
-    "rateLimited": "You've reached the limit for free forecasts. Sign up to continue."
+    "rateLimited": "You've reached the limit for free forecasts. Sign up to continue.",
+    "notAuthenticated": "Please log in to save your behavioral profile."
+  },
+  "onboarding": {
+    "title": "Get to know your decision style",
+    "intro": "A few quick questions — no diagnoses, just patterns that help FORECAST tailor your scenarios.",
+    "progress": "Question {current} of {total}",
+    "finishButton": "Finish",
+    "nextButton": "Next",
+    "backButton": "Back",
+    "completeTitle": "You're all set",
+    "completeBody": "Your behavioral profile is saved. You can update it anytime.",
+    "questions": {
+      "decision_style": {
+        "prompt": "When facing a decision, you tend to be more...",
+        "options": { "analytical": "Analytical — I weigh pros and cons", "intuitive": "Intuitive — I go with my gut", "mixed": "A mix of both" }
+      },
+      "risk_tolerance": {
+        "prompt": "How comfortable are you with taking risks?",
+        "options": { "low": "I prefer safety", "moderate": "Some risk is fine", "high": "I'm comfortable with risk" }
+      },
+      "conflict_style": {
+        "prompt": "In a disagreement, you usually...",
+        "options": { "direct": "Address it directly", "diplomatic": "Look for a middle ground", "avoidant": "Try to avoid it" }
+      },
+      "communication_style": {
+        "prompt": "Your communication style is more...",
+        "options": { "direct": "Direct and to the point", "indirect": "Indirect and context-heavy", "expressive": "Expressive and detailed" }
+      },
+      "uncertainty_tolerance": {
+        "prompt": "How well do you handle not knowing what will happen?",
+        "options": { "low": "It's uncomfortable for me", "moderate": "I can manage it", "high": "I'm fine with it" }
+      },
+      "planning_style": {
+        "prompt": "You prefer to...",
+        "options": { "structured": "Plan things out in detail", "flexible": "Have a loose plan", "spontaneous": "Go with the flow" }
+      },
+      "decision_speed": {
+        "prompt": "When you need to decide something, you tend to...",
+        "options": { "fast": "Decide quickly", "deliberate": "Take your time", "slow": "Need a lot of time" }
+      },
+      "pressure_response": {
+        "prompt": "Under pressure, you tend to become...",
+        "options": { "focused": "More focused", "stressed": "More stressed", "variable": "It depends" }
+      },
+      "social_interpretation": {
+        "prompt": "When someone's message is ambiguous, you tend to read it as...",
+        "options": { "neutral": "Neutral until I know more", "positive": "Probably fine", "cautious": "Worth being cautious about" }
+      },
+      "negative_interpretation": {
+        "prompt": "Do you tend to assume the worst when information is incomplete?",
+        "options": { "yes": "Yes, often", "no": "Not really" }
+      },
+      "overthinking": {
+        "prompt": "Do you tend to replay decisions over and over in your head?",
+        "options": { "yes": "Yes, often", "no": "Not really" }
+      },
+      "conflict_avoidance": {
+        "prompt": "Do you tend to avoid conflict even when something bothers you?",
+        "options": { "yes": "Yes, often", "no": "Not really" }
+      },
+      "catastrophizing": {
+        "prompt": "Do you tend to imagine the worst-case outcome first?",
+        "options": { "yes": "Yes, often", "no": "Not really" }
+      },
+      "risk_sensitivity": {
+        "prompt": "How much do potential downsides weigh on your decisions?",
+        "options": { "low": "Not much", "moderate": "A moderate amount", "high": "Quite a lot" }
+      },
+      "need_for_certainty": {
+        "prompt": "How important is it for you to be certain before acting?",
+        "options": { "low": "Not very important", "moderate": "Somewhat important", "high": "Very important" }
+      },
+      "adaptability": {
+        "prompt": "When plans change unexpectedly, you...",
+        "options": { "low": "Find it hard to adjust", "moderate": "Adjust with some effort", "high": "Adapt easily" }
+      }
+    }
   }
 }
