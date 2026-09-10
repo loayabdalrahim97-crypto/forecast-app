@@ -15,6 +15,7 @@ import {
   drawDivider,
   bandColor,
   setFont,
+  shapedLine,
   type PdfContext,
 } from "./pdf-writer";
 import { PDF_LABELS, type PdfLocale, type PdfLabelSet } from "./pdf-labels";
@@ -102,14 +103,14 @@ export async function generateForecastReport(data: ForecastReportData): Promise<
   setFont(ctx, "bold");
   doc.setFontSize(24);
   doc.setTextColor(15, 45, 42);
-  doc.text(labels.brand, isRtl ? PAGE.width - MARGIN.right : MARGIN.left, y + 4, {
+  doc.text(shapedLine(ctx, labels.brand), isRtl ? PAGE.width - MARGIN.right : MARGIN.left, y + 4, {
     align: isRtl ? "right" : "left",
   });
   y += 9;
   setFont(ctx, "normal");
   doc.setFontSize(10);
   doc.setTextColor(90, 150, 135);
-  doc.text(labels.tagline, isRtl ? PAGE.width - MARGIN.right : MARGIN.left, y, { align: isRtl ? "right" : "left" });
+  doc.text(shapedLine(ctx, labels.tagline), isRtl ? PAGE.width - MARGIN.right : MARGIN.left, y, { align: isRtl ? "right" : "left" });
   doc.setTextColor(20, 20, 20);
   y += 10;
   y = drawDivider(ctx, y);
@@ -228,7 +229,7 @@ export async function generateForecastReport(data: ForecastReportData): Promise<
       setFont(ctx, "bold");
       doc.setFontSize(10);
       doc.setTextColor(120, 120, 120);
-      doc.text(scenarioHeading(labels, scenario.outcomeType), isRtl ? PAGE.width - MARGIN.right : MARGIN.left, y, {
+      doc.text(shapedLine(ctx, scenarioHeading(labels, scenario.outcomeType)), isRtl ? PAGE.width - MARGIN.right : MARGIN.left, y, {
         align: isRtl ? "right" : "left",
       });
       y += 5;
