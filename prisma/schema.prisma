@@ -192,6 +192,10 @@ model BusinessForecast {
   estimates     Json?
   breakEven     Json?
   sensitivity   Json?
+  upside        Json?
+  downside      Json?
+  executionRisk String?
+  recommendation String?
   createdAt     DateTime @default(now())
 }
 
