@@ -24,7 +24,15 @@ export async function analyzeSituation(situationText: string, locale: string) {
     systemPrompt: SITUATION_ANALYSIS_SYSTEM_PROMPT_V1,
     userPrompt: buildSituationAnalysisUserPrompt(situationText, languageName),
     schema: SituationAnalysisSchema,
-    maxOutputTokens: 1024,
+    // §11 splits the situation into 8 array categories (facts,
+    // assumptions, unknowns, keyVariables, behavioral/external/
+    // controllable/uncontrollable variables). 1024 tokens was cutting
+    // the response off mid-string for longer or Arabic-language
+    // situations (Arabic tokenizes to noticeably more tokens per
+    // character) — confirmed via the AIValidationError raw output in
+    // production logs. This is the same class of bug already fixed
+    // once for scenario generation (§ generate-scenarios.ts).
+    maxOutputTokens: 3072,
   });
 }
 
@@ -53,6 +61,6 @@ export async function generateFollowUpQuestions(params: {
       languageName,
     }),
     schema: FollowUpQuestionsSchema,
-    maxOutputTokens: 512,
+    maxOutputTokens: 768,
   });
 }
