@@ -20,14 +20,7 @@ export default function LocaleHome({ params: { locale } }: { params: { locale: s
 
   return (
     <main style={{ padding: "3.5rem 2rem 4rem", maxWidth: 980, margin: "0 auto" }}>
-      <section
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1.1fr 1fr",
-          gap: "2.5rem",
-          alignItems: "center",
-        }}
-      >
+      <section className="fc-hero-grid">
         <div>
           <h1 style={{ fontSize: "2.4rem", margin: "0 0 0.75rem" }}>{t(locale, "hero.title")}</h1>
           <p
