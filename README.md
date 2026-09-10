@@ -1,4 +1,4 @@
-# FORECAST
+# Foresee
 
 **AI Behavioral Scenario Forecasting & Decision Intelligence platform.**
 
