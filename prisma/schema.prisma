@@ -111,6 +111,7 @@ model Forecast {
   outcomeRecord    OutcomeRecord?
   aiRequests       AIRequest[]
   businessForecast BusinessForecast?
+  decisionAnalysis DecisionAnalysis?
 
   @@index([userId])
 }
@@ -192,6 +193,24 @@ model BusinessForecast {
   breakEven     Json?
   sensitivity   Json?
   createdAt     DateTime @default(now())
+}
+
+// §15: Decision Mode — "should I resign?", "which job should I choose?",
+// etc. `options` is a JSON array of
+// { option, upside[], downside[], risk, reversibility, bestCase,
+//   baseCase, worstCase } — kept as JSON rather than a child table
+// since the option count and shape is genuinely variable per decision,
+// unlike Scenario's fixed field set.
+model DecisionAnalysis {
+  id              String   @id @default(cuid())
+  forecastId      String   @unique
+  forecast        Forecast @relation(fields: [forecastId], references: [id], onDelete: Cascade)
+
+  options         Json
+  keyVariables    Json?
+  recommendation  String?
+  contingencyPlan String?
+  createdAt       DateTime @default(now())
 }
 
 model UserInsight {
