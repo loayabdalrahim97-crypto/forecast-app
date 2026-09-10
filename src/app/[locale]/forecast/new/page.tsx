@@ -63,7 +63,7 @@ export default function NewForecastPage({ params }: { params: { locale: string }
       const res = await fetch("/api/forecasts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ situationText }),
+        body: JSON.stringify({ situationText, locale }),
       });
       if (!res.ok) {
         setErrorMessage(t(locale, "errors.generic"));
