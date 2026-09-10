@@ -1,0 +1,100 @@
+import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth/config";
+import { prisma } from "@/lib/db";
+import { generateScenarios } from "@/lib/forecast/generate-scenarios";
+import { groupVariablesByKind } from "@/lib/forecast/variable-rows";
+import { summarizeBehavioralProfile } from "@/lib/forecast/behavioral-summary";
+import { SUPPORTED_LOCALES } from "@/lib/i18n/config";
+import { AIValidationError } from "@/lib/ai/orchestrator";
+
+const BodySchema = z.object({
+  locale: z.enum(SUPPORTED_LOCALES).default("en-us"),
+});
+
+/**
+ * POST /api/forecasts/:id/scenarios
+ *
+ * §13/§14: generates 3-6 scenarios for a forecast that already has a
+ * Situation Analysis. §9/§19: if the requester is signed in and has a
+ * Behavioral Profile, it's folded into the prompt so
+ * "likelyUserResponse" reflects their actual tendencies — anonymous
+ * Free Forecast users just don't get that personalization (§8, still
+ * fully functional without it).
+ */
+export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+  const forecast = await prisma.forecast.findUnique({
+    where: { id: params.id },
+    include: { variables: true },
+  });
+
+  if (!forecast) {
+    return NextResponse.json({ error: "Forecast not found" }, { status: 404 });
+  }
+
+  let body: unknown = {};
+  try {
+    body = await req.json();
+  } catch {
+    // Empty body is fine — locale defaults to en-us.
+  }
+  const parsed = BodySchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+  }
+
+  const grouped = groupVariablesByKind(
+    forecast.variables.map((v: { kind: string; content: string }) => ({
+      kind: v.kind,
+      content: v.content,
+    }))
+  );
+
+  let behavioralProfileSummary: string[] = [];
+  const session = await getServerSession(authOptions);
+  const userId = (session?.user as { id?: string } | undefined)?.id;
+  if (userId) {
+    const profile = await prisma.behavioralProfile.findUnique({ where: { userId } });
+    behavioralProfileSummary = summarizeBehavioralProfile(profile);
+  }
+
+  let result;
+  try {
+    result = await generateScenarios({
+      situationText: forecast.situationText,
+      ...grouped,
+      behavioralProfileSummary,
+      locale: parsed.data.locale,
+    });
+  } catch (err) {
+    if (err instanceof AIValidationError) {
+      return NextResponse.json({ error: "Scenario generation failed validation" }, { status: 502 });
+    }
+    return NextResponse.json({ error: "Scenario generation failed" }, { status: 502 });
+  }
+
+  await prisma.scenario.createMany({
+    data: result.data.scenarios.map((s) => ({
+      forecastId: forecast.id,
+      title: s.title,
+      description: s.description,
+      likelihood: s.likelihood,
+      confidence: s.confidence,
+      impact: s.impact,
+      evidence: s.evidence,
+      assumptions: s.assumptions,
+      triggers: s.triggers,
+      earlyWarningSigns: s.earlyWarningSigns,
+      likelihoodIncreasesIf: s.likelihoodIncreasesIf,
+      likelihoodDecreasesIf: s.likelihoodDecreasesIf,
+      likelyUserResponse: s.likelyUserResponse,
+      recommendedResponse: s.recommendedResponse,
+      contingencyPlan: s.contingencyPlan,
+    })),
+  });
+
+  const scenarios = await prisma.scenario.findMany({ where: { forecastId: forecast.id } });
+
+  return NextResponse.json({ scenarios }, { status: 201 });
+}
