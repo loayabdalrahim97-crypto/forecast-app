@@ -5,6 +5,7 @@ import { authOptions } from "@/lib/auth/config";
 import { prisma } from "@/lib/db";
 import { generateScenarios } from "@/lib/forecast/generate-scenarios";
 import { groupVariablesByKind } from "@/lib/forecast/variable-rows";
+import type { ForecastVariableRow } from "@/lib/forecast/variable-rows";
 import { summarizeBehavioralProfile } from "@/lib/forecast/behavioral-summary";
 import { SUPPORTED_LOCALES } from "@/lib/i18n/config";
 import { AIValidationError } from "@/lib/ai/orchestrator";
@@ -44,9 +45,13 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
+  // ForecastVariable.kind is a plain String column in the database
+  // (§24 — kept schemaless there for portability), but every value in
+  // it was written by our own code from the fixed CATEGORY_MAP, so it's
+  // safe to narrow to the literal union groupVariablesByKind expects.
   const grouped = groupVariablesByKind(
     forecast.variables.map((v: { kind: string; content: string }) => ({
-      kind: v.kind,
+      kind: v.kind as ForecastVariableRow["kind"],
       content: v.content,
     }))
   );
