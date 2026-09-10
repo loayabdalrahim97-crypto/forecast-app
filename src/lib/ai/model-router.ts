@@ -14,6 +14,7 @@ export const ROUTING_TABLE: Record<AIRequestType, "cheap" | "standard" | "premiu
   summarization: "cheap",
   question_generation: "cheap",
   json_conversion: "cheap",
+  situation_analysis: "cheap",
 
   scenario_generation: "standard",
   behavioral_analysis: "standard",
