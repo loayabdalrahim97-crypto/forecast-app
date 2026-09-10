@@ -40,7 +40,9 @@ export async function POST(req: NextRequest) {
   try {
     analysisResult = await analyzeSituation(parsed.data.situationText, parsed.data.locale);
   } catch (err) {
+    console.error("[forecasts] analysis failed:", err);
     if (err instanceof AIValidationError) {
+      console.error("[forecasts] raw model output:", err.rawText);
       return NextResponse.json({ error: "Analysis failed validation" }, { status: 502 });
     }
     return NextResponse.json({ error: "Analysis failed" }, { status: 502 });
