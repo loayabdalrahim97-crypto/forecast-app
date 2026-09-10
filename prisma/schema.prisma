@@ -104,6 +104,11 @@ model Forecast {
   // UI preference only — no email/notification delivery is wired up
   // yet, so setting this does not currently send anything.
   reminderInterval String?  // "24h" | "3d" | "1w"
+  // Synthesized once per scenario-generation run — "what should I do
+  // now" and "what would change this" as a single answer rather than
+  // something the person has to infer from 3 separate scenario cards.
+  recommendedAction Json?
+  whatCouldChangeForecast Json?
 
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
