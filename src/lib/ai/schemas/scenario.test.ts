@@ -4,6 +4,7 @@ import {
   SituationAnalysisSchema,
   FollowUpQuestionsSchema,
   OutcomeComparisonSchema,
+  DecisionAnalysisOutputSchema,
 } from "./scenario";
 
 describe("ScenarioGenerationOutputSchema", () => {
@@ -114,5 +115,49 @@ describe("OutcomeComparisonSchema", () => {
     const result = OutcomeComparisonSchema.safeParse({ matchedScenarioTitle: null });
     expect(result.success).toBe(true);
     expect(result.data?.whatWentRight).toEqual([]);
+  });
+});
+
+describe("DecisionAnalysisOutputSchema", () => {
+  const validOption = {
+    option: "Resign",
+    upside: ["More time to find the right fit"],
+    downside: ["Loss of income"],
+    risk: "moderate",
+    reversibility: "low",
+    bestCase: "Finds a better role within a month.",
+    baseCase: "Takes a few months to find a comparable role.",
+    worstCase: "Extended unemployment.",
+  };
+
+  it("accepts 2 to 6 well-formed options", () => {
+    const result = DecisionAnalysisOutputSchema.safeParse({
+      options: [validOption, { ...validOption, option: "Stay" }],
+      keyVariables: [],
+      recommendation: "Consider staying while job searching quietly.",
+      contingencyPlan: "Set a 3-month savings runway before resigning.",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects fewer than 2 options - decision mode compares choices", () => {
+    const result = DecisionAnalysisOutputSchema.safeParse({
+      options: [validOption],
+      recommendation: "R",
+      contingencyPlan: "C",
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects a fabricated numeric risk instead of a band", () => {
+    const result = DecisionAnalysisOutputSchema.safeParse({
+      options: [
+        { ...validOption, risk: "73%" },
+        { ...validOption, option: "Stay" },
+      ],
+      recommendation: "R",
+      contingencyPlan: "C",
+    });
+    expect(result.success).toBe(false);
   });
 });
