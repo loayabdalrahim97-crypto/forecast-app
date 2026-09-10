@@ -101,6 +101,9 @@ model Forecast {
 
   isPublicShared   Boolean  @default(false)
   shareSlug        String?  @unique
+  // UI preference only — no email/notification delivery is wired up
+  // yet, so setting this does not currently send anything.
+  reminderInterval String?  // "24h" | "3d" | "1w"
 
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
@@ -134,6 +137,7 @@ model Scenario {
   forecast              Forecast @relation(fields: [forecastId], references: [id], onDelete: Cascade)
 
   title                 String
+  outcomeType           String?  // "best_case" | "most_likely" | "worst_case" — nullable so existing rows from before this field existed don't break `db push`
   description           String
   likelihood            String   // "low" | "moderate" | "high" (no fake precision, see docs)
   confidence            String
