@@ -14,9 +14,25 @@ export interface PdfContext {
   pageLabel: string; // e.g. "Page" / "صفحة"
 }
 
-/** RTL-safe text: shapes+reorders Arabic before handing it to jsPDF. */
-function prepared(ctx: PdfContext, text: string): string {
+/** RTL-safe text: shapes+reorders Arabic before handing it to jsPDF. Use for single lines only (no wrapping) — see wrapAndShape for multi-line text. */
+export function shapedLine(ctx: PdfContext, text: string): string {
   return ctx.isRtl ? shapeArabic(text) : text;
+}
+const prepared = shapedLine;
+
+/**
+ * Wraps on the ORIGINAL logical-order text first, then shapes each
+ * resulting line independently. Bidi/Arabic shaping must happen
+ * per-line, not on the whole paragraph before wrapping — shaping the
+ * full paragraph and then slicing the ALREADY-reordered string into
+ * width-based chunks scrambles it further (double-reversal: both
+ * letter order within words and word order across the line come out
+ * wrong). This was a real bug, confirmed from an actual generated PDF.
+ */
+function wrapAndShape(ctx: PdfContext, text: string, fontSize: number, maxWidth: number): string[] {
+  ctx.doc.setFontSize(fontSize);
+  const rawLines = ctx.doc.splitTextToSize(text, maxWidth) as string[];
+  return ctx.isRtl ? rawLines.map((line) => shapeArabic(line)) : rawLines;
 }
 
 export function setFont(ctx: PdfContext, weight: "normal" | "bold") {
@@ -46,7 +62,7 @@ export function addHeaderFooter(ctx: PdfContext, pageNumber: number) {
 
   doc.setFontSize(8);
   doc.setTextColor(150, 150, 150);
-  doc.text(`${ctx.pageLabel} ${pageNumber}`, PAGE.width / 2, PAGE.height - 10, { align: "center" });
+  doc.text(prepared(ctx, `${ctx.pageLabel} ${pageNumber}`), PAGE.width / 2, PAGE.height - 10, { align: "center" });
   doc.setTextColor(20, 20, 20);
 }
 
@@ -77,8 +93,7 @@ export function ensureSpace(
 }
 
 export function measureWrappedLines(ctx: PdfContext, text: string, fontSize: number, maxWidth: number): string[] {
-  ctx.doc.setFontSize(fontSize);
-  return ctx.doc.splitTextToSize(prepared(ctx, text), maxWidth) as string[];
+  return wrapAndShape(ctx, text, fontSize, maxWidth);
 }
 
 /** Draws a section heading (e.g. "Known Facts"). Returns the new Y. */
@@ -109,7 +124,7 @@ export function drawParagraph(
   setFont(ctx, opts.bold ? "bold" : "normal");
   doc.setFontSize(fontSize);
   if (opts.color) doc.setTextColor(...opts.color);
-  const lines = doc.splitTextToSize(prepared(ctx, text), maxWidth) as string[];
+  const lines = wrapAndShape(ctx, text, fontSize, maxWidth);
   const lineHeight = fontSize * 0.42;
   doc.text(lines, startX(ctx), y, { align: align(ctx) });
   if (opts.color) doc.setTextColor(20, 20, 20);
@@ -130,7 +145,7 @@ export function drawBulletList(ctx: PdfContext, items: string[], y: number, font
   const bulletWidth = 5;
   const textMaxWidth = CONTENT_WIDTH - bulletWidth;
   for (const item of items) {
-    const lines = doc.splitTextToSize(prepared(ctx, item), textMaxWidth) as string[];
+    const lines = wrapAndShape(ctx, item, fontSize, textMaxWidth);
     const lineHeight = fontSize * 0.42;
     const bulletX = ctx.isRtl ? PAGE.width - MARGIN.right : MARGIN.left;
     const textX = ctx.isRtl ? bulletX - bulletWidth : bulletX + bulletWidth;
