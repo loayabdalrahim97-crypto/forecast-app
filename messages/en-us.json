@@ -15,9 +15,13 @@
   },
   "forecast": {
     "situationLabel": "Describe your situation",
+    "situationPlaceholder": "e.g. My manager asked to meet tomorrow but didn't say why...",
+    "submitButton": "Analyze",
+    "analyzingText": "Analyzing...",
     "factsHeading": "Facts",
     "assumptionsHeading": "Assumptions",
     "unknownsHeading": "Unknowns",
+    "followUpHeading": "A couple of things that would help",
     "scenariosHeading": "Possible scenarios",
     "likelihood": "Likelihood",
     "confidence": "Confidence",
