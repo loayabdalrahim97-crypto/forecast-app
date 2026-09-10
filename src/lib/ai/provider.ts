@@ -20,6 +20,7 @@ export type AIRequestType =
   | "outcome_comparison"
   | "personalization_analysis"
   | "decision_analysis"
+  | "business_analysis"
   | "complex_decision_analysis";
 
 export interface AICallParams {
