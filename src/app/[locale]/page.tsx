@@ -1,3 +1,4 @@
+import { BandGauge } from "@/components/band-gauge";
 import enUs from "../../../messages/en-us.json";
 import ar from "../../../messages/ar.json";
 
@@ -12,16 +13,6 @@ function t(locale: string, path: string): string {
     return undefined;
   }, dict);
   return typeof value === "string" ? value : path;
-}
-
-function BandPill({ label, band }: { label: string; band: "low" | "moderate" | "high" }) {
-  const colorVar = `var(--fc-band-${band})`;
-  const bgVar = `var(--fc-band-${band}-soft)`;
-  return (
-    <span className="fc-pill" style={{ color: colorVar, background: bgVar }}>
-      {label}
-    </span>
-  );
 }
 
 export default function LocaleHome({ params: { locale } }: { params: { locale: string } }) {
@@ -72,9 +63,9 @@ export default function LocaleHome({ params: { locale } }: { params: { locale: s
               ? "المدير بيوافق على زيادة، بس بربطها بمراجعة أداء بعد ثلاث شهور بدل ما يوافق فوراً."
               : "The manager agrees to a raise, but ties it to a performance check-in in three months rather than approving it outright."}
           </p>
-          <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-            <BandPill label={isRtlLocale ? "احتمالية: متوسطة" : "Likelihood: moderate"} band="moderate" />
-            <BandPill label={isRtlLocale ? "تأثير: مرتفع" : "Impact: high"} band="high" />
+          <div style={{ display: "flex", gap: "1.25rem", flexWrap: "wrap" }}>
+            <BandGauge label={isRtlLocale ? "احتمالية" : "Likelihood"} value="moderate" />
+            <BandGauge label={isRtlLocale ? "تأثير" : "Impact"} value="high" />
           </div>
         </div>
       </section>
