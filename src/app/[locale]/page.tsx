@@ -13,6 +13,11 @@ export default function LocaleHome({ params: { locale } }: { params: { locale: s
           Behavioral Profile onboarding (Phase 2) →
         </a>
       </p>
+      <p>
+        <a href={`/${locale}/forecast/new`} style={{ color: "var(--fc-accent)" }}>
+          Run a Free Forecast (Phase 3) →
+        </a>
+      </p>
     </main>
   );
 }
