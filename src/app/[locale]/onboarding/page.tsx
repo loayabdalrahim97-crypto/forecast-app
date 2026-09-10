@@ -90,27 +90,41 @@ export default function OnboardingPage({ params }: { params: { locale: string } 
 
   if (status === "done") {
     return (
-      <main style={{ padding: "2rem", maxWidth: 480 }}>
-        <h1>{t(locale, "onboarding.completeTitle")}</h1>
-        <p>{t(locale, "onboarding.completeBody")}</p>
+      <main style={{ padding: "2.5rem 2rem", maxWidth: 480, margin: "0 auto" }}>
+        <h1 style={{ fontSize: "1.5rem" }}>{t(locale, "onboarding.completeTitle")}</h1>
+        <p style={{ color: "var(--fc-text-secondary)" }}>{t(locale, "onboarding.completeBody")}</p>
       </main>
     );
   }
 
+  const progressPct = Math.round((answeredCount / questions.length) * 100);
+
   return (
-    <main style={{ padding: "2rem", maxWidth: 480 }}>
-      <h1>{t(locale, "onboarding.title")}</h1>
-      <p style={{ color: "var(--fc-text-secondary)" }}>{t(locale, "onboarding.intro")}</p>
+    <main style={{ padding: "2.5rem 2rem", maxWidth: 480, margin: "0 auto" }}>
+      <h1 style={{ fontSize: "1.5rem", margin: "0 0 0.4rem" }}>{t(locale, "onboarding.title")}</h1>
+      <p style={{ color: "var(--fc-text-secondary)", margin: "0 0 1.25rem" }}>{t(locale, "onboarding.intro")}</p>
 
-      <p style={{ fontSize: "0.85rem", color: "var(--fc-text-muted)" }}>
-        {t(locale, "onboarding.progress", {
-          current: answeredCount + 1,
-          total: questions.length,
-        })}
-      </p>
+      <div style={{ marginBottom: "1.5rem" }}>
+        <div style={{ height: 4, borderRadius: 999, background: "var(--fc-bg-elevated)", overflow: "hidden" }}>
+          <div
+            style={{
+              height: "100%",
+              width: `${progressPct}%`,
+              background: "var(--fc-accent)",
+              transition: "width 200ms ease",
+            }}
+          />
+        </div>
+        <p style={{ fontSize: "0.8rem", color: "var(--fc-text-muted)", marginTop: "0.5rem" }}>
+          {t(locale, "onboarding.progress", {
+            current: answeredCount + 1,
+            total: questions.length,
+          })}
+        </p>
+      </div>
 
-      <fieldset style={{ border: "none", padding: 0, margin: "1.5rem 0" }}>
-        <legend style={{ fontSize: "1.1rem", marginBottom: "1rem" }}>
+      <fieldset style={{ border: "none", padding: 0, margin: "0 0 1.5rem" }}>
+        <legend style={{ fontSize: "1.15rem", marginBottom: "1rem", fontFamily: "var(--fc-font-heading)" }}>
           {t(locale, current.promptKey)}
         </legend>
 
@@ -120,17 +134,16 @@ export default function OnboardingPage({ params }: { params: { locale: string } 
             type="button"
             onClick={() => selectOption(opt.value)}
             disabled={status === "submitting"}
+            className="fc-strip"
             style={{
               display: "block",
               width: "100%",
               textAlign: locale === "ar" ? "right" : "left",
-              padding: "0.75rem 1rem",
-              marginBottom: "0.5rem",
-              borderRadius: "var(--fc-radius-md)",
-              border: "1px solid var(--fc-border)",
-              background: "var(--fc-bg-card)",
-              color: "var(--fc-text-primary)",
+              marginBottom: "0.6rem",
               cursor: "pointer",
+              fontSize: "0.95rem",
+              fontFamily: "var(--fc-font-sans)",
+              padding: "0.85rem 1.1rem",
             }}
           >
             {t(locale, opt.labelKey)}
@@ -139,13 +152,13 @@ export default function OnboardingPage({ params }: { params: { locale: string } 
       </fieldset>
 
       {step > 0 && status === "in_progress" && (
-        <button type="button" onClick={() => setStep((s) => s - 1)}>
+        <button type="button" className="fc-btn fc-btn-secondary" onClick={() => setStep((s) => s - 1)}>
           {t(locale, "onboarding.backButton")}
         </button>
       )}
 
       {status === "error" && errorMessage && (
-        <p style={{ color: "var(--fc-band-high)" }}>{errorMessage}</p>
+        <p style={{ color: "var(--fc-band-high)", marginTop: "1rem" }}>{errorMessage}</p>
       )}
     </main>
   );
