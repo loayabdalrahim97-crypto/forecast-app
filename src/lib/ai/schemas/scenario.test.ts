@@ -25,6 +25,8 @@ describe("ScenarioGenerationOutputSchema", () => {
         { ...validScenario, outcomeType: "most_likely" },
         { ...validScenario, outcomeType: "worst_case" },
       ],
+
+    recommendedAction: { summary: "Do X.", conditionalBranches: [] },
     });
     expect(result.success).toBe(true);
   });
@@ -35,6 +37,8 @@ describe("ScenarioGenerationOutputSchema", () => {
         { ...validScenario, outcomeType: "best_case" },
         { ...validScenario, outcomeType: "worst_case" },
       ],
+
+    recommendedAction: { summary: "Do X.", conditionalBranches: [] },
     });
     expect(result.success).toBe(false);
   });
@@ -47,6 +51,8 @@ describe("ScenarioGenerationOutputSchema", () => {
         { ...validScenario, outcomeType: "worst_case" },
         { ...validScenario, outcomeType: "most_likely" },
       ],
+
+    recommendedAction: { summary: "Do X.", conditionalBranches: [] },
     });
     expect(result.success).toBe(false);
   });
@@ -58,6 +64,8 @@ describe("ScenarioGenerationOutputSchema", () => {
         { ...validScenario, outcomeType: "best_case" },
         { ...validScenario, outcomeType: "worst_case" },
       ],
+
+    recommendedAction: { summary: "Do X.", conditionalBranches: [] },
     });
     expect(result.success).toBe(false);
   });
@@ -69,6 +77,51 @@ describe("ScenarioGenerationOutputSchema", () => {
         { ...validScenario, outcomeType: "most_likely" },
         { ...validScenario, outcomeType: "worst_case" },
       ],
+
+    recommendedAction: { summary: "Do X.", conditionalBranches: [] },
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("accepts conditional branches in recommendedAction", () => {
+    const result = ScenarioGenerationOutputSchema.safeParse({
+      scenarios: [
+        { ...validScenario, outcomeType: "best_case" },
+        { ...validScenario, outcomeType: "most_likely" },
+        { ...validScenario, outcomeType: "worst_case" },
+      ],
+      recommendedAction: {
+        summary: "Wait for the review, but prepare your case now.",
+        conditionalBranches: [
+          { condition: "If the raise is approved", action: "Confirm the effective date in writing." },
+          { condition: "If it's declined", action: "Ask directly what specific criteria would change the outcome." },
+        ],
+      },
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts an empty whatCouldChangeForecast when nothing would materially change the picture", () => {
+    const result = ScenarioGenerationOutputSchema.safeParse({
+      scenarios: [
+        { ...validScenario, outcomeType: "best_case" },
+        { ...validScenario, outcomeType: "most_likely" },
+        { ...validScenario, outcomeType: "worst_case" },
+      ],
+      recommendedAction: { summary: "Do X.", conditionalBranches: [] },
+      whatCouldChangeForecast: [],
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("requires recommendedAction.summary", () => {
+    const result = ScenarioGenerationOutputSchema.safeParse({
+      scenarios: [
+        { ...validScenario, outcomeType: "best_case" },
+        { ...validScenario, outcomeType: "most_likely" },
+        { ...validScenario, outcomeType: "worst_case" },
+      ],
+      recommendedAction: { conditionalBranches: [] },
     });
     expect(result.success).toBe(false);
   });
@@ -80,6 +133,8 @@ describe("SituationAnalysisSchema", () => {
       facts: ["Manager requested a meeting."],
       assumptions: ["The manager intends to fire the user."],
       unknowns: ["Reason for the meeting."],
+
+    recommendedAction: { summary: "Do X.", conditionalBranches: [] },
     });
     expect(result.success).toBe(true);
     expect(result.data?.facts).toEqual(["Manager requested a meeting."]);
@@ -103,6 +158,8 @@ describe("FollowUpQuestionsSchema", () => {
   it("accepts up to 3 questions", () => {
     const result = FollowUpQuestionsSchema.safeParse({
       questions: ["Q1?", "Q2?", "Q3?"],
+
+    recommendedAction: { summary: "Do X.", conditionalBranches: [] },
     });
     expect(result.success).toBe(true);
   });
@@ -110,6 +167,8 @@ describe("FollowUpQuestionsSchema", () => {
   it("rejects more than 3 questions", () => {
     const result = FollowUpQuestionsSchema.safeParse({
       questions: ["Q1?", "Q2?", "Q3?", "Q4?"],
+
+    recommendedAction: { summary: "Do X.", conditionalBranches: [] },
     });
     expect(result.success).toBe(false);
   });
