@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { analysisToVariableRows } from "./variable-rows";
+import { analysisToVariableRows, groupVariablesByKind } from "./variable-rows";
 import type { SituationAnalysis } from "./analyze-situation";
 
 const baseAnalysis: SituationAnalysis = {
@@ -50,5 +50,26 @@ describe("analysisToVariableRows", () => {
 
   it("returns an empty array for an entirely empty analysis", () => {
     expect(analysisToVariableRows(baseAnalysis)).toEqual([]);
+  });
+});
+
+describe("groupVariablesByKind", () => {
+  it("regroups rows back into flat lists by kind", () => {
+    const grouped = groupVariablesByKind([
+      { kind: "fact", content: "Fact A" },
+      { kind: "assumption", content: "Assumption A" },
+      { kind: "fact", content: "Fact B" },
+    ]);
+    expect(grouped.facts).toEqual(["Fact A", "Fact B"]);
+    expect(grouped.assumptions).toEqual(["Assumption A"]);
+    expect(grouped.unknowns).toEqual([]);
+  });
+
+  it("ignores kinds it doesn't group (controllable/uncontrollable) without throwing", () => {
+    const grouped = groupVariablesByKind([
+      { kind: "controllable", content: "X" },
+      { kind: "fact", content: "Y" },
+    ]);
+    expect(grouped.facts).toEqual(["Y"]);
   });
 });
