@@ -1,24 +1,23 @@
 "use client";
 
-import { useState, type RefObject } from "react";
-import { downloadForecastPdf } from "@/lib/pdf/download-forecast-pdf";
+import { useState } from "react";
+import { generateForecastReport, type ForecastReportData } from "@/lib/pdf/generate-forecast-report";
 
 export function DownloadPdfButton({
-  targetRef,
-  filename,
+  buildReportData,
   locale,
 }: {
-  targetRef: RefObject<HTMLElement>;
-  filename: string;
+  /** Called only on click — builds the report payload from current state at that moment. */
+  buildReportData: () => ForecastReportData;
   locale: string;
 }) {
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
 
   async function handleClick() {
-    if (!targetRef.current) return;
     setStatus("loading");
     try {
-      await downloadForecastPdf(targetRef.current, filename);
+      const data = buildReportData();
+      await generateForecastReport(data);
       setStatus("idle");
     } catch (err) {
       console.error("[pdf] export failed:", err);
