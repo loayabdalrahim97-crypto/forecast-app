@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { RealityCheckBarometer } from "@/components/reality-check-barometer";
 import { computeRealityCheck } from "@/lib/forecast/reality-check";
+import { diffForecastVariables, isDiffEmpty, type ForecastDiff } from "@/lib/forecast/diff-variables";
 import { ExecutiveSummary } from "@/components/executive-summary";
 import { ScenarioAccordion, type AccordionScenario } from "@/components/scenario-accordion";
 import { DownloadPdfButton } from "@/components/download-pdf-button";
@@ -86,7 +87,7 @@ function DecisionOptionCard({ locale, opt }: { locale: string; opt: DecisionOpti
       style={{ ["--fc-strip-color" as string]: `var(--fc-band-${normalizeBand(opt.risk)})`, marginBottom: "1rem" }}
     >
       <h3 style={{ margin: "0 0 0.75rem", fontSize: "1.05rem" }}>{opt.option}</h3>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "0.9rem" }}>
+      <div className="fc-grid-2" style={{ marginBottom: "0.9rem" }}>
         <SectionList locale={locale} headingKey="decision.upside" items={opt.upside} />
         <SectionList locale={locale} headingKey="decision.downside" items={opt.downside} />
       </div>
@@ -111,6 +112,11 @@ export default function NewForecastPage({ params }: { params: { locale: string }
   const [scenarioStatus, setScenarioStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
   const [scenarios, setScenarios] = useState<AccordionScenario[]>([]);
   const [scenarioErrorMessage, setScenarioErrorMessage] = useState<string | null>(null);
+  const [recommendedAction, setRecommendedAction] = useState<{
+    summary: string;
+    conditionalBranches: { condition: string; action: string }[];
+  } | null>(null);
+  const [whatCouldChangeForecast, setWhatCouldChangeForecast] = useState<string[]>([]);
 
   const [actualOutcome, setActualOutcome] = useState("");
   const [resultTag, setResultTag] = useState<string | null>(null);
@@ -128,6 +134,7 @@ export default function NewForecastPage({ params }: { params: { locale: string }
   const [additionalInfo, setAdditionalInfo] = useState("");
   const [updateStatus, setUpdateStatus] = useState<"idle" | "loading" | "error">("idle");
   const [scenariosStale, setScenariosStale] = useState(false);
+  const [forecastDiff, setForecastDiff] = useState<ForecastDiff | null>(null);
 
   const resultsRef = useRef<HTMLDivElement>(null);
 
@@ -175,8 +182,14 @@ export default function NewForecastPage({ params }: { params: { locale: string }
         setScenarioStatus("error");
         return;
       }
-      const data = (await res.json()) as { scenarios: AccordionScenario[] };
+      const data = (await res.json()) as {
+        scenarios: AccordionScenario[];
+        recommendedAction: { summary: string; conditionalBranches: { condition: string; action: string }[] };
+        whatCouldChangeForecast: string[];
+      };
       setScenarios(data.scenarios);
+      setRecommendedAction(data.recommendedAction ?? null);
+      setWhatCouldChangeForecast(data.whatCouldChangeForecast ?? []);
       setScenarioStatus("done");
       setScenariosStale(false);
     } catch {
@@ -190,6 +203,11 @@ export default function NewForecastPage({ params }: { params: { locale: string }
     if (!result || !additionalInfo.trim()) return;
 
     setUpdateStatus("loading");
+    const before = {
+      facts: byKind("fact"),
+      assumptions: byKind("assumption"),
+      unknowns: byKind("unknown"),
+    };
     try {
       const res = await fetch(`/api/forecasts/${result.forecast.id}/update-info`, {
         method: "POST",
@@ -201,6 +219,13 @@ export default function NewForecastPage({ params }: { params: { locale: string }
         return;
       }
       const data = await res.json();
+      const newVariables: ForecastVariable[] = data.forecast.variables;
+      const after = {
+        facts: newVariables.filter((v) => v.kind === "fact").map((v) => v.content),
+        assumptions: newVariables.filter((v) => v.kind === "assumption").map((v) => v.content),
+        unknowns: newVariables.filter((v) => v.kind === "unknown").map((v) => v.content),
+      };
+      setForecastDiff(diffForecastVariables(before, after));
       setResult({ forecast: data.forecast, followUpQuestions: data.followUpQuestions });
       setAdditionalInfo("");
       setUpdateStatus("idle");
@@ -368,6 +393,33 @@ export default function NewForecastPage({ params }: { params: { locale: string }
                 )}
               </form>
             </details>
+            {forecastDiff && !isDiffEmpty(forecastDiff) && (
+              <div className="fc-strip" style={{ marginTop: "1rem" }}>
+                <p style={{ margin: "0 0 0.5rem", fontSize: "0.85rem", fontWeight: 600, color: "var(--fc-text-secondary)" }}>
+                  {locale === "ar" ? "شو تغيّر" : "What changed"}
+                </p>
+                {[
+                  { items: forecastDiff.addedFacts, label: locale === "ar" ? "حقائق جديدة" : "New facts", sign: "+" },
+                  { items: forecastDiff.removedAssumptions, label: locale === "ar" ? "افتراضات اترفعت" : "Assumptions resolved", sign: "−" },
+                  { items: forecastDiff.removedUnknowns, label: locale === "ar" ? "مجاهيل اتوضحت" : "Unknowns clarified", sign: "−" },
+                  { items: forecastDiff.addedAssumptions, label: locale === "ar" ? "افتراضات جديدة" : "New assumptions", sign: "+" },
+                  { items: forecastDiff.addedUnknowns, label: locale === "ar" ? "مجاهيل جديدة" : "New unknowns", sign: "+" },
+                ]
+                  .filter((g) => g.items.length > 0)
+                  .map((g) => (
+                    <div key={g.label} style={{ marginBottom: "0.5rem" }}>
+                      <p style={{ margin: "0 0 0.2rem", fontSize: "0.78rem", color: "var(--fc-text-muted)" }}>{g.label}</p>
+                      <ul style={{ margin: 0, paddingInlineStart: "1.2rem", fontSize: "0.88rem" }}>
+                        {g.items.map((item, i) => (
+                          <li key={i}>
+                            {g.sign} {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+              </div>
+            )}
           </section>
 
           <section style={{ marginTop: "2rem", marginBottom: "2rem", paddingTop: "1.5rem", borderTop: "1px solid var(--fc-border)" }}>
@@ -426,6 +478,44 @@ export default function NewForecastPage({ params }: { params: { locale: string }
             <section style={{ marginTop: "1.75rem" }}>
               <h2 style={{ fontSize: "1.05rem", margin: "0 0 1rem" }}>{t(locale, "forecast.scenariosHeading")}</h2>
               <ScenarioAccordion locale={locale} scenarios={scenarios} />
+
+              {recommendedAction && (
+                <div
+                  className="fc-strip"
+                  style={{ ["--fc-strip-color" as string]: "var(--fc-accent)", marginTop: "1.25rem", marginBottom: "1.25rem" }}
+                >
+                  <p style={{ margin: "0 0 0.5rem", fontSize: "0.85rem", fontWeight: 600, color: "var(--fc-accent)" }}>
+                    {locale === "ar" ? "شو أعمل هلق؟" : "What should I do now?"}
+                  </p>
+                  <p style={{ margin: recommendedAction.conditionalBranches.length > 0 ? "0 0 0.75rem" : 0, fontSize: "0.95rem" }}>
+                    {recommendedAction.summary}
+                  </p>
+                  {recommendedAction.conditionalBranches.length > 0 && (
+                    <div style={{ display: "grid", gap: "0.5rem" }}>
+                      {recommendedAction.conditionalBranches.map((b, i) => (
+                        <p key={i} style={{ margin: 0, fontSize: "0.88rem" }}>
+                          <strong>{b.condition}</strong> → {b.action}
+                        </p>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {whatCouldChangeForecast.length > 0 && (
+                <section style={{ marginBottom: "1.25rem" }}>
+                  <h2 style={{ fontSize: "0.95rem", fontFamily: "var(--fc-font-sans)", fontWeight: 600, color: "var(--fc-text-secondary)", margin: "0 0 0.5rem" }}>
+                    {locale === "ar" ? "شو ممكن يغيّر هالتوقع" : "What could change this forecast"}
+                  </h2>
+                  <ul style={{ margin: 0, paddingInlineStart: "1.2rem" }}>
+                    {whatCouldChangeForecast.map((item, i) => (
+                      <li key={i} style={{ marginBottom: "0.3rem", lineHeight: 1.5 }}>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              )}
 
               {outcomeStatus !== "done" && (
                 <form onSubmit={handleRecordOutcome} style={{ marginTop: "1.75rem", paddingTop: "1.5rem", borderTop: "1px solid var(--fc-border)" }}>
