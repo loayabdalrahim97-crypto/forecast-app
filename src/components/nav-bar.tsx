@@ -20,7 +20,7 @@ function t(locale: string, path: string): string {
 const linkStyle = {
   color: "var(--fc-text-secondary)",
   textDecoration: "none",
-  fontSize: "0.9rem",
+  fontSize: "0.88rem",
 };
 
 export function NavBar({ locale }: { locale: string }) {
@@ -32,14 +32,36 @@ export function NavBar({ locale }: { locale: string }) {
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        padding: "1rem 2rem",
+        padding: "1.1rem 2rem",
         borderBottom: "1px solid var(--fc-border)",
       }}
     >
-      <a href={`/${locale}`} style={{ color: "var(--fc-text-primary)", textDecoration: "none", fontWeight: "bold" }}>
+      <a
+        href={`/${locale}`}
+        style={{
+          color: "var(--fc-text-primary)",
+          textDecoration: "none",
+          fontFamily: "var(--fc-font-heading)",
+          fontWeight: 600,
+          fontSize: "1.05rem",
+          display: "flex",
+          alignItems: "center",
+          gap: "0.5rem",
+        }}
+      >
+        <span
+          aria-hidden
+          style={{
+            width: 8,
+            height: 8,
+            borderRadius: "50%",
+            background: "var(--fc-accent)",
+            boxShadow: "0 0 0 3px var(--fc-accent-soft)",
+          }}
+        />
         FORECAST
       </a>
-      <div style={{ display: "flex", gap: "1.25rem", alignItems: "center" }}>
+      <div style={{ display: "flex", gap: "1.5rem", alignItems: "center" }}>
         <a href={`/${locale}/forecast/new`} style={linkStyle}>
           {t(locale, "hero.ctaPrimary")}
         </a>
@@ -51,7 +73,8 @@ export function NavBar({ locale }: { locale: string }) {
             <span style={{ ...linkStyle, color: "var(--fc-text-muted)" }}>{session.user?.email}</span>
             <button
               onClick={() => signOut({ callbackUrl: `/${locale}` })}
-              style={{ background: "none", border: "none", color: "var(--fc-text-secondary)", cursor: "pointer" }}
+              className="fc-btn fc-btn-secondary"
+              style={{ padding: "0.4rem 0.85rem", fontSize: "0.82rem" }}
             >
               {t(locale, "nav.login") === "Log in" ? "Log out" : "تسجيل خروج"}
             </button>
@@ -61,7 +84,7 @@ export function NavBar({ locale }: { locale: string }) {
             <a href={`/${locale}/login`} style={linkStyle}>
               {t(locale, "nav.login")}
             </a>
-            <a href={`/${locale}/signup`} style={linkStyle}>
+            <a href={`/${locale}/signup`} className="fc-btn fc-btn-primary" style={{ padding: "0.45rem 0.9rem", fontSize: "0.82rem" }}>
               {t(locale, "nav.signup")}
             </a>
           </>
