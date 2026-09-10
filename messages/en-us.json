@@ -44,6 +44,22 @@
     "wrongAssumptions": "Assumptions that turned out wrong",
     "alreadyRecorded": "You've already recorded an outcome for this forecast."
   },
+  "decision": {
+    "heading": "Facing a decision?",
+    "optionsLabel": "List your options, separated by commas (optional — leave blank to let FORECAST infer them)",
+    "optionsPlaceholder": "e.g. Resign, Stay",
+    "submitButton": "Analyze decision",
+    "analyzingText": "Analyzing decision...",
+    "recommendation": "Recommendation",
+    "keyVariables": "Key variables",
+    "bestCase": "Best case",
+    "baseCase": "Base case",
+    "worstCase": "Worst case",
+    "risk": "Risk",
+    "reversibility": "Reversibility",
+    "upside": "Upside",
+    "downside": "Downside"
+  },
   "errors": {
     "generic": "Something went wrong. Please try again.",
     "rateLimited": "You've reached the limit for free forecasts. Sign up to continue.",
