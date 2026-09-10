@@ -58,3 +58,24 @@ export const OutcomeComparisonSchema = z.object({
   whatWasMissed: z.array(z.string()).default([]),
   wrongAssumptions: z.array(z.string()).default([]),
 });
+
+// §19: personalization insights, one per detected tendency. Kept to at
+// most 3 per analysis run — this is about surfacing the clearest
+// patterns, not exhaustively labeling the user.
+export const PersonalizationInsightsSchema = z.object({
+  insights: z
+    .array(
+      z.object({
+        tendencyKey: z.enum([
+          "negative_interpretation",
+          "overthinking",
+          "avoidance",
+          "impulsive_decisions",
+          "excessive_risk_sensitivity",
+          "repeated_prediction_errors",
+        ]),
+        explanation: z.string().min(1).max(500),
+      })
+    )
+    .max(3),
+});
