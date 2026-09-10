@@ -50,6 +50,15 @@
   --fc-band-high: #e2604f;
   --fc-band-high-soft: rgba(226, 96, 79, 0.14);
 
+  /* Positive/favorable indicator — distinct from --fc-band-low (which
+     means "low severity", a neutral gray), for places that mean
+     "this is a genuinely good outcome" (best-case scenarios, a
+     reassuring reality-check result). Conflating the two made "best
+     case" render in the same neutral gray as "low risk," which read
+     as unremarkable rather than positive. */
+  --fc-positive: #4caf7d;
+  --fc-positive-soft: rgba(76, 175, 125, 0.14);
+
   /* Radius / spacing scale */
   --fc-radius-sm: 6px;
   --fc-radius-md: 10px;
