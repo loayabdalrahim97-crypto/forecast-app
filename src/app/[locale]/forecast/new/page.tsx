@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { RealityCheckBarometer } from "@/components/reality-check-barometer";
+import { computeRealityCheck } from "@/lib/forecast/reality-check";
 import { ExecutiveSummary } from "@/components/executive-summary";
 import { ScenarioAccordion, type AccordionScenario } from "@/components/scenario-accordion";
 import { DownloadPdfButton } from "@/components/download-pdf-button";
@@ -206,6 +207,13 @@ export default function NewForecastPage({ params }: { params: { locale: string }
       if (scenarios.length > 0) {
         setScenariosStale(true);
       }
+      // The outcome (if any) was recorded against the old scenarios,
+      // which are now stale too — clear it so the UI doesn't show a
+      // "matched scenario" that no longer exists.
+      setOutcomeStatus("idle");
+      setOutcomeResult(null);
+      setActualOutcome("");
+      setResultTag(null);
     } catch {
       setUpdateStatus("error");
     }
@@ -274,6 +282,13 @@ export default function NewForecastPage({ params }: { params: { locale: string }
   const unknownsCount = byKind("unknown").length;
 
   const mostLikely = scenarios.find((s) => s.outcomeType === "most_likely") ?? scenarios[0];
+  const realityCheck = computeRealityCheck(factsCount, assumptionsCount, unknownsCount);
+  const realityCheckBadgeLabel =
+    realityCheck.badge === "grounded"
+      ? t(locale, "realityCheck.grounded")
+      : realityCheck.badge === "high_assumption"
+        ? t(locale, "realityCheck.highAssumption")
+        : t(locale, "realityCheck.mixed");
 
   return (
     <main style={{ padding: "1.5rem 2rem 4rem", maxWidth: 640, margin: "0 auto" }}>
@@ -311,11 +326,7 @@ export default function NewForecastPage({ params }: { params: { locale: string }
               locale={locale}
               topScenarioTitle={mostLikely.title}
               mainRecommendation={mostLikely.recommendedResponse ?? ""}
-              realityCheckBadgeLabel={
-                assumptionsCount + unknownsCount > factsCount
-                  ? t(locale, "realityCheck.highAssumption")
-                  : t(locale, "realityCheck.grounded")
-              }
+              realityCheckBadgeLabel={realityCheckBadgeLabel}
             />
           )}
 
