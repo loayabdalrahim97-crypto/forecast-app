@@ -25,10 +25,14 @@ export async function generateScenarios(params: {
     systemPrompt: SCENARIO_GENERATION_SYSTEM_PROMPT_V1,
     userPrompt: buildScenarioGenerationUserPrompt({ ...params, languageName }),
     schema: ScenarioGenerationOutputSchema,
-    // 3 scenarios plus a top-level recommendedAction and
-    // whatCouldChangeForecast now add to the response size — bumped
-    // headroom again after the earlier 2048->4096 truncation bug to
-    // avoid repeating it.
-    maxOutputTokens: 4608,
+    // 3 scenarios (each with ~10 fields) plus recommendedAction and
+    // whatCouldChangeForecast add up fast, and this is now the SECOND
+    // time a max_tokens ceiling truncated a real response mid-JSON
+    // (confirmed via production error logs both times: 2048->4096,
+    // then 4096->4608 wasn't enough for a longer/Arabic situation).
+    // Setting a generous ceiling once instead of nudging it up again —
+    // the model stops naturally once it's done; this just removes the
+    // artificial cutoff as the failure point.
+    maxOutputTokens: 8192,
   });
 }
