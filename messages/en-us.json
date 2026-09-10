@@ -9,7 +9,7 @@
   "hero": {
     "title": "WHAT COULD HAPPEN NEXT?",
     "subtitle": "AI BEHAVIORAL SCENARIO INTELLIGENCE",
-    "tagline": "FORECAST doesn't predict the future. It helps you prepare for what could happen next.",
+    "tagline": "Foresee doesn't predict the future. It helps you prepare for what could happen next.",
     "ctaPrimary": "Run a Free Forecast",
     "ctaSecondary": "See How It Works"
   },
@@ -42,11 +42,35 @@
     "whatWentRight": "What the forecast got right",
     "whatWasMissed": "What the forecast missed",
     "wrongAssumptions": "Assumptions that turned out wrong",
-    "alreadyRecorded": "You've already recorded an outcome for this forecast."
+    "alreadyRecorded": "You've already recorded an outcome for this forecast.",
+    "betterThanExpected": "Better than expected",
+    "asExpected": "As expected",
+    "worseThanExpected": "Worse than expected",
+    "reminderLabel": "Remind me to record this",
+    "reminderNone": "No reminder",
+    "reminder24h": "24 Hours",
+    "reminder3d": "3 Days",
+    "reminder1w": "1 Week",
+    "reminderNote": "Saved as a preference — reminder delivery isn't set up yet."
+  },
+  "update": {
+    "button": "Update Forecast with more information",
+    "label": "Add new information",
+    "placeholder": "e.g. He mentioned this is about budget cuts across the team...",
+    "submitButton": "Recalculate",
+    "recalculatingText": "Recalculating...",
+    "staleScenarios": "The situation changed — regenerate scenarios to reflect the new information."
+  },
+  "realityCheck": {
+    "solidFacts": "Solid Facts",
+    "assumptionsGaps": "Assumptions & Information Gaps",
+    "grounded": "Grounded in Real Data",
+    "highAssumption": "High Assumption Reliance",
+    "mixed": "Mixed Evidence"
   },
   "decision": {
     "heading": "Facing a decision?",
-    "optionsLabel": "List your options, separated by commas (optional — leave blank to let FORECAST infer them)",
+    "optionsLabel": "List your options, separated by commas (optional — leave blank to let Foresee infer them)",
     "optionsPlaceholder": "e.g. Resign, Stay",
     "submitButton": "Analyze decision",
     "analyzingText": "Analyzing decision...",
@@ -67,7 +91,7 @@
   },
   "onboarding": {
     "title": "Get to know your decision style",
-    "intro": "A few quick questions — no diagnoses, just patterns that help FORECAST tailor your scenarios.",
+    "intro": "A few quick questions — no diagnoses, just patterns that help Foresee tailor your scenarios.",
     "progress": "Question {current} of {total}",
     "finishButton": "Finish",
     "nextButton": "Next",
