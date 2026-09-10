@@ -37,8 +37,10 @@ CRITICAL RULES:
   "uncontrollableVariables": string[]
 }`;
 
-export function buildSituationAnalysisUserPrompt(situationText: string): string {
-  return `Situation described by the user:\n\n${situationText}`;
+export function buildSituationAnalysisUserPrompt(situationText: string, languageName: string): string {
+  return `Respond ONLY in ${languageName} — every string value in the JSON output (facts, assumptions, unknowns, variable descriptions) must be written in ${languageName}, regardless of what language the situation below is written in.
+
+Situation described by the user:\n\n${situationText}`;
 }
 
 // §12: at most 1-3 follow-up questions, and only when the answer would
@@ -61,8 +63,11 @@ The array must have between 0 and 3 items.`;
 export function buildFollowUpQuestionsUserPrompt(params: {
   situationText: string;
   unknowns: string[];
+  languageName: string;
 }): string {
-  return `Situation:\n${params.situationText}\n\nUnknowns identified so far:\n${params.unknowns
+  return `Respond ONLY in ${params.languageName} — every question in the JSON output must be written in ${params.languageName}.
+
+Situation:\n${params.situationText}\n\nUnknowns identified so far:\n${params.unknowns
     .map((u) => `- ${u}`)
     .join("\n") || "(none)"}`;
 }
