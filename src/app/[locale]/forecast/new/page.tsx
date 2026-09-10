@@ -105,6 +105,19 @@ export default function NewForecastPage({ params }: { params: { locale: string }
   );
   const [scenarios, setScenarios] = useState<Scenario[]>([]);
 
+  const [actualOutcome, setActualOutcome] = useState("");
+  const [outcomeStatus, setOutcomeStatus] = useState<"idle" | "loading" | "done" | "error">(
+    "idle"
+  );
+  const [outcomeResult, setOutcomeResult] = useState<{
+    matchedScenarioTitle: string | null;
+    outcomeRecord: {
+      whatWentRight: string[];
+      whatWasMissed: string[];
+      wrongAssumptions: string[];
+    };
+  } | null>(null);
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!situationText.trim()) return;
@@ -156,6 +169,29 @@ export default function NewForecastPage({ params }: { params: { locale: string }
 
   const byKind = (kind: string) =>
     result?.forecast.variables.filter((v) => v.kind === kind).map((v) => v.content) ?? [];
+
+  async function handleRecordOutcome(e: React.FormEvent) {
+    e.preventDefault();
+    if (!result || !actualOutcome.trim()) return;
+
+    setOutcomeStatus("loading");
+    try {
+      const res = await fetch(`/api/forecasts/${result.forecast.id}/outcome`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ actualOutcome, locale }),
+      });
+      if (!res.ok) {
+        setOutcomeStatus("error");
+        return;
+      }
+      const data = await res.json();
+      setOutcomeResult(data);
+      setOutcomeStatus("done");
+    } catch {
+      setOutcomeStatus("error");
+    }
+  }
 
   return (
     <main style={{ padding: "2rem", maxWidth: 560 }}>
@@ -218,6 +254,65 @@ export default function NewForecastPage({ params }: { params: { locale: string }
               {scenarios.map((s) => (
                 <ScenarioCard key={s.id} locale={locale} scenario={s} />
               ))}
+
+              {outcomeStatus !== "done" && (
+                <form onSubmit={handleRecordOutcome} style={{ marginTop: "1.5rem" }}>
+                  <h2 style={{ fontSize: "1rem", color: "var(--fc-text-secondary)" }}>
+                    {t(locale, "outcome.heading")}
+                  </h2>
+                  <label htmlFor="outcome" style={{ display: "block", marginBottom: "0.5rem" }}>
+                    {t(locale, "outcome.label")}
+                  </label>
+                  <textarea
+                    id="outcome"
+                    value={actualOutcome}
+                    onChange={(e) => setActualOutcome(e.target.value)}
+                    placeholder={t(locale, "outcome.placeholder")}
+                    rows={3}
+                    style={{
+                      width: "100%",
+                      padding: "0.75rem",
+                      borderRadius: "var(--fc-radius-md)",
+                      border: "1px solid var(--fc-border)",
+                      background: "var(--fc-bg-card)",
+                      color: "var(--fc-text-primary)",
+                      marginBottom: "1rem",
+                    }}
+                  />
+                  <button type="submit" disabled={outcomeStatus === "loading"}>
+                    {outcomeStatus === "loading"
+                      ? t(locale, "outcome.recordingText")
+                      : t(locale, "outcome.submitButton")}
+                  </button>
+                  {outcomeStatus === "error" && (
+                    <p style={{ color: "var(--fc-band-high)" }}>{t(locale, "errors.generic")}</p>
+                  )}
+                </form>
+              )}
+
+              {outcomeStatus === "done" && outcomeResult && (
+                <section style={{ marginTop: "1.5rem" }}>
+                  <p>
+                    <strong>{t(locale, "outcome.matchedScenario")}:</strong>{" "}
+                    {outcomeResult.matchedScenarioTitle ?? t(locale, "outcome.noMatch")}
+                  </p>
+                  {section(
+                    locale,
+                    "outcome.whatWentRight",
+                    outcomeResult.outcomeRecord.whatWentRight
+                  )}
+                  {section(
+                    locale,
+                    "outcome.whatWasMissed",
+                    outcomeResult.outcomeRecord.whatWasMissed
+                  )}
+                  {section(
+                    locale,
+                    "outcome.wrongAssumptions",
+                    outcomeResult.outcomeRecord.wrongAssumptions
+                  )}
+                </section>
+              )}
             </section>
           )}
         </div>
