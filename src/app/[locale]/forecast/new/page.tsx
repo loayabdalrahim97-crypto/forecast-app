@@ -30,6 +30,18 @@ interface ForecastResult {
   followUpQuestions: string[];
 }
 
+interface Scenario {
+  id: string;
+  title: string;
+  description: string;
+  likelihood: string;
+  confidence: string;
+  impact: string;
+  likelyUserResponse: string | null;
+  recommendedResponse: string | null;
+  contingencyPlan: string | null;
+}
+
 function section(locale: string, headingKey: string, items: string[]) {
   if (items.length === 0) return null;
   return (
@@ -46,6 +58,41 @@ function section(locale: string, headingKey: string, items: string[]) {
   );
 }
 
+function ScenarioCard({ locale, scenario }: { locale: string; scenario: Scenario }) {
+  return (
+    <div
+      style={{
+        border: "1px solid var(--fc-border)",
+        borderRadius: "var(--fc-radius-md)",
+        background: "var(--fc-bg-card)",
+        padding: "1rem",
+        marginBottom: "1rem",
+      }}
+    >
+      <h3 style={{ marginTop: 0 }}>{scenario.title}</h3>
+      <p style={{ color: "var(--fc-text-secondary)" }}>{scenario.description}</p>
+      <p style={{ fontSize: "0.85rem" }}>
+        {t(locale, "forecast.likelihood")}: <strong>{scenario.likelihood}</strong>
+        {"  ·  "}
+        {t(locale, "forecast.confidence")}: <strong>{scenario.confidence}</strong>
+        {"  ·  "}
+        {t(locale, "forecast.impact")}: <strong>{scenario.impact}</strong>
+      </p>
+      {scenario.recommendedResponse && (
+        <p>
+          <strong>{t(locale, "forecast.recommendedResponse")}:</strong>{" "}
+          {scenario.recommendedResponse}
+        </p>
+      )}
+      {scenario.contingencyPlan && (
+        <p>
+          <strong>{t(locale, "forecast.contingencyPlan")}:</strong> {scenario.contingencyPlan}
+        </p>
+      )}
+    </div>
+  );
+}
+
 export default function NewForecastPage({ params }: { params: { locale: string } }) {
   const { locale } = params;
   const [situationText, setSituationText] = useState("");
@@ -53,12 +100,19 @@ export default function NewForecastPage({ params }: { params: { locale: string }
   const [result, setResult] = useState<ForecastResult | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const [scenarioStatus, setScenarioStatus] = useState<"idle" | "loading" | "done" | "error">(
+    "idle"
+  );
+  const [scenarios, setScenarios] = useState<Scenario[]>([]);
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!situationText.trim()) return;
 
     setStatus("loading");
     setErrorMessage(null);
+    setScenarios([]);
+    setScenarioStatus("idle");
     try {
       const res = await fetch("/api/forecasts", {
         method: "POST",
@@ -76,6 +130,27 @@ export default function NewForecastPage({ params }: { params: { locale: string }
     } catch {
       setErrorMessage(t(locale, "errors.generic"));
       setStatus("error");
+    }
+  }
+
+  async function handleGenerateScenarios() {
+    if (!result) return;
+    setScenarioStatus("loading");
+    try {
+      const res = await fetch(`/api/forecasts/${result.forecast.id}/scenarios`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ locale }),
+      });
+      if (!res.ok) {
+        setScenarioStatus("error");
+        return;
+      }
+      const data = (await res.json()) as { scenarios: Scenario[] };
+      setScenarios(data.scenarios);
+      setScenarioStatus("done");
+    } catch {
+      setScenarioStatus("error");
     }
   }
 
@@ -122,6 +197,29 @@ export default function NewForecastPage({ params }: { params: { locale: string }
           {section(locale, "forecast.unknownsHeading", byKind("unknown"))}
           {result.followUpQuestions.length > 0 &&
             section(locale, "forecast.followUpHeading", result.followUpQuestions)}
+
+          {scenarioStatus !== "done" && (
+            <button type="button" onClick={handleGenerateScenarios} disabled={scenarioStatus === "loading"}>
+              {scenarioStatus === "loading"
+                ? t(locale, "forecast.generatingScenariosText")
+                : t(locale, "forecast.generateScenariosButton")}
+            </button>
+          )}
+
+          {scenarioStatus === "error" && (
+            <p style={{ color: "var(--fc-band-high)" }}>{t(locale, "errors.generic")}</p>
+          )}
+
+          {scenarioStatus === "done" && scenarios.length > 0 && (
+            <section style={{ marginTop: "1.5rem" }}>
+              <h2 style={{ fontSize: "1rem", color: "var(--fc-text-secondary)" }}>
+                {t(locale, "forecast.scenariosHeading")}
+              </h2>
+              {scenarios.map((s) => (
+                <ScenarioCard key={s.id} locale={locale} scenario={s} />
+              ))}
+            </section>
+          )}
         </div>
       )}
     </main>
