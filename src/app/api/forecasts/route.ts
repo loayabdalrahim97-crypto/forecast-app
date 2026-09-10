@@ -6,6 +6,10 @@ import { CreateForecastSchema } from "@/lib/forecast/schema";
 import { analyzeSituation, generateFollowUpQuestions } from "@/lib/forecast/analyze-situation";
 import { analysisToVariableRows } from "@/lib/forecast/variable-rows";
 import { AIValidationError } from "@/lib/ai/orchestrator";
+import { isWithinRateLimit, FREE_FORECAST_RATE_LIMIT } from "@/lib/rate-limit/free-forecast-limit";
+import { getClientIp } from "@/lib/rate-limit/get-client-ip";
+
+const RATE_LIMIT_EVENT_NAME = "anonymous_forecast_created";
 
 /**
  * POST /api/forecasts
@@ -16,10 +20,32 @@ import { AIValidationError } from "@/lib/ai/orchestrator";
  * runs the Situation Analyzer and persists facts/assumptions/unknowns/
  * variables as separate rows. §12: only asks follow-up questions when
  * there are unknowns worth asking about.
+ *
+ * §8/§26: signed-in users are trusted (their account is the abuse
+ * boundary — a real credit system comes in a later phase). Anonymous
+ * requests are rate-limited by IP using AnalyticsEvent as a lightweight
+ * request log, since that table already exists for exactly this kind
+ * of "did this happen recently" query.
  */
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
   const userId = (session?.user as { id?: string } | undefined)?.id ?? null;
+
+  if (!userId) {
+    const ip = getClientIp(req);
+    const since = new Date(Date.now() - FREE_FORECAST_RATE_LIMIT.windowMs);
+    const recentEvents = await prisma.analyticsEvent.findMany({
+      where: { eventName: RATE_LIMIT_EVENT_NAME, source: ip, createdAt: { gte: since } },
+      select: { createdAt: true },
+    });
+
+    if (!isWithinRateLimit(recentEvents.map((e: { createdAt: Date }) => e.createdAt), new Date())) {
+      return NextResponse.json(
+        { error: "Free forecast limit reached. Sign up to continue." },
+        { status: 429 }
+      );
+    }
+  }
 
   let body: unknown;
   try {
@@ -69,6 +95,12 @@ export async function POST(req: NextRequest) {
     },
     include: { variables: true },
   });
+
+  if (!userId) {
+    await prisma.analyticsEvent.create({
+      data: { eventName: RATE_LIMIT_EVENT_NAME, source: getClientIp(req) },
+    });
+  }
 
   return NextResponse.json(
     {
