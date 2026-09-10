@@ -1,12 +1,13 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { RealityCheckBarometer } from "@/components/reality-check-barometer";
 import { computeRealityCheck } from "@/lib/forecast/reality-check";
 import { diffForecastVariables, isDiffEmpty, type ForecastDiff } from "@/lib/forecast/diff-variables";
 import { ExecutiveSummary } from "@/components/executive-summary";
 import { ScenarioAccordion, type AccordionScenario } from "@/components/scenario-accordion";
 import { DownloadPdfButton } from "@/components/download-pdf-button";
+import type { ForecastReportData } from "@/lib/pdf/generate-forecast-report";
 import enUs from "../../../../../messages/en-us.json";
 import ar from "../../../../../messages/ar.json";
 
@@ -136,7 +137,6 @@ export default function NewForecastPage({ params }: { params: { locale: string }
   const [scenariosStale, setScenariosStale] = useState(false);
   const [forecastDiff, setForecastDiff] = useState<ForecastDiff | null>(null);
 
-  const resultsRef = useRef<HTMLDivElement>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -315,6 +315,48 @@ export default function NewForecastPage({ params }: { params: { locale: string }
         ? t(locale, "realityCheck.highAssumption")
         : t(locale, "realityCheck.mixed");
 
+  function buildReportData(): ForecastReportData {
+    return {
+      locale,
+      situationText,
+      facts: byKind("fact"),
+      assumptions: byKind("assumption"),
+      unknowns: byKind("unknown"),
+      behavioralVariables: byKind("behavioral"),
+      externalVariables: byKind("external"),
+      controllableVariables: byKind("controllable"),
+      uncontrollableVariables: byKind("uncontrollable"),
+      realityCheckLabel: realityCheckBadgeLabel,
+      scenarios: scenarios.map((s) => ({
+        outcomeType: s.outcomeType,
+        title: s.title,
+        description: s.description,
+        likelihood: s.likelihood,
+        confidence: s.confidence,
+        impact: s.impact,
+        evidence: Array.isArray(s.evidence) ? (s.evidence as string[]) : [],
+        triggers: Array.isArray(s.triggers) ? (s.triggers as string[]) : [],
+        earlyWarningSigns: Array.isArray(s.earlyWarningSigns) ? (s.earlyWarningSigns as string[]) : [],
+        recommendedResponse: s.recommendedResponse,
+      })),
+      recommendedAction,
+      whatCouldChangeForecast,
+      updateNote: forecastDiff && !isDiffEmpty(forecastDiff)
+        ? [...forecastDiff.addedFacts, ...forecastDiff.removedAssumptions, ...forecastDiff.removedUnknowns]
+            .map((item) => `• ${item}`)
+            .join("\n") || null
+        : null,
+      outcome: outcomeResult
+        ? {
+            matchedScenarioTitle: outcomeResult.matchedScenarioTitle,
+            whatWentRight: outcomeResult.outcomeRecord.whatWentRight,
+            whatWasMissed: outcomeResult.outcomeRecord.whatWasMissed,
+            wrongAssumptions: outcomeResult.outcomeRecord.wrongAssumptions,
+          }
+        : null,
+    };
+  }
+
   return (
     <main style={{ padding: "1.5rem 2rem 4rem", maxWidth: 640, margin: "0 auto" }}>
       <h1 style={{ fontSize: "1.6rem", margin: "1rem 0 1.5rem" }}>Foresee</h1>
@@ -342,10 +384,10 @@ export default function NewForecastPage({ params }: { params: { locale: string }
       {status === "done" && result && (
         <div style={{ marginTop: "1.5rem" }}>
           <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "0.75rem" }}>
-            <DownloadPdfButton targetRef={resultsRef} filename="foresee-forecast.pdf" locale={locale} />
+            <DownloadPdfButton buildReportData={buildReportData} locale={locale} />
           </div>
 
-          <div ref={resultsRef}>
+          <div>
           {scenarioStatus === "done" && scenarios.length > 0 && mostLikely && (
             <ExecutiveSummary
               locale={locale}
