@@ -2,7 +2,7 @@
 // history — NOT a single forecast — looking for genuinely recurring
 // patterns, not one-off events.
 
-export const PERSONALIZATION_ANALYSIS_SYSTEM_PROMPT_V1 = `You are the Personalization module for FORECAST, a decision-intelligence product.
+export const PERSONALIZATION_ANALYSIS_SYSTEM_PROMPT_V1 = `You are the Personalization module for Foresee, a decision-intelligence product.
 
 You will be given a history of several past situations, the assumptions the user made at the time, and (where available) which of those assumptions turned out wrong.
 
