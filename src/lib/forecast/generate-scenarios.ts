@@ -25,11 +25,10 @@ export async function generateScenarios(params: {
     systemPrompt: SCENARIO_GENERATION_SYSTEM_PROMPT_V1,
     userPrompt: buildScenarioGenerationUserPrompt({ ...params, languageName }),
     schema: ScenarioGenerationOutputSchema,
-    // 3-6 scenarios, each with title/description/evidence/triggers/
-    // earlyWarningSigns/likelihoodIncreasesIf/likelihoodDecreasesIf/
-    // likelyUserResponse/recommendedResponse/contingencyPlan, adds up
-    // fast — 2048 was cutting the response off mid-JSON (confirmed via
-    // the AIValidationError raw output in production logs).
-    maxOutputTokens: 4096,
+    // 3 scenarios plus a top-level recommendedAction and
+    // whatCouldChangeForecast now add to the response size — bumped
+    // headroom again after the earlier 2048->4096 truncation bug to
+    // avoid repeating it.
+    maxOutputTokens: 4608,
   });
 }
