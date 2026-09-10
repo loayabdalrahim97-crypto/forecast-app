@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { resolveLocale, isRtl, DEFAULT_LOCALE } from "./config";
+import { resolveLocale, isRtl, DEFAULT_LOCALE, languageNameForLocale } from "./config";
 
 describe("resolveLocale", () => {
   it("prefers explicit selection over everything else", () => {
@@ -36,5 +36,17 @@ describe("isRtl", () => {
 
   it("does not flag English as RTL", () => {
     expect(isRtl("en-us")).toBe(false);
+  });
+});
+
+describe("languageNameForLocale", () => {
+  it("maps a locale to its display language name", () => {
+    expect(languageNameForLocale("ar")).toBe("Arabic");
+    expect(languageNameForLocale("de")).toBe("German");
+    expect(languageNameForLocale("en-us")).toBe("English");
+  });
+
+  it("falls back to the default locale's language for an unknown locale", () => {
+    expect(languageNameForLocale("xx-YY")).toBe("English");
   });
 });
