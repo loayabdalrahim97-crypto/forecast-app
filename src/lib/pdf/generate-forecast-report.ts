@@ -129,7 +129,18 @@ export async function generateForecastReport(data: ForecastReportData): Promise<
 
   if (data.recommendedAction) {
     y = drawHeading(ctx, labels.executiveSummary, y);
-    y = drawParagraph(ctx, data.recommendedAction.summary, y);
+    const factsAssumptionsLine =
+      isRtl
+        ? `${data.facts.length} حقيقة معروفة، ${data.assumptions.length} افتراض، و${data.unknowns.length} مجهول تم تحديدهم. ${data.realityCheckLabel}.`
+        : `${data.facts.length} known fact(s), ${data.assumptions.length} assumption(s), and ${data.unknowns.length} unknown(s) identified. ${data.realityCheckLabel}.`;
+    y = drawParagraph(ctx, factsAssumptionsLine, y);
+    if (data.scenarios.length > 0) {
+      const topScenario = data.scenarios.find((s) => s.outcomeType === "most_likely") ?? data.scenarios[0];
+      const scenarioLine = isRtl
+        ? `أرجح سيناريو مبني عليه: "${topScenario.title}".`
+        : `The most likely scenario considered: "${topScenario.title}".`;
+      y = drawParagraph(ctx, scenarioLine, y);
+    }
     y += 3;
   }
 
