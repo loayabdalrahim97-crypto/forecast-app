@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { analyzeBusiness } from "@/lib/forecast/analyze-business";
 import { SUPPORTED_LOCALES } from "@/lib/i18n/config";
 import { AIValidationError } from "@/lib/ai/orchestrator";
+import { logAIRequest } from "@/lib/ai/log-request";
 
 const BodySchema = z.object({
   locale: z.enum(SUPPORTED_LOCALES).default("en-us"),
@@ -74,6 +75,8 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   });
 
   await prisma.forecast.update({ where: { id: forecast.id }, data: { mode: "business" } });
+
+  await logAIRequest(result.meta, { userId: forecast.userId, forecastId: forecast.id });
 
   return NextResponse.json({ businessForecast }, { status: 201 });
 }
