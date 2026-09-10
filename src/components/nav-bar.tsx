@@ -2,6 +2,7 @@
 
 import { useSession, signOut } from "next-auth/react";
 import { LanguageSwitcher } from "./language-switcher";
+import { Logo } from "./logo";
 import enUs from "../../messages/en-us.json";
 import ar from "../../messages/ar.json";
 
@@ -50,16 +51,7 @@ export function NavBar({ locale }: { locale: string }) {
           gap: "0.5rem",
         }}
       >
-        <span
-          aria-hidden
-          style={{
-            width: 8,
-            height: 8,
-            borderRadius: "50%",
-            background: "var(--fc-accent)",
-            boxShadow: "0 0 0 3px var(--fc-accent-soft)",
-          }}
-        />
+        <Logo size={22} />
         Foresee
       </a>
       <div style={{ display: "flex", gap: "1.5rem", alignItems: "center" }}>
