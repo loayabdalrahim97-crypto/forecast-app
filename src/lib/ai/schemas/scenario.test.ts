@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { ScenarioGenerationOutputSchema, SituationAnalysisSchema, FollowUpQuestionsSchema } from "./scenario";
+import {
+  ScenarioGenerationOutputSchema,
+  SituationAnalysisSchema,
+  FollowUpQuestionsSchema,
+  OutcomeComparisonSchema,
+} from "./scenario";
 
 describe("ScenarioGenerationOutputSchema", () => {
   const validScenario = {
@@ -81,5 +86,33 @@ describe("FollowUpQuestionsSchema", () => {
       questions: ["Q1?", "Q2?", "Q3?", "Q4?"],
     });
     expect(result.success).toBe(false);
+  });
+});
+
+describe("OutcomeComparisonSchema", () => {
+  it("accepts a null matchedScenarioTitle (section 18 - not forcing a match)", () => {
+    const result = OutcomeComparisonSchema.safeParse({
+      matchedScenarioTitle: null,
+      whatWentRight: [],
+      whatWasMissed: ["The forecast underestimated how quickly things resolved."],
+      wrongAssumptions: [],
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts a matched scenario title", () => {
+    const result = OutcomeComparisonSchema.safeParse({
+      matchedScenarioTitle: "Conditional raise offered",
+      whatWentRight: ["Correctly predicted a conditional offer"],
+      whatWasMissed: [],
+      wrongAssumptions: [],
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("defaults omitted arrays to empty rather than failing", () => {
+    const result = OutcomeComparisonSchema.safeParse({ matchedScenarioTitle: null });
+    expect(result.success).toBe(true);
+    expect(result.data?.whatWentRight).toEqual([]);
   });
 });
