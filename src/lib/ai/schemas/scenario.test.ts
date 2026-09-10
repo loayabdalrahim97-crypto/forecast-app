@@ -10,6 +10,7 @@ import {
 
 describe("ScenarioGenerationOutputSchema", () => {
   const validScenario = {
+    outcomeType: "most_likely",
     title: "Manager offers a conditional raise",
     description: "The manager proposes a raise tied to a performance review.",
     likelihood: "moderate",
@@ -17,23 +18,46 @@ describe("ScenarioGenerationOutputSchema", () => {
     impact: "high",
   };
 
-  it("accepts 3 to 6 well-formed scenarios", () => {
+  it("accepts exactly one best_case, one most_likely, one worst_case", () => {
     const result = ScenarioGenerationOutputSchema.safeParse({
-      scenarios: [validScenario, validScenario, validScenario],
+      scenarios: [
+        { ...validScenario, outcomeType: "best_case" },
+        { ...validScenario, outcomeType: "most_likely" },
+        { ...validScenario, outcomeType: "worst_case" },
+      ],
     });
     expect(result.success).toBe(true);
   });
 
   it("rejects fewer than 3 scenarios", () => {
     const result = ScenarioGenerationOutputSchema.safeParse({
-      scenarios: [validScenario, validScenario],
+      scenarios: [
+        { ...validScenario, outcomeType: "best_case" },
+        { ...validScenario, outcomeType: "worst_case" },
+      ],
     });
     expect(result.success).toBe(false);
   });
 
-  it("rejects more than 6 scenarios", () => {
+  it("rejects more than 3 scenarios", () => {
     const result = ScenarioGenerationOutputSchema.safeParse({
-      scenarios: Array(7).fill(validScenario),
+      scenarios: [
+        { ...validScenario, outcomeType: "best_case" },
+        { ...validScenario, outcomeType: "most_likely" },
+        { ...validScenario, outcomeType: "worst_case" },
+        { ...validScenario, outcomeType: "most_likely" },
+      ],
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects two scenarios of the same outcome type (must be one of each)", () => {
+    const result = ScenarioGenerationOutputSchema.safeParse({
+      scenarios: [
+        { ...validScenario, outcomeType: "best_case" },
+        { ...validScenario, outcomeType: "best_case" },
+        { ...validScenario, outcomeType: "worst_case" },
+      ],
     });
     expect(result.success).toBe(false);
   });
@@ -41,9 +65,9 @@ describe("ScenarioGenerationOutputSchema", () => {
   it("rejects fabricated decimal-precision likelihood instead of a band (section 13)", () => {
     const result = ScenarioGenerationOutputSchema.safeParse({
       scenarios: [
-        { ...validScenario, likelihood: "73.482%" },
-        validScenario,
-        validScenario,
+        { ...validScenario, outcomeType: "best_case", likelihood: "73.482%" },
+        { ...validScenario, outcomeType: "most_likely" },
+        { ...validScenario, outcomeType: "worst_case" },
       ],
     });
     expect(result.success).toBe(false);
