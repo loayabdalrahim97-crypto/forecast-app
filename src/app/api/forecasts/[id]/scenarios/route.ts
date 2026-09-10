@@ -73,31 +73,38 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       locale: parsed.data.locale,
     });
   } catch (err) {
+    console.error("[scenarios] generation failed:", err);
     if (err instanceof AIValidationError) {
+      console.error("[scenarios] raw model output:", err.rawText);
       return NextResponse.json({ error: "Scenario generation failed validation" }, { status: 502 });
     }
     return NextResponse.json({ error: "Scenario generation failed" }, { status: 502 });
   }
 
-  await prisma.scenario.createMany({
-    data: result.data.scenarios.map((s) => ({
-      forecastId: forecast.id,
-      title: s.title,
-      description: s.description,
-      likelihood: s.likelihood,
-      confidence: s.confidence,
-      impact: s.impact,
-      evidence: s.evidence,
-      assumptions: s.assumptions,
-      triggers: s.triggers,
-      earlyWarningSigns: s.earlyWarningSigns,
-      likelihoodIncreasesIf: s.likelihoodIncreasesIf,
-      likelihoodDecreasesIf: s.likelihoodDecreasesIf,
-      likelyUserResponse: s.likelyUserResponse,
-      recommendedResponse: s.recommendedResponse,
-      contingencyPlan: s.contingencyPlan,
-    })),
-  });
+  try {
+    await prisma.scenario.createMany({
+      data: result.data.scenarios.map((s) => ({
+        forecastId: forecast.id,
+        title: s.title,
+        description: s.description,
+        likelihood: s.likelihood,
+        confidence: s.confidence,
+        impact: s.impact,
+        evidence: s.evidence,
+        assumptions: s.assumptions,
+        triggers: s.triggers,
+        earlyWarningSigns: s.earlyWarningSigns,
+        likelihoodIncreasesIf: s.likelihoodIncreasesIf,
+        likelihoodDecreasesIf: s.likelihoodDecreasesIf,
+        likelyUserResponse: s.likelyUserResponse,
+        recommendedResponse: s.recommendedResponse,
+        contingencyPlan: s.contingencyPlan,
+      })),
+    });
+  } catch (err) {
+    console.error("[scenarios] failed to persist scenarios:", err);
+    return NextResponse.json({ error: "Failed to save scenarios" }, { status: 500 });
+  }
 
   const scenarios = await prisma.scenario.findMany({ where: { forecastId: forecast.id } });
 
