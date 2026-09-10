@@ -17,6 +17,26 @@ function t(locale: string, path: string): string {
   return typeof value === "string" ? value : path;
 }
 
+type Band = "low" | "moderate" | "high";
+
+function normalizeBand(value: string): Band {
+  const v = value.toLowerCase();
+  if (v === "low" || v === "moderate" || v === "high") return v;
+  return "moderate";
+}
+
+function BandPill({ locale, labelKey, value }: { locale: string; labelKey: string; value: string }) {
+  const band = normalizeBand(value);
+  return (
+    <span
+      className="fc-pill"
+      style={{ color: `var(--fc-band-${band})`, background: `var(--fc-band-${band}-soft)` }}
+    >
+      {t(locale, labelKey)}: {value}
+    </span>
+  );
+}
+
 interface ForecastVariable {
   kind: string;
   content: string;
@@ -42,16 +62,18 @@ interface Scenario {
   contingencyPlan: string | null;
 }
 
-function section(locale: string, headingKey: string, items: string[]) {
+function SectionList({ locale, headingKey, items }: { locale: string; headingKey: string; items: string[] }) {
   if (items.length === 0) return null;
   return (
     <section style={{ marginBottom: "1.25rem" }}>
-      <h2 style={{ fontSize: "1rem", color: "var(--fc-text-secondary)" }}>
+      <h2 style={{ fontSize: "0.95rem", fontFamily: "var(--fc-font-sans)", fontWeight: 600, color: "var(--fc-text-secondary)", margin: "0 0 0.5rem" }}>
         {t(locale, headingKey)}
       </h2>
-      <ul>
+      <ul style={{ margin: 0, paddingInlineStart: "1.2rem", color: "var(--fc-text-primary)" }}>
         {items.map((item, i) => (
-          <li key={i}>{item}</li>
+          <li key={i} style={{ marginBottom: "0.3rem", lineHeight: 1.5 }}>
+            {item}
+          </li>
         ))}
       </ul>
     </section>
@@ -61,32 +83,32 @@ function section(locale: string, headingKey: string, items: string[]) {
 function ScenarioCard({ locale, scenario }: { locale: string; scenario: Scenario }) {
   return (
     <div
-      style={{
-        border: "1px solid var(--fc-border)",
-        borderRadius: "var(--fc-radius-md)",
-        background: "var(--fc-bg-card)",
-        padding: "1rem",
-        marginBottom: "1rem",
-      }}
+      className="fc-strip"
+      style={{ ["--fc-strip-color" as string]: `var(--fc-band-${normalizeBand(scenario.impact)})`, marginBottom: "1rem" }}
     >
-      <h3 style={{ marginTop: 0 }}>{scenario.title}</h3>
-      <p style={{ color: "var(--fc-text-secondary)" }}>{scenario.description}</p>
-      <p style={{ fontSize: "0.85rem" }}>
-        {t(locale, "forecast.likelihood")}: <strong>{scenario.likelihood}</strong>
-        {"  ·  "}
-        {t(locale, "forecast.confidence")}: <strong>{scenario.confidence}</strong>
-        {"  ·  "}
-        {t(locale, "forecast.impact")}: <strong>{scenario.impact}</strong>
+      <h3 style={{ margin: "0 0 0.4rem", fontSize: "1.05rem" }}>{scenario.title}</h3>
+      <p style={{ color: "var(--fc-text-secondary)", lineHeight: 1.55, margin: "0 0 0.75rem" }}>
+        {scenario.description}
       </p>
+      <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginBottom: "0.75rem" }}>
+        <BandPill locale={locale} labelKey="forecast.likelihood" value={scenario.likelihood} />
+        <BandPill locale={locale} labelKey="forecast.confidence" value={scenario.confidence} />
+        <BandPill locale={locale} labelKey="forecast.impact" value={scenario.impact} />
+      </div>
       {scenario.recommendedResponse && (
-        <p>
-          <strong>{t(locale, "forecast.recommendedResponse")}:</strong>{" "}
+        <p style={{ margin: "0 0 0.5rem", fontSize: "0.92rem" }}>
+          <strong style={{ color: "var(--fc-text-secondary)", fontWeight: 600 }}>
+            {t(locale, "forecast.recommendedResponse")}:
+          </strong>{" "}
           {scenario.recommendedResponse}
         </p>
       )}
       {scenario.contingencyPlan && (
-        <p>
-          <strong>{t(locale, "forecast.contingencyPlan")}:</strong> {scenario.contingencyPlan}
+        <p style={{ margin: 0, fontSize: "0.92rem" }}>
+          <strong style={{ color: "var(--fc-text-secondary)", fontWeight: 600 }}>
+            {t(locale, "forecast.contingencyPlan")}:
+          </strong>{" "}
+          {scenario.contingencyPlan}
         </p>
       )}
     </div>
@@ -114,30 +136,24 @@ interface DecisionAnalysisResult {
 function DecisionOptionCard({ locale, opt }: { locale: string; opt: DecisionOption }) {
   return (
     <div
-      style={{
-        border: "1px solid var(--fc-border)",
-        borderRadius: "var(--fc-radius-md)",
-        background: "var(--fc-bg-card)",
-        padding: "1rem",
-        marginBottom: "1rem",
-      }}
+      className="fc-strip"
+      style={{ ["--fc-strip-color" as string]: `var(--fc-band-${normalizeBand(opt.risk)})`, marginBottom: "1rem" }}
     >
-      <h3 style={{ marginTop: 0 }}>{opt.option}</h3>
-      <p style={{ fontSize: "0.85rem" }}>
-        {t(locale, "decision.risk")}: <strong>{opt.risk}</strong>
-        {"  ·  "}
-        {t(locale, "decision.reversibility")}: <strong>{opt.reversibility}</strong>
+      <h3 style={{ margin: "0 0 0.5rem", fontSize: "1.05rem" }}>{opt.option}</h3>
+      <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginBottom: "0.75rem" }}>
+        <BandPill locale={locale} labelKey="decision.risk" value={opt.risk} />
+        <BandPill locale={locale} labelKey="decision.reversibility" value={opt.reversibility} />
+      </div>
+      <SectionList locale={locale} headingKey="decision.upside" items={opt.upside} />
+      <SectionList locale={locale} headingKey="decision.downside" items={opt.downside} />
+      <p style={{ margin: "0 0 0.35rem", fontSize: "0.9rem" }}>
+        <strong style={{ color: "var(--fc-text-secondary)" }}>{t(locale, "decision.bestCase")}:</strong> {opt.bestCase}
       </p>
-      {section(locale, "decision.upside", opt.upside)}
-      {section(locale, "decision.downside", opt.downside)}
-      <p>
-        <strong>{t(locale, "decision.bestCase")}:</strong> {opt.bestCase}
+      <p style={{ margin: "0 0 0.35rem", fontSize: "0.9rem" }}>
+        <strong style={{ color: "var(--fc-text-secondary)" }}>{t(locale, "decision.baseCase")}:</strong> {opt.baseCase}
       </p>
-      <p>
-        <strong>{t(locale, "decision.baseCase")}:</strong> {opt.baseCase}
-      </p>
-      <p>
-        <strong>{t(locale, "decision.worstCase")}:</strong> {opt.worstCase}
+      <p style={{ margin: 0, fontSize: "0.9rem" }}>
+        <strong style={{ color: "var(--fc-text-secondary)" }}>{t(locale, "decision.worstCase")}:</strong> {opt.worstCase}
       </p>
     </div>
   );
@@ -279,30 +295,23 @@ export default function NewForecastPage({ params }: { params: { locale: string }
   }
 
   return (
-    <main style={{ padding: "2rem", maxWidth: 560 }}>
-      <h1>FORECAST</h1>
+    <main style={{ padding: "2.5rem 2rem 4rem", maxWidth: 640, margin: "0 auto" }}>
+      <h1 style={{ fontSize: "1.6rem", margin: "0 0 1.5rem" }}>FORECAST</h1>
 
       <form onSubmit={handleSubmit}>
-        <label htmlFor="situation" style={{ display: "block", marginBottom: "0.5rem" }}>
+        <label htmlFor="situation" className="fc-label">
           {t(locale, "forecast.situationLabel")}
         </label>
         <textarea
           id="situation"
+          className="fc-textarea"
           value={situationText}
           onChange={(e) => setSituationText(e.target.value)}
           placeholder={t(locale, "forecast.situationPlaceholder")}
           rows={5}
-          style={{
-            width: "100%",
-            padding: "0.75rem",
-            borderRadius: "var(--fc-radius-md)",
-            border: "1px solid var(--fc-border)",
-            background: "var(--fc-bg-card)",
-            color: "var(--fc-text-primary)",
-            marginBottom: "1rem",
-          }}
+          style={{ marginBottom: "1rem", resize: "vertical" }}
         />
-        <button type="submit" disabled={status === "loading"}>
+        <button type="submit" className="fc-btn fc-btn-primary" disabled={status === "loading"}>
           {status === "loading" ? t(locale, "forecast.analyzingText") : t(locale, "forecast.submitButton")}
         </button>
       </form>
@@ -312,38 +321,30 @@ export default function NewForecastPage({ params }: { params: { locale: string }
       )}
 
       {status === "done" && result && (
-        <div style={{ marginTop: "2rem" }}>
-          {section(locale, "forecast.factsHeading", byKind("fact"))}
-          {section(locale, "forecast.assumptionsHeading", byKind("assumption"))}
-          {section(locale, "forecast.unknownsHeading", byKind("unknown"))}
-          {result.followUpQuestions.length > 0 &&
-            section(locale, "forecast.followUpHeading", result.followUpQuestions)}
+        <div style={{ marginTop: "2.25rem" }}>
+          <SectionList locale={locale} headingKey="forecast.factsHeading" items={byKind("fact")} />
+          <SectionList locale={locale} headingKey="forecast.assumptionsHeading" items={byKind("assumption")} />
+          <SectionList locale={locale} headingKey="forecast.unknownsHeading" items={byKind("unknown")} />
+          {result.followUpQuestions.length > 0 && (
+            <SectionList locale={locale} headingKey="forecast.followUpHeading" items={result.followUpQuestions} />
+          )}
 
-          <section style={{ marginTop: "1.5rem", marginBottom: "1.5rem" }}>
-            <h2 style={{ fontSize: "1rem", color: "var(--fc-text-secondary)" }}>
-              {t(locale, "decision.heading")}
-            </h2>
+          <section style={{ marginTop: "2rem", marginBottom: "2rem", paddingTop: "1.5rem", borderTop: "1px solid var(--fc-border)" }}>
+            <h2 style={{ fontSize: "1.05rem", margin: "0 0 1rem" }}>{t(locale, "decision.heading")}</h2>
             <form onSubmit={handleAnalyzeDecision}>
-              <label htmlFor="options" style={{ display: "block", marginBottom: "0.5rem" }}>
+              <label htmlFor="options" className="fc-label">
                 {t(locale, "decision.optionsLabel")}
               </label>
               <input
                 id="options"
                 type="text"
+                className="fc-input"
                 value={decisionOptionsInput}
                 onChange={(e) => setDecisionOptionsInput(e.target.value)}
                 placeholder={t(locale, "decision.optionsPlaceholder")}
-                style={{
-                  width: "100%",
-                  padding: "0.5rem",
-                  borderRadius: "var(--fc-radius-md)",
-                  border: "1px solid var(--fc-border)",
-                  background: "var(--fc-bg-card)",
-                  color: "var(--fc-text-primary)",
-                  marginBottom: "0.75rem",
-                }}
+                style={{ marginBottom: "0.85rem" }}
               />
-              <button type="submit" disabled={decisionStatus === "loading"}>
+              <button type="submit" className="fc-btn fc-btn-secondary" disabled={decisionStatus === "loading"}>
                 {decisionStatus === "loading"
                   ? t(locale, "decision.analyzingText")
                   : t(locale, "decision.submitButton")}
@@ -351,21 +352,21 @@ export default function NewForecastPage({ params }: { params: { locale: string }
             </form>
 
             {decisionStatus === "error" && (
-              <p style={{ color: "var(--fc-band-high)" }}>{t(locale, "errors.generic")}</p>
+              <p style={{ color: "var(--fc-band-high)", marginTop: "0.75rem" }}>{t(locale, "errors.generic")}</p>
             )}
 
             {decisionStatus === "done" && decisionResult && (
-              <div style={{ marginTop: "1rem" }}>
+              <div style={{ marginTop: "1.25rem" }}>
                 {decisionResult.options.map((opt, i) => (
                   <DecisionOptionCard key={i} locale={locale} opt={opt} />
                 ))}
-                {section(locale, "decision.keyVariables", decisionResult.keyVariables)}
-                <p>
-                  <strong>{t(locale, "decision.recommendation")}:</strong>{" "}
+                <SectionList locale={locale} headingKey="decision.keyVariables" items={decisionResult.keyVariables} />
+                <p style={{ fontSize: "0.92rem", margin: "0 0 0.5rem" }}>
+                  <strong style={{ color: "var(--fc-text-secondary)" }}>{t(locale, "decision.recommendation")}:</strong>{" "}
                   {decisionResult.recommendation}
                 </p>
-                <p>
-                  <strong>{t(locale, "forecast.contingencyPlan")}:</strong>{" "}
+                <p style={{ fontSize: "0.92rem", margin: 0 }}>
+                  <strong style={{ color: "var(--fc-text-secondary)" }}>{t(locale, "forecast.contingencyPlan")}:</strong>{" "}
                   {decisionResult.contingencyPlan}
                 </p>
               </div>
@@ -373,7 +374,12 @@ export default function NewForecastPage({ params }: { params: { locale: string }
           </section>
 
           {scenarioStatus !== "done" && (
-            <button type="button" onClick={handleGenerateScenarios} disabled={scenarioStatus === "loading"}>
+            <button
+              type="button"
+              className="fc-btn fc-btn-primary"
+              onClick={handleGenerateScenarios}
+              disabled={scenarioStatus === "loading"}
+            >
               {scenarioStatus === "loading"
                 ? t(locale, "forecast.generatingScenariosText")
                 : t(locale, "forecast.generateScenariosButton")}
@@ -381,74 +387,54 @@ export default function NewForecastPage({ params }: { params: { locale: string }
           )}
 
           {scenarioStatus === "error" && (
-            <p style={{ color: "var(--fc-band-high)" }}>{t(locale, "errors.generic")}</p>
+            <p style={{ color: "var(--fc-band-high)", marginTop: "0.75rem" }}>{t(locale, "errors.generic")}</p>
           )}
 
           {scenarioStatus === "done" && scenarios.length > 0 && (
-            <section style={{ marginTop: "1.5rem" }}>
-              <h2 style={{ fontSize: "1rem", color: "var(--fc-text-secondary)" }}>
-                {t(locale, "forecast.scenariosHeading")}
-              </h2>
+            <section style={{ marginTop: "1.75rem" }}>
+              <h2 style={{ fontSize: "1.05rem", margin: "0 0 1rem" }}>{t(locale, "forecast.scenariosHeading")}</h2>
               {scenarios.map((s) => (
                 <ScenarioCard key={s.id} locale={locale} scenario={s} />
               ))}
 
               {outcomeStatus !== "done" && (
-                <form onSubmit={handleRecordOutcome} style={{ marginTop: "1.5rem" }}>
-                  <h2 style={{ fontSize: "1rem", color: "var(--fc-text-secondary)" }}>
-                    {t(locale, "outcome.heading")}
-                  </h2>
-                  <label htmlFor="outcome" style={{ display: "block", marginBottom: "0.5rem" }}>
+                <form
+                  onSubmit={handleRecordOutcome}
+                  style={{ marginTop: "1.75rem", paddingTop: "1.5rem", borderTop: "1px solid var(--fc-border)" }}
+                >
+                  <h2 style={{ fontSize: "1.05rem", margin: "0 0 1rem" }}>{t(locale, "outcome.heading")}</h2>
+                  <label htmlFor="outcome" className="fc-label">
                     {t(locale, "outcome.label")}
                   </label>
                   <textarea
                     id="outcome"
+                    className="fc-textarea"
                     value={actualOutcome}
                     onChange={(e) => setActualOutcome(e.target.value)}
                     placeholder={t(locale, "outcome.placeholder")}
                     rows={3}
-                    style={{
-                      width: "100%",
-                      padding: "0.75rem",
-                      borderRadius: "var(--fc-radius-md)",
-                      border: "1px solid var(--fc-border)",
-                      background: "var(--fc-bg-card)",
-                      color: "var(--fc-text-primary)",
-                      marginBottom: "1rem",
-                    }}
+                    style={{ marginBottom: "1rem", resize: "vertical" }}
                   />
-                  <button type="submit" disabled={outcomeStatus === "loading"}>
+                  <button type="submit" className="fc-btn fc-btn-primary" disabled={outcomeStatus === "loading"}>
                     {outcomeStatus === "loading"
                       ? t(locale, "outcome.recordingText")
                       : t(locale, "outcome.submitButton")}
                   </button>
                   {outcomeStatus === "error" && (
-                    <p style={{ color: "var(--fc-band-high)" }}>{t(locale, "errors.generic")}</p>
+                    <p style={{ color: "var(--fc-band-high)", marginTop: "0.75rem" }}>{t(locale, "errors.generic")}</p>
                   )}
                 </form>
               )}
 
               {outcomeStatus === "done" && outcomeResult && (
                 <section style={{ marginTop: "1.5rem" }}>
-                  <p>
-                    <strong>{t(locale, "outcome.matchedScenario")}:</strong>{" "}
+                  <p style={{ fontSize: "0.92rem" }}>
+                    <strong style={{ color: "var(--fc-text-secondary)" }}>{t(locale, "outcome.matchedScenario")}:</strong>{" "}
                     {outcomeResult.matchedScenarioTitle ?? t(locale, "outcome.noMatch")}
                   </p>
-                  {section(
-                    locale,
-                    "outcome.whatWentRight",
-                    outcomeResult.outcomeRecord.whatWentRight
-                  )}
-                  {section(
-                    locale,
-                    "outcome.whatWasMissed",
-                    outcomeResult.outcomeRecord.whatWasMissed
-                  )}
-                  {section(
-                    locale,
-                    "outcome.wrongAssumptions",
-                    outcomeResult.outcomeRecord.wrongAssumptions
-                  )}
+                  <SectionList locale={locale} headingKey="outcome.whatWentRight" items={outcomeResult.outcomeRecord.whatWentRight} />
+                  <SectionList locale={locale} headingKey="outcome.whatWasMissed" items={outcomeResult.outcomeRecord.whatWasMissed} />
+                  <SectionList locale={locale} headingKey="outcome.wrongAssumptions" items={outcomeResult.outcomeRecord.wrongAssumptions} />
                 </section>
               )}
             </section>
