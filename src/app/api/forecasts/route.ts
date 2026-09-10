@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
 
   let analysisResult;
   try {
-    analysisResult = await analyzeSituation(parsed.data.situationText);
+    analysisResult = await analyzeSituation(parsed.data.situationText, parsed.data.locale);
   } catch (err) {
     if (err instanceof AIValidationError) {
       return NextResponse.json({ error: "Analysis failed validation" }, { status: 502 });
@@ -51,6 +51,7 @@ export async function POST(req: NextRequest) {
   const followUp = await generateFollowUpQuestions({
     situationText: parsed.data.situationText,
     unknowns: analysis.unknowns,
+    locale: parsed.data.locale,
   }).catch(() => ({ data: { questions: [] as string[] }, meta: null }));
 
   const forecast = await prisma.forecast.create({
