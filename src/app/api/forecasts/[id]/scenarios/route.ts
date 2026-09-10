@@ -11,6 +11,7 @@ import { SUPPORTED_LOCALES } from "@/lib/i18n/config";
 import { AIValidationError } from "@/lib/ai/orchestrator";
 import { isWithinRateLimit, FREE_FORECAST_RATE_LIMIT } from "@/lib/rate-limit/free-forecast-limit";
 import { getClientIp } from "@/lib/rate-limit/get-client-ip";
+import { logAIRequest } from "@/lib/ai/log-request";
 
 const RATE_LIMIT_EVENT_NAME = "anonymous_scenarios_generated";
 
@@ -124,6 +125,8 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   }
 
   const scenarios = await prisma.scenario.findMany({ where: { forecastId: forecast.id } });
+
+  await logAIRequest(result.meta, { userId, forecastId: forecast.id });
 
   if (!userId) {
     await prisma.analyticsEvent.create({
