@@ -3,7 +3,7 @@
 import { computeRealityCheck, type RealityCheckBadge } from "@/lib/forecast/reality-check";
 
 const BADGE_STYLE: Record<RealityCheckBadge, { color: string; bg: string }> = {
-  grounded: { color: "var(--fc-band-low)", bg: "var(--fc-band-low-soft)" },
+  grounded: { color: "var(--fc-positive)", bg: "var(--fc-positive-soft)" },
   high_assumption: { color: "var(--fc-band-moderate)", bg: "var(--fc-band-moderate-soft)" },
   mixed: { color: "var(--fc-text-secondary)", bg: "var(--fc-bg-elevated)" },
 };
@@ -55,7 +55,7 @@ export function RealityCheckBarometer({
       </div>
 
       <div style={{ display: "flex", height: 8, borderRadius: 999, overflow: "hidden" }}>
-        <div style={{ width: `${result.solidFactsPct}%`, background: "var(--fc-band-low)" }} />
+        <div style={{ width: `${result.solidFactsPct}%`, background: "var(--fc-positive)" }} />
         <div
           style={{ width: `${result.assumptionsGapsPct}%`, background: "var(--fc-band-moderate)" }}
         />
