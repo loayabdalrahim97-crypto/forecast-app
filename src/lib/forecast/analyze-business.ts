@@ -16,6 +16,6 @@ export async function analyzeBusiness(situationText: string, locale: string) {
     systemPrompt: BUSINESS_ANALYSIS_SYSTEM_PROMPT_V1,
     userPrompt: buildBusinessAnalysisUserPrompt(situationText, languageName),
     schema: BusinessAnalysisOutputSchema,
-    maxOutputTokens: 2048,
+    maxOutputTokens: 4096, // raised proactively — same truncation bug class hit two other endpoints already
   });
 }
