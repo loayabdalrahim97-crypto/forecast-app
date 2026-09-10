@@ -50,7 +50,7 @@ export default function LocaleHome({ params: { locale } }: { params: { locale: s
 
         {/* The hero visual is a real example of the product's output —
             a scenario card, not a decorative icon grid — so the first
-            thing a visitor sees is what FORECAST actually produces. */}
+            thing a visitor sees is what Foresee actually produces. */}
         <div className="fc-strip" style={{ ["--fc-strip-color" as string]: "var(--fc-band-moderate)" }}>
           <p style={{ fontSize: "0.8rem", color: "var(--fc-text-muted)", margin: "0 0 0.4rem" }}>
             {isRtlLocale ? "مثال على النتيجة" : "Example output"}
