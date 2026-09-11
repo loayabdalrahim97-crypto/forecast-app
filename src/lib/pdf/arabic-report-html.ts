@@ -84,6 +84,10 @@ export function buildArabicReportHtml(data: ForecastReportData): string {
     <h2 style="font-size:16px;color:#0f3c37;">${escapeHtml(S.keyVariables)}</h2>
     ${variableGroups.map(([h, items]) => section(h, items)).join("")}
     ${section(S.whatCouldChange, data.whatCouldChangeForecast)}
+    ${data.limitsOfForecast ? `
+      <h2 style="font-size:14px;color:#888;margin:14px 0 6px;">${escapeHtml(S.limitsOfForecast)}</h2>
+      <p style="margin:0 0 10px; color:#888; font-size:12.5px; font-style:italic;">${escapeHtml(data.limitsOfForecast)}</p>
+    ` : ""}
 
     <div style="page-break-before: always;"></div>
 
