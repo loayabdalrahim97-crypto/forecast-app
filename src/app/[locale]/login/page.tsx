@@ -36,13 +36,13 @@ export default function LoginPage({ params }: { params: { locale: string } }) {
       return;
     }
 
-    window.location.href = `/${locale}`;
+    window.location.href = `/${locale}/dashboard`;
   }
 
   return (
     <main style={{ padding: "2.5rem 2rem", maxWidth: 400, margin: "0 auto" }}>
       <h1>{t(locale, "nav.login")}</h1>
-      <GoogleSignInButton locale={locale} callbackUrl={`/${locale}`} />
+      <GoogleSignInButton locale={locale} callbackUrl={`/${locale}/dashboard`} />
       <form onSubmit={handleSubmit}>
         <label htmlFor="email" className="fc-label">
           Email

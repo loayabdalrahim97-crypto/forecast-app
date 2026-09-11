@@ -56,6 +56,9 @@ export function NavBar({ locale }: { locale: string }) {
         </a>
         {status === "authenticated" ? (
           <>
+            <a href={`/${locale}/dashboard`} style={linkStyle}>
+              {locale === "ar" ? "لوحتي" : "Dashboard"}
+            </a>
             <span
               className="fc-nav-email"
               style={{
