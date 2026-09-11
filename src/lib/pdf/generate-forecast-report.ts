@@ -15,7 +15,6 @@ import {
   drawDivider,
   bandColor,
   setFont,
-  shapedLine,
   type PdfContext,
 } from "./pdf-writer";
 import { PDF_LABELS, type PdfLocale, type PdfLabelSet } from "./pdf-labels";
@@ -67,10 +66,28 @@ function scenarioHeading(labels: PdfLabelSet, outcomeType: string | null): strin
 }
 
 export async function generateForecastReport(data: ForecastReportData): Promise<void> {
-  const [{ jsPDF }, fontData] = await Promise.all([import("jspdf"), import("./amiri-font-data")]);
+  const today = new Date().toISOString().slice(0, 10);
+
+  // Arabic: manual PDF text shaping (jsPDF + a bidi/shaping library)
+  // produced visibly disconnected, unjoined letters when checked by
+  // rasterizing an actual generated PDF and reading it closely — not
+  // a text-extraction artifact, a real rendering defect. Falling back
+  // to rendering real HTML and capturing it, which relies on the
+  // browser's own Arabic text engine — the same one that already
+  // renders every Arabic page on this site correctly.
+  if (pdfLocale(data.locale) === "ar") {
+    const [{ buildArabicReportHtml }, { renderHtmlToPdf }] = await Promise.all([
+      import("./arabic-report-html"),
+      import("./html-to-pdf"),
+    ]);
+    await renderHtmlToPdf(buildArabicReportHtml(data), `FORESEE_Report_${today}.pdf`);
+    return;
+  }
+
+  const { jsPDF } = await import("jspdf");
 
   const loc = pdfLocale(data.locale);
-  const isRtl = loc === "ar";
+  const isRtl = false; // Arabic already handled and returned above
   const labels = PDF_LABELS[loc];
 
   const doc = new jsPDF({ unit: "mm", format: "a4" });
@@ -80,13 +97,6 @@ export async function generateForecastReport(data: ForecastReportData): Promise<
     subject: "Decision Forecast",
     creator: "FORESEE",
   });
-
-  if (isRtl) {
-    doc.addFileToVFS("Amiri-Regular.ttf", fontData.AMIRI_REGULAR_BASE64);
-    doc.addFont("Amiri-Regular.ttf", "Amiri", "normal");
-    doc.addFileToVFS("Amiri-Bold.ttf", fontData.AMIRI_BOLD_BASE64);
-    doc.addFont("Amiri-Bold.ttf", "Amiri", "bold");
-  }
 
   const ctx: PdfContext = { doc, isRtl, reportTitle: labels.reportTitle, pageLabel: labels.page };
   let pageNumber = 1;
@@ -103,14 +113,14 @@ export async function generateForecastReport(data: ForecastReportData): Promise<
   setFont(ctx, "bold");
   doc.setFontSize(24);
   doc.setTextColor(15, 45, 42);
-  doc.text(shapedLine(ctx, labels.brand), isRtl ? PAGE.width - MARGIN.right : MARGIN.left, y + 4, {
+  doc.text(labels.brand, isRtl ? PAGE.width - MARGIN.right : MARGIN.left, y + 4, {
     align: isRtl ? "right" : "left",
   });
   y += 9;
   setFont(ctx, "normal");
   doc.setFontSize(10);
   doc.setTextColor(90, 150, 135);
-  doc.text(shapedLine(ctx, labels.tagline), isRtl ? PAGE.width - MARGIN.right : MARGIN.left, y, { align: isRtl ? "right" : "left" });
+  doc.text(labels.tagline, isRtl ? PAGE.width - MARGIN.right : MARGIN.left, y, { align: isRtl ? "right" : "left" });
   doc.setTextColor(20, 20, 20);
   y += 10;
   y = drawDivider(ctx, y);
@@ -229,7 +239,7 @@ export async function generateForecastReport(data: ForecastReportData): Promise<
       setFont(ctx, "bold");
       doc.setFontSize(10);
       doc.setTextColor(120, 120, 120);
-      doc.text(shapedLine(ctx, scenarioHeading(labels, scenario.outcomeType)), isRtl ? PAGE.width - MARGIN.right : MARGIN.left, y, {
+      doc.text(scenarioHeading(labels, scenario.outcomeType), isRtl ? PAGE.width - MARGIN.right : MARGIN.left, y, {
         align: isRtl ? "right" : "left",
       });
       y += 5;
@@ -344,6 +354,5 @@ export async function generateForecastReport(data: ForecastReportData): Promise<
     }
   }
 
-  const today = new Date().toISOString().slice(0, 10);
   doc.save(`FORESEE_Report_${today}.pdf`);
 }
