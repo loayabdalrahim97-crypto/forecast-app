@@ -68,7 +68,7 @@ export default function BehavioralProfilePage({ params }: { params: { locale: st
         </div>
         <p style={{ color: "var(--fc-text-secondary)", marginBottom: "1.5rem", fontSize: "0.9rem" }}>
           {locale === "ar"
-            ? "ميول سلوكية عامة بتساعد فورسي يخصص السيناريوهات — مش تشخيص نفسي."
+            ? "ميول سلوكية عامة تساعد فورسي على تخصيص السيناريوهات — وليست تشخيصاً نفسياً."
             : "General behavioral tendencies that help Foresee tailor scenarios — not a psychological diagnosis."}
         </p>
 
@@ -77,7 +77,7 @@ export default function BehavioralProfilePage({ params }: { params: { locale: st
         ) : !profile || filledFields.length === 0 ? (
           <div className="fc-strip">
             <p style={{ margin: "0 0 0.75rem" }}>
-              {locale === "ar" ? "لسا ما عبيت الملف السلوكي." : "You haven't filled out your behavioral profile yet."}
+              {locale === "ar" ? "لم تُكمل الملف السلوكي بعد." : "You haven't filled out your behavioral profile yet."}
             </p>
             <a href={`/${locale}/onboarding`} className="fc-btn fc-btn-primary">
               {locale === "ar" ? "ابدأ" : "Get Started"}

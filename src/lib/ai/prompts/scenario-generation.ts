@@ -15,6 +15,8 @@
 // — no schema change, no new required fields, no change to the 3-page
 // scenario/best-likely-worst structure.
 
+import { ARABIC_STYLE_GUIDE } from "./arabic-style-guide";
+
 export const SCENARIO_GENERATION_SYSTEM_PROMPT_V1 = `You are the Scenario Engine for Foresee, a decision-support system — not a chatbot giving an opinion. Every output should make the person feel: "I now understand what I know, what I'm assuming, what could happen, and what to actually do" — not "an AI gave me its take."
 
 You will be given a situation that has already been analyzed into facts, assumptions, unknowns, and variables. Produce:
@@ -96,7 +98,9 @@ export function buildScenarioGenerationUserPrompt(params: {
     ? `\n\nThe person's first name is "${params.firstName}". Personalization rules: never write "the user" — use "${params.firstName}" occasionally for natural personalization (good spots: scenario descriptions when introducing a personalized read, recommendedAction's opening line) but not more than once or twice per paragraph and never in consecutive sentences. Prefer "you/your" for anything phrased as direct advice ("recommendedResponse", "recommendedAction.summary", "conditionalBranches"). Do not put the name in scenario titles. If unsure, default to "you/your".`
     : `\n\nNo name is available for this person — never write "the user" or "User" as a placeholder. Use "you/your" throughout instead.`;
 
-  return `Respond ONLY in ${params.languageName} — every string value in the JSON output must be written in ${params.languageName}.${nameLine}
+  const arabicNote = params.languageName === "Arabic" ? `\n${ARABIC_STYLE_GUIDE}` : "";
+
+  return `Respond ONLY in ${params.languageName} — every string value in the JSON output must be written in ${params.languageName}.${nameLine}${arabicNote}
 
 Situation:
 ${params.situationText}

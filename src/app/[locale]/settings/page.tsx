@@ -143,7 +143,7 @@ export default function SettingsPage({ params }: { params: { locale: string } })
               <h2 style={{ fontSize: "1rem", margin: "0 0 0.75rem" }}>{locale === "ar" ? "الأمان" : "Security"}</h2>
               <p style={{ fontSize: "0.85rem", color: "var(--fc-text-muted)" }}>
                 {locale === "ar"
-                  ? "تغيير كلمة السر مش مدعوم بعد — هاد جاي بمرحلة قادمة."
+                  ? "تغيير كلمة السر غير مدعوم بعد — سيتوفر في مرحلة قادمة."
                   : "Password change isn't supported yet — coming in a later phase."}
               </p>
             </section>

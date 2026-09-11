@@ -37,7 +37,7 @@ export default function SubscriptionPage({ params }: { params: { locale: string 
         </button>
         <p style={{ marginTop: "0.75rem", fontSize: "0.8rem", color: "var(--fc-text-muted)" }}>
           {locale === "ar"
-            ? "نظام الدفع لسا ما اتبنى — هاد الزر مكانه جاهز بس مش شغال فعلياً لحد هلق."
+            ? "نظام الدفع لم يُبنَ بعد — هذا الزر جاهز مكانياً فقط ولا يعمل فعلياً حتى الآن."
             : "Billing isn't built yet — this button holds the spot but doesn't do anything real yet."}
         </p>
       </main>

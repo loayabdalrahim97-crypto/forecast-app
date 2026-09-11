@@ -82,7 +82,7 @@ export default function InsightsPage({ params }: { params: { locale: string } })
         </div>
         <p style={{ color: "var(--fc-text-secondary)", marginBottom: "1.5rem", fontSize: "0.9rem" }}>
           {locale === "ar"
-            ? "أنماط مبنية بس على تاريخ توقعاتك الحقيقي — مش تشخيص نفسي."
+            ? "أنماط مبنية فقط على تاريخ توقعاتك الفعلي — وليست تشخيصاً نفسياً."
             : "Patterns based only on your real forecast history — not a psychological diagnosis."}
         </p>
 
@@ -90,10 +90,10 @@ export default function InsightsPage({ params }: { params: { locale: string } })
           <p>{locale === "ar" ? "جاري التحميل..." : "Loading..."}</p>
         ) : insights.length === 0 ? (
           <div className="fc-strip">
-            <p style={{ margin: 0 }}>{locale === "ar" ? "لسا ما في بيانات كافية." : "Not enough data yet."}</p>
+            <p style={{ margin: 0 }}>{locale === "ar" ? "لا توجد بيانات كافية بعد." : "Not enough data yet."}</p>
             <p style={{ margin: "0.5rem 0 0", fontSize: "0.85rem", color: "var(--fc-text-muted)" }}>
               {locale === "ar"
-                ? "حلل مواقف أكتر وسجل شو صار فعلاً عشان تظهر ملاحظات موثوقة."
+                ? "حلّل مواقف أكثر وسجّل ما حدث فعلياً حتى تظهر ملاحظات موثوقة."
                 : "Analyze more situations and record what actually happened for reliable insights to appear."}
             </p>
           </div>
@@ -126,7 +126,7 @@ export default function InsightsPage({ params }: { params: { locale: string } })
                     color: insight.confirmedByUser === false ? "var(--fc-band-high)" : undefined,
                   }}
                 >
-                  {locale === "ar" ? "مش صحيح" : "Not accurate"}
+                  {locale === "ar" ? "غير صحيح" : "Not accurate"}
                 </button>
               </div>
             </div>

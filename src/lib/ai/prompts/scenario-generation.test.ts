@@ -30,4 +30,13 @@ describe("buildScenarioGenerationUserPrompt", () => {
     const prompt = buildScenarioGenerationUserPrompt(baseParams);
     expect(prompt).toContain("No name is available");
   });
+
+  it("includes the Arabic style guide and terminology dictionary only when the language is Arabic", () => {
+    const arabicPrompt = buildScenarioGenerationUserPrompt({ ...baseParams, languageName: "Arabic" });
+    expect(arabicPrompt).toContain("NEVER use regional dialect");
+    expect(arabicPrompt).toContain("أفضل سيناريو");
+
+    const englishPrompt = buildScenarioGenerationUserPrompt(baseParams);
+    expect(englishPrompt).not.toContain("NEVER use regional dialect");
+  });
 });

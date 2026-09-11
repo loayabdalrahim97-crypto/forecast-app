@@ -22,7 +22,7 @@ export function ExecutiveSummary({
       }}
     >
       <p style={{ margin: "0 0 0.4rem", fontSize: "0.8rem", fontWeight: 600, color: "var(--fc-accent)" }}>
-        {isRtl ? "شو أعمل هلق؟" : "What should I do now?"}
+        {isRtl ? "ماذا أفعل الآن؟" : "What should I do now?"}
       </p>
       <p style={{ margin: "0 0 0.6rem", fontSize: "1.1rem", lineHeight: 1.5, fontWeight: 600 }}>
         {mainRecommendation}

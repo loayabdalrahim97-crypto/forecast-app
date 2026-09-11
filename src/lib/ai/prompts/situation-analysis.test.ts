@@ -30,6 +30,15 @@ describe("buildSituationAnalysisUserPrompt", () => {
     expect(prompt).toContain("No name is available");
     expect(prompt).toContain("you/your");
   });
+
+  it("includes the Arabic style guide and terminology dictionary only when the language is Arabic", () => {
+    const arabicPrompt = buildSituationAnalysisUserPrompt("Situation X", "Arabic");
+    expect(arabicPrompt).toContain("NEVER use regional dialect");
+    expect(arabicPrompt).toContain("السيناريو الأرجح");
+
+    const englishPrompt = buildSituationAnalysisUserPrompt("Situation X", "English");
+    expect(englishPrompt).not.toContain("NEVER use regional dialect");
+  });
 });
 
 describe("buildFollowUpQuestionsUserPrompt", () => {

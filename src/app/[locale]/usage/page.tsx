@@ -32,7 +32,7 @@ export default function UsagePage({ params }: { params: { locale: string } }) {
 
         <div className="fc-strip" style={{ marginBottom: "1rem" }}>
           <p style={{ margin: "0 0 0.3rem", fontSize: "0.78rem", color: "var(--fc-text-muted)" }}>
-            {locale === "ar" ? "إجمالي التوقعات يلي عملتها" : "Total forecasts you've created"}
+            {locale === "ar" ? "إجمالي التوقعات التي أنشأتها" : "Total forecasts you've created"}
           </p>
           <p style={{ margin: 0, fontSize: "1.8rem", fontWeight: 700 }}>
             {totalForecasts === null ? "…" : totalForecasts}

@@ -45,7 +45,7 @@ export function buildArabicReportHtml(data: ForecastReportData): string {
     [S.uncontrollableVariables, data.uncontrollableVariables],
   ];
 
-  const factsAssumptionsLine = `${data.facts.length} حقيقة معروفة، ${data.assumptions.length} افتراض، و${data.unknowns.length} مجهول تم تحديدهم. ${escapeHtml(data.realityCheckLabel)}.`;
+  const factsAssumptionsLine = `تحديد ${data.facts.length} حقيقة، و${data.assumptions.length} افتراضاً، و${data.unknowns.length} معلومة مجهولة. ${escapeHtml(data.realityCheckLabel)}.`;
   const topScenario = sortedScenarios.find((s) => s.outcomeType === "most_likely") ?? sortedScenarios[0];
 
   return `
@@ -65,7 +65,7 @@ export function buildArabicReportHtml(data: ForecastReportData): string {
     ${data.recommendedAction ? `
       <h2 style="font-size:16px;color:#0f3c37;">${escapeHtml(S.executiveSummary)}</h2>
       <p style="margin:0 0 4px;">${factsAssumptionsLine}</p>
-      ${topScenario ? `<p style="margin:0 0 14px;">أرجح سيناريو مبني عليه: "${escapeHtml(topScenario.title)}".</p>` : ""}
+      ${topScenario ? `<p style="margin:0 0 14px;">السيناريو الأرجح المعتمد في هذا التحليل: "${escapeHtml(topScenario.title)}".</p>` : ""}
     ` : ""}
 
     <div style="border:1px solid #ddd; border-radius:8px; padding:14px; background:#f7f9f8; margin-bottom:10px;">

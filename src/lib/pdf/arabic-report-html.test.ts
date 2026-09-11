@@ -55,7 +55,7 @@ describe("buildArabicReportHtml", () => {
 
   it("shows 'not recorded' when no outcome exists, not an empty/undefined section", () => {
     const html = buildArabicReportHtml(baseData);
-    expect(html).toContain("لسا ما اتسجلت نتيجة");
+    expect(html).toContain("لم تُسجَّل نتيجة بعد");
     expect(html).not.toContain("undefined");
     expect(html).not.toContain("null");
   });

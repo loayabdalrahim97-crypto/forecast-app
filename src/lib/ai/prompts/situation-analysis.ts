@@ -6,6 +6,8 @@
 // docs/AI_ARCHITECTURE.md "Prompts" for why this lives in its own file
 // rather than inline in a route handler.
 
+import { ARABIC_STYLE_GUIDE } from "./arabic-style-guide";
+
 export const SITUATION_ANALYSIS_SYSTEM_PROMPT_V1 = `You are the Situation Analyzer for Foresee, a decision-support system — not a chatbot giving an opinion. Frame everything around: What do we know? What are we assuming? What don't we know?
 
 Your ONLY job: read the user's description of a situation and split it into these categories, with total honesty about what is known versus assumed:
@@ -52,7 +54,9 @@ export function buildSituationAnalysisUserPrompt(
     ? `\n\nThe person's first name is "${firstName}". Personalization rules: never write "the user" — use "${firstName}" occasionally for natural personalization (not in every sentence, not more than once or twice per paragraph, never in consecutive sentences), and use "you/your" for anything phrased directly at the person. Keep "facts"/"assumptions"/"unknowns" entries objective and concise (rarely need the name at all) — personalize mainly in "behavioralVariables" where it adds clarity. If unsure whether to use the name, prefer "you/your" instead — it never sounds robotic.`
     : `\n\nNo name is available for this person — never write "the user" or "User" as a placeholder. Use "you/your" throughout instead; it reads naturally without a name.`;
 
-  return `Respond ONLY in ${languageName} — every string value in the JSON output (facts, assumptions, unknowns, variable descriptions) must be written in ${languageName}, regardless of what language the situation below is written in.${nameLine}
+  const arabicNote = languageName === "Arabic" ? `\n${ARABIC_STYLE_GUIDE}` : "";
+
+  return `Respond ONLY in ${languageName} — every string value in the JSON output (facts, assumptions, unknowns, variable descriptions) must be written in ${languageName}, regardless of what language the situation below is written in.${nameLine}${arabicNote}
 
 Situation described by the user:\n\n${situationText}`;
 }

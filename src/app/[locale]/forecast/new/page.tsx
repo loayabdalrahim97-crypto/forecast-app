@@ -442,7 +442,7 @@ export default function NewForecastPage({ params }: { params: { locale: string }
             {forecastDiff && !isDiffEmpty(forecastDiff) && (
               <div className="fc-strip" style={{ marginTop: "1rem" }}>
                 <p style={{ margin: "0 0 0.5rem", fontSize: "0.85rem", fontWeight: 600, color: "var(--fc-text-secondary)" }}>
-                  {locale === "ar" ? "شو تغيّر" : "What changed"}
+                  {locale === "ar" ? "ما الذي تغيّر" : "What changed"}
                 </p>
                 {[
                   { items: forecastDiff.addedFacts, label: locale === "ar" ? "حقائق جديدة" : "New facts", sign: "+" },
@@ -531,7 +531,7 @@ export default function NewForecastPage({ params }: { params: { locale: string }
                   style={{ ["--fc-strip-color" as string]: "var(--fc-accent)", marginTop: "1.25rem", marginBottom: "1.25rem" }}
                 >
                   <p style={{ margin: "0 0 0.5rem", fontSize: "0.85rem", fontWeight: 600, color: "var(--fc-accent)" }}>
-                    {locale === "ar" ? "شو أعمل هلق؟" : "What should I do now?"}
+                    {locale === "ar" ? "ماذا أفعل الآن؟" : "What should I do now?"}
                   </p>
                   <p style={{ margin: recommendedAction.conditionalBranches.length > 0 ? "0 0 0.75rem" : 0, fontSize: "0.95rem" }}>
                     {recommendedAction.summary}
@@ -551,7 +551,7 @@ export default function NewForecastPage({ params }: { params: { locale: string }
               {whatCouldChangeForecast.length > 0 && (
                 <section style={{ marginBottom: "1.25rem" }}>
                   <h2 style={{ fontSize: "0.95rem", fontFamily: "var(--fc-font-sans)", fontWeight: 600, color: "var(--fc-text-secondary)", margin: "0 0 0.5rem" }}>
-                    {locale === "ar" ? "شو ممكن يغيّر هالتوقع" : "What could change this forecast"}
+                    {locale === "ar" ? "ما الذي قد يغيّر هذا التوقع" : "What could change this forecast"}
                   </h2>
                   <ul style={{ margin: 0, paddingInlineStart: "1.2rem" }}>
                     {whatCouldChangeForecast.map((item, i) => (
@@ -574,7 +574,7 @@ export default function NewForecastPage({ params }: { params: { locale: string }
                     marginBottom: "1.25rem",
                   }}
                 >
-                  {locale === "ar" ? "شو ما فيه هالتوقع يحدده: " : "What this forecast can't determine: "}
+                  {locale === "ar" ? "ما لا يستطيع هذا التوقع تحديده: " : "What this forecast can't determine: "}
                   {limitsOfForecast}
                 </p>
               )}

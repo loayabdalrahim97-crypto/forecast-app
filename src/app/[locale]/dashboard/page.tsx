@@ -77,7 +77,7 @@ export default function DashboardPage({ params }: { params: { locale: string } }
         <p>{locale === "ar" ? "جاري التحميل..." : "Loading..."}</p>
       ) : totalDecisions === 0 ? (
         <div className="fc-strip">
-          <p style={{ margin: 0 }}>{locale === "ar" ? "لسا ما حللت أي موقف." : "You haven't analyzed a situation yet."}</p>
+          <p style={{ margin: 0 }}>{locale === "ar" ? "لم تُحلَّل أي حالة بعد." : "You haven't analyzed a situation yet."}</p>
         </div>
       ) : (
         <>
@@ -124,11 +124,11 @@ export default function DashboardPage({ params }: { params: { locale: string } }
             ) : !profile.ready ? (
               <div className="fc-strip">
                 <p style={{ margin: "0 0 0.4rem" }}>
-                  {locale === "ar" ? "ملف القرار الخاص فيك لسا قيد التطور." : "Your decision profile is still developing."}
+                  {locale === "ar" ? "ملف قرارك لا يزال قيد التطور." : "Your decision profile is still developing."}
                 </p>
                 <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--fc-text-muted)" }}>
                   {locale === "ar"
-                    ? `فورسي بيصير أدق بتحديد أنماط قراراتك كل ما حللت مواقف أكتر وسجلت شو صار فعلاً. (${profile.totalOutcomesRecorded}/${profile.minRequired} نتائج مسجلة)`
+                    ? `يصبح فورسي أكثر دقة في تحديد أنماط قراراتك كلما حلّلت مواقف أكثر وسجّلت ما حدث فعلياً. (${profile.totalOutcomesRecorded}/${profile.minRequired} نتائج مسجَّلة)`
                     : `Foresee becomes more accurate at identifying your decision patterns as you analyze more situations and record what actually happened. (${profile.totalOutcomesRecorded}/${profile.minRequired} outcomes recorded)`}
                 </p>
               </div>

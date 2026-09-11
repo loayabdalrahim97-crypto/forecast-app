@@ -148,10 +148,10 @@ export default function RevisitDecisionPage({ params }: { params: { locale: stri
           )}
 
           <section style={{ marginTop: "1.5rem", paddingTop: "1.5rem", borderTop: "1px solid var(--fc-border)" }}>
-            <h2 style={{ fontSize: "1.05rem", margin: "0 0 1rem" }}>{locale === "ar" ? "شو صار فعلاً؟" : "What Actually Happened?"}</h2>
+            <h2 style={{ fontSize: "1.05rem", margin: "0 0 1rem" }}>{locale === "ar" ? "ماذا حدث فعلياً؟" : "What Actually Happened?"}</h2>
             {!forecast.outcomeRecord ? (
               <p style={{ color: "var(--fc-text-muted)" }}>
-                {locale === "ar" ? "لسا ما اتسجلت نتيجة لهاد القرار." : "No outcome recorded for this decision yet."}
+                {locale === "ar" ? "لم تُسجَّل نتيجة لهذا القرار بعد." : "No outcome recorded for this decision yet."}
               </p>
             ) : (
               <>
@@ -165,8 +165,8 @@ export default function RevisitDecisionPage({ params }: { params: { locale: stri
                     {forecast.outcomeRecord.matchedScenarioTitle}
                   </p>
                 )}
-                <SectionList heading={locale === "ar" ? "شو كان صحيح" : "What went right"} items={forecast.outcomeRecord.whatWentRight} />
-                <SectionList heading={locale === "ar" ? "شو فات" : "What was missed"} items={forecast.outcomeRecord.whatWasMissed} />
+                <SectionList heading={locale === "ar" ? "ما الذي كان صحيحاً" : "What went right"} items={forecast.outcomeRecord.whatWentRight} />
+                <SectionList heading={locale === "ar" ? "ما الذي فات" : "What was missed"} items={forecast.outcomeRecord.whatWasMissed} />
                 <SectionList heading={locale === "ar" ? "افتراضات غلط" : "Wrong assumptions"} items={forecast.outcomeRecord.wrongAssumptions} />
               </>
             )}
