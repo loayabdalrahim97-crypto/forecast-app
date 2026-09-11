@@ -109,6 +109,9 @@ model Forecast {
   // something the person has to infer from 3 separate scenario cards.
   recommendedAction Json?
   whatCouldChangeForecast Json?
+  // Quality-polish pass: optional, contextual-only note on what this
+  // forecast genuinely cannot determine — null most of the time.
+  limitsOfForecast String?
 
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
