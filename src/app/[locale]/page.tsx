@@ -63,6 +63,18 @@ export default function LocaleHome({ params: { locale } }: { params: { locale: s
         </div>
       </section>
 
+      <section style={{ marginTop: "3rem", textAlign: "center" }}>
+        <p style={{ fontSize: "0.8rem", color: "var(--fc-text-muted)", marginBottom: "0.75rem" }}>
+          {isRtlLocale ? "شوف فورسي وهو شغال" : "See Foresee in action"}
+        </p>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/promo/foresee-promo.gif"
+          alt={isRtlLocale ? "عرض متحرك يوضح كيف يحلل فورسي موقفاً إلى حقائق وافتراضات وسيناريوهات" : "Animated walkthrough of Foresee turning a situation into facts, assumptions, and scenarios"}
+          style={{ maxWidth: "100%", width: 640, borderRadius: "var(--fc-radius-md)", border: "1px solid var(--fc-border)" }}
+        />
+      </section>
+
       <section style={{ marginTop: "4rem" }}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "1rem" }}>
           <a href={`/${locale}/forecast/new`} className="fc-strip" style={{ textDecoration: "none", color: "inherit" }}>
