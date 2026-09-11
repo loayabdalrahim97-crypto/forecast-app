@@ -56,6 +56,9 @@ export function NavBar({ locale }: { locale: string }) {
         </a>
         {status === "authenticated" ? (
           <>
+            <a href={`/${locale}/admin`} style={linkStyle}>
+              {locale === "ar" ? "الإدارة" : "Admin"}
+            </a>
             <span
               className="fc-nav-email"
               style={{
