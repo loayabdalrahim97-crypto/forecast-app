@@ -129,6 +129,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       data: {
         recommendedAction: result.data.recommendedAction,
         whatCouldChangeForecast: result.data.whatCouldChangeForecast,
+        limitsOfForecast: result.data.limitsOfForecast,
       },
     });
   } catch (err) {
@@ -151,6 +152,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       scenarios,
       recommendedAction: result.data.recommendedAction,
       whatCouldChangeForecast: result.data.whatCouldChangeForecast,
+      limitsOfForecast: result.data.limitsOfForecast,
     },
     { status: 201 }
   );
