@@ -314,7 +314,11 @@ export async function generateForecastReport(data: ForecastReportData): Promise<
     if (data.recommendedAction.conditionalBranches.length > 0) {
       y = drawHeading(ctx, labels.ifThen, y, 12);
       for (const branch of data.recommendedAction.conditionalBranches) {
-        const line = `${branch.condition} → ${branch.action}`;
+        // "→" (U+2192) isn't in jsPDF's default Helvetica encoding —
+        // it silently corrupted the rest of the line in testing (a
+        // real bug confirmed from an actual generated PDF). "->" is
+        // plain ASCII and renders correctly.
+        const line = `${branch.condition} -> ${branch.action}`;
         const needed = measureParagraphHeight(ctx, line);
         ({ y, pageNumber } = ensureSpace(ctx, y, needed, pageNumber));
         y = drawParagraph(ctx, line, y);
