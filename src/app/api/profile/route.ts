@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { z } from "zod";
 import { authOptions } from "@/lib/auth/config";
 import { prisma } from "@/lib/db";
+import { checkCurrentUserAdmin } from "@/lib/admin/check-admin";
 
 const VALID_DECISION_AREAS = ["career", "relationships", "finance", "business", "personal", "other"];
 
@@ -40,7 +41,14 @@ export async function GET() {
   });
   if (!user) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  return NextResponse.json({ profile: user }, { status: 200 });
+  // Bootstrap sync happens here too, not just on the /admin pages —
+  // otherwise a first-time admin has no way to ever SEE the
+  // "Management" sidebar link, since that link's visibility itself
+  // depended on this same sync having already run somewhere.
+  const { isAdmin } = await checkCurrentUserAdmin(userId);
+  const role = isAdmin ? "admin" : user.role;
+
+  return NextResponse.json({ profile: { ...user, role } }, { status: 200 });
 }
 
 export async function PATCH(req: NextRequest) {
