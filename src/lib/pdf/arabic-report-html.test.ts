@@ -29,6 +29,7 @@ const baseData: ForecastReportData = {
   ],
   recommendedAction: { summary: "توصية أساسية", conditionalBranches: [] },
   whatCouldChangeForecast: [],
+  limitsOfForecast: null,
   updateNote: null,
   outcome: null,
 };
