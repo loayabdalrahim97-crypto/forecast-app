@@ -118,6 +118,7 @@ export default function NewForecastPage({ params }: { params: { locale: string }
     conditionalBranches: { condition: string; action: string }[];
   } | null>(null);
   const [whatCouldChangeForecast, setWhatCouldChangeForecast] = useState<string[]>([]);
+  const [limitsOfForecast, setLimitsOfForecast] = useState<string | null>(null);
 
   const [actualOutcome, setActualOutcome] = useState("");
   const [resultTag, setResultTag] = useState<string | null>(null);
@@ -186,10 +187,12 @@ export default function NewForecastPage({ params }: { params: { locale: string }
         scenarios: AccordionScenario[];
         recommendedAction: { summary: string; conditionalBranches: { condition: string; action: string }[] };
         whatCouldChangeForecast: string[];
+        limitsOfForecast: string | null;
       };
       setScenarios(data.scenarios);
       setRecommendedAction(data.recommendedAction ?? null);
       setWhatCouldChangeForecast(data.whatCouldChangeForecast ?? []);
+      setLimitsOfForecast(data.limitsOfForecast ?? null);
       setScenarioStatus("done");
       setScenariosStale(false);
     } catch {
@@ -341,6 +344,7 @@ export default function NewForecastPage({ params }: { params: { locale: string }
       })),
       recommendedAction,
       whatCouldChangeForecast,
+      limitsOfForecast,
       updateNote: forecastDiff && !isDiffEmpty(forecastDiff)
         ? [...forecastDiff.addedFacts, ...forecastDiff.removedAssumptions, ...forecastDiff.removedUnknowns]
             .map((item) => `• ${item}`)
@@ -557,6 +561,22 @@ export default function NewForecastPage({ params }: { params: { locale: string }
                     ))}
                   </ul>
                 </section>
+              )}
+
+              {limitsOfForecast && (
+                <p
+                  style={{
+                    fontSize: "0.82rem",
+                    color: "var(--fc-text-muted)",
+                    fontStyle: "italic",
+                    borderInlineStart: "2px solid var(--fc-border-strong)",
+                    paddingInlineStart: "0.75rem",
+                    marginBottom: "1.25rem",
+                  }}
+                >
+                  {locale === "ar" ? "شو ما فيه هالتوقع يحدده: " : "What this forecast can't determine: "}
+                  {limitsOfForecast}
+                </p>
               )}
 
               {outcomeStatus !== "done" && (
