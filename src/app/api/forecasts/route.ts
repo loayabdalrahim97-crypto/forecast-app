@@ -5,6 +5,7 @@ import { prisma } from "@/lib/db";
 import { CreateForecastSchema } from "@/lib/forecast/schema";
 import { analyzeSituation, generateFollowUpQuestions } from "@/lib/forecast/analyze-situation";
 import { analysisToVariableRows } from "@/lib/forecast/variable-rows";
+import { deriveFirstName } from "@/lib/forecast/derive-first-name";
 import { AIValidationError } from "@/lib/ai/orchestrator";
 import { isWithinRateLimit, FREE_FORECAST_RATE_LIMIT } from "@/lib/rate-limit/free-forecast-limit";
 import { getClientIp } from "@/lib/rate-limit/get-client-ip";
@@ -65,7 +66,13 @@ export async function POST(req: NextRequest) {
 
   let analysisResult;
   try {
-    analysisResult = await analyzeSituation(parsed.data.situationText, parsed.data.locale);
+    // §13 (name-only personalization): looked up fresh from the DB
+    // rather than trusted from the session token, since the JWT
+    // callback here doesn't copy `name` onto the token by default.
+    const firstName = userId
+      ? deriveFirstName((await prisma.user.findUnique({ where: { id: userId }, select: { name: true } }))?.name)
+      : null;
+    analysisResult = await analyzeSituation(parsed.data.situationText, parsed.data.locale, firstName);
   } catch (err) {
     console.error("[forecasts] analysis failed:", err);
     if (err instanceof AIValidationError) {

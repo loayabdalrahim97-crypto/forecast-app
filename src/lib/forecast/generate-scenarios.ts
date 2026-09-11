@@ -18,6 +18,7 @@ export async function generateScenarios(params: {
   externalVariables: string[];
   behavioralProfileSummary: string[];
   locale: string;
+  firstName?: string | null;
 }) {
   const languageName = languageNameForLocale(params.locale);
   return AIOrchestrator.run<ScenarioGenerationOutput>({

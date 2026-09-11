@@ -17,12 +17,12 @@ export type SituationAnalysis = z.infer<typeof SituationAnalysisSchema>;
  * (e.g. "ar", "en-us"), resolved by the caller the same way any other
  * page content is.
  */
-export async function analyzeSituation(situationText: string, locale: string) {
+export async function analyzeSituation(situationText: string, locale: string, firstName?: string | null) {
   const languageName = languageNameForLocale(locale);
   return AIOrchestrator.run<SituationAnalysis>({
     requestType: "situation_analysis",
     systemPrompt: SITUATION_ANALYSIS_SYSTEM_PROMPT_V1,
-    userPrompt: buildSituationAnalysisUserPrompt(situationText, languageName),
+    userPrompt: buildSituationAnalysisUserPrompt(situationText, languageName, firstName),
     schema: SituationAnalysisSchema,
     // §11 splits the situation into 8 array categories. Raised once
     // already (1024->3072) and still got truncated on a longer Arabic

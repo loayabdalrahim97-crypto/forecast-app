@@ -4,6 +4,7 @@ import type { Prisma } from "@prisma/client";
 import { UpdateForecastSchema } from "@/lib/forecast/update-schema";
 import { analyzeSituation, generateFollowUpQuestions } from "@/lib/forecast/analyze-situation";
 import { analysisToVariableRows } from "@/lib/forecast/variable-rows";
+import { deriveFirstName } from "@/lib/forecast/derive-first-name";
 import { AIValidationError } from "@/lib/ai/orchestrator";
 import { logAIRequest } from "@/lib/ai/log-request";
 
@@ -49,7 +50,13 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
   let analysisResult;
   try {
-    analysisResult = await analyzeSituation(combinedText, parsed.data.locale);
+    analysisResult = await analyzeSituation(
+      combinedText,
+      parsed.data.locale,
+      forecast.userId
+        ? deriveFirstName((await prisma.user.findUnique({ where: { id: forecast.userId }, select: { name: true } }))?.name)
+        : null
+    );
   } catch (err) {
     console.error("[update-info] analysis failed:", err);
     if (err instanceof AIValidationError) {

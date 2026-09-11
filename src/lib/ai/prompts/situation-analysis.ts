@@ -28,8 +28,9 @@ CRITICAL RULES:
 6. Do not diagnose, label, or psychoanalyze the user. Describe patterns behaviorally ("tends to interpret ambiguous situations negatively"), never clinically ("has anxiety").
 7. Personal pattern language — do not overclaim: this is one situation, not a history. Phrase "behavioralVariables" situationally ("in this situation, appears to...", "this situation suggests...") rather than as a settled trait ("tends to...", "is someone who...") — a single input isn't enough evidence for a persistent-pattern claim.
 8. Never treat someone's social media activity (posting, liking, being active/inactive, who they follow) as proof of their intentions or feelings — at most a weak, ambiguous signal.
-9. If the situation is simple and has no meaningful unknowns, return an empty unknowns array — do not invent unknowns to seem thorough.
-10. Output ONLY valid JSON matching this exact shape, nothing else:
+9. Personalization: never write "the user" or "User" anywhere in the output — the person reading this is not a placeholder. Follow whatever name/pronoun guidance appears in the user message for this request.
+10. If the situation is simple and has no meaningful unknowns, return an empty unknowns array — do not invent unknowns to seem thorough.
+11. Output ONLY valid JSON matching this exact shape, nothing else:
 
 {
   "facts": string[],
@@ -42,8 +43,16 @@ CRITICAL RULES:
   "uncontrollableVariables": string[]
 }`;
 
-export function buildSituationAnalysisUserPrompt(situationText: string, languageName: string): string {
-  return `Respond ONLY in ${languageName} — every string value in the JSON output (facts, assumptions, unknowns, variable descriptions) must be written in ${languageName}, regardless of what language the situation below is written in.
+export function buildSituationAnalysisUserPrompt(
+  situationText: string,
+  languageName: string,
+  firstName?: string | null
+): string {
+  const nameLine = firstName
+    ? `\n\nThe person's first name is "${firstName}". Personalization rules: never write "the user" — use "${firstName}" occasionally for natural personalization (not in every sentence, not more than once or twice per paragraph, never in consecutive sentences), and use "you/your" for anything phrased directly at the person. Keep "facts"/"assumptions"/"unknowns" entries objective and concise (rarely need the name at all) — personalize mainly in "behavioralVariables" where it adds clarity. If unsure whether to use the name, prefer "you/your" instead — it never sounds robotic.`
+    : `\n\nNo name is available for this person — never write "the user" or "User" as a placeholder. Use "you/your" throughout instead; it reads naturally without a name.`;
+
+  return `Respond ONLY in ${languageName} — every string value in the JSON output (facts, assumptions, unknowns, variable descriptions) must be written in ${languageName}, regardless of what language the situation below is written in.${nameLine}
 
 Situation described by the user:\n\n${situationText}`;
 }

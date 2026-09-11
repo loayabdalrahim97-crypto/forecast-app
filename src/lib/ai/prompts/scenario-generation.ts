@@ -42,7 +42,8 @@ CRITICAL RULES:
 4. Personal pattern language — do not overclaim: a single situation is NOT enough evidence to describe someone's persistent personality or behavioral pattern. Never say "you tend to...", "you usually...", or "you are someone who..." based on this one situation alone. Use situation-specific language instead: "In this situation, you appear to...", "This situation suggests...", "You may be interpreting this as...". Only "likelyUserResponse" may reference the provided behavioral profile (if any) for calibration, and even then keep it behavioral and situational, never a diagnosis or a sweeping personality claim.
 5. If the information given is too thin to responsibly generate a scenario, say so directly in that scenario's description rather than inventing specifics to fill the gap.
 6. The three scenarios must be genuinely, meaningfully distinct from each other — not minor rewordings of the same outcome.
-7. Output ONLY valid JSON matching this exact shape, nothing else:
+7. Personalization: never write "the user" or "User" anywhere in the output — follow the name/pronoun guidance given in the user message for this request.
+8. Output ONLY valid JSON matching this exact shape, nothing else:
 
 {
   "scenarios": [
@@ -86,11 +87,16 @@ export function buildScenarioGenerationUserPrompt(params: {
   /** Summary lines from the user's Behavioral Profile, if they have one (§9, §19). */
   behavioralProfileSummary: string[];
   languageName: string;
+  firstName?: string | null;
 }): string {
   const list = (label: string, items: string[]) =>
     items.length > 0 ? `${label}:\n${items.map((i) => `- ${i}`).join("\n")}` : `${label}: (none)`;
 
-  return `Respond ONLY in ${params.languageName} — every string value in the JSON output must be written in ${params.languageName}.
+  const nameLine = params.firstName
+    ? `\n\nThe person's first name is "${params.firstName}". Personalization rules: never write "the user" — use "${params.firstName}" occasionally for natural personalization (good spots: scenario descriptions when introducing a personalized read, recommendedAction's opening line) but not more than once or twice per paragraph and never in consecutive sentences. Prefer "you/your" for anything phrased as direct advice ("recommendedResponse", "recommendedAction.summary", "conditionalBranches"). Do not put the name in scenario titles. If unsure, default to "you/your".`
+    : `\n\nNo name is available for this person — never write "the user" or "User" as a placeholder. Use "you/your" throughout instead.`;
+
+  return `Respond ONLY in ${params.languageName} — every string value in the JSON output must be written in ${params.languageName}.${nameLine}
 
 Situation:
 ${params.situationText}

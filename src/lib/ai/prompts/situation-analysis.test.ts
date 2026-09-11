@@ -18,6 +18,18 @@ describe("buildSituationAnalysisUserPrompt", () => {
     expect(prompt).toContain("Respond ONLY in Arabic");
     expect(prompt).toContain("امي حكتلي انو ما بتحبني");
   });
+
+  it("passes the first name and personalization guidance when a name is given", () => {
+    const prompt = buildSituationAnalysisUserPrompt("Situation X", "English", "Loay");
+    expect(prompt).toContain('"Loay"');
+    expect(prompt).toContain('never write "the user"');
+  });
+
+  it("falls back to you/your guidance with no name given", () => {
+    const prompt = buildSituationAnalysisUserPrompt("Situation X", "English", null);
+    expect(prompt).toContain("No name is available");
+    expect(prompt).toContain("you/your");
+  });
 });
 
 describe("buildFollowUpQuestionsUserPrompt", () => {

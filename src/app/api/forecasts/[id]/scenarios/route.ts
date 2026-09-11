@@ -7,6 +7,7 @@ import { generateScenarios } from "@/lib/forecast/generate-scenarios";
 import { groupVariablesByKind } from "@/lib/forecast/variable-rows";
 import type { ForecastVariableRow } from "@/lib/forecast/variable-rows";
 import { summarizeBehavioralProfile } from "@/lib/forecast/behavioral-summary";
+import { deriveFirstName } from "@/lib/forecast/derive-first-name";
 import { SUPPORTED_LOCALES } from "@/lib/i18n/config";
 import { AIValidationError } from "@/lib/ai/orchestrator";
 import { isWithinRateLimit, FREE_FORECAST_RATE_LIMIT } from "@/lib/rate-limit/free-forecast-limit";
@@ -62,11 +63,16 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   );
 
   let behavioralProfileSummary: string[] = [];
+  let firstName: string | null = null;
   const session = await getServerSession(authOptions);
   const userId = (session?.user as { id?: string } | undefined)?.id;
   if (userId) {
-    const profile = await prisma.behavioralProfile.findUnique({ where: { userId } });
+    const [profile, user] = await Promise.all([
+      prisma.behavioralProfile.findUnique({ where: { userId } }),
+      prisma.user.findUnique({ where: { id: userId }, select: { name: true } }),
+    ]);
     behavioralProfileSummary = summarizeBehavioralProfile(profile);
+    firstName = deriveFirstName(user?.name);
   } else {
     const ip = getClientIp(req);
     const since = new Date(Date.now() - FREE_FORECAST_RATE_LIMIT.windowMs);
@@ -89,6 +95,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       ...grouped,
       behavioralProfileSummary,
       locale: parsed.data.locale,
+      firstName,
     });
   } catch (err) {
     console.error("[scenarios] generation failed:", err);
