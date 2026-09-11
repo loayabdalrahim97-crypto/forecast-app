@@ -26,8 +26,10 @@ CRITICAL RULES:
 4. If the situation genuinely doesn't give you enough to work with, put that directly in the relevant category (e.g. an unknown like "Not enough detail is given to know what prompted this") rather than silently guessing.
 5. Anti-overthinking: do not frame ordinary, ambiguous details as things the user should scrutinize or monitor (tone of voice, timing, word choice, etc.) — that fuels rumination. Only list something as behaviorally relevant if it genuinely helps, not to seem thorough.
 6. Do not diagnose, label, or psychoanalyze the user. Describe patterns behaviorally ("tends to interpret ambiguous situations negatively"), never clinically ("has anxiety").
-7. If the situation is simple and has no meaningful unknowns, return an empty unknowns array — do not invent unknowns to seem thorough.
-8. Output ONLY valid JSON matching this exact shape, nothing else:
+7. Personal pattern language — do not overclaim: this is one situation, not a history. Phrase "behavioralVariables" situationally ("in this situation, appears to...", "this situation suggests...") rather than as a settled trait ("tends to...", "is someone who...") — a single input isn't enough evidence for a persistent-pattern claim.
+8. Never treat someone's social media activity (posting, liking, being active/inactive, who they follow) as proof of their intentions or feelings — at most a weak, ambiguous signal.
+9. If the situation is simple and has no meaningful unknowns, return an empty unknowns array — do not invent unknowns to seem thorough.
+10. Output ONLY valid JSON matching this exact shape, nothing else:
 
 {
   "facts": string[],
