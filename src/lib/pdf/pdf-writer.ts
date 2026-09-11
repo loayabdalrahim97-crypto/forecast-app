@@ -1,5 +1,4 @@
 import type { jsPDF } from "jspdf";
-import { render as shapeArabic } from "bidi-shaper";
 
 // A4 in mm, with generous margins for a "premium report" feel rather
 // than a cramped screen-to-paper dump.
@@ -7,42 +6,23 @@ export const PAGE = { width: 210, height: 297 };
 export const MARGIN = { top: 22, bottom: 18, left: 18, right: 18 };
 export const CONTENT_WIDTH = PAGE.width - MARGIN.left - MARGIN.right;
 
+// English-only module. Arabic report generation uses a completely
+// separate path (arabic-report-html.ts + html-to-pdf.ts) that renders
+// real HTML and captures it, because manual PDF text shaping here
+// (jsPDF + a bidi/shaping library) produced visibly disconnected,
+// unjoined Arabic letters when checked by rasterizing an actual
+// generated PDF and reading it closely — confirmed as a real defect,
+// not a text-extraction artifact. `isRtl` is kept on PdfContext only
+// so this module's shape doesn't need to change if a text-based RTL
+// approach is revisited later; every call site here now always passes
+// isRtl: false.
 export interface PdfContext {
   doc: jsPDF;
   isRtl: boolean;
   reportTitle: string;
-  pageLabel: string; // e.g. "Page" / "صفحة"
+  pageLabel: string;
 }
 
-/** RTL-safe text: shapes+reorders Arabic before handing it to jsPDF. Use for single lines only (no wrapping) — see wrapAndShape for multi-line text. */
-export function shapedLine(ctx: PdfContext, text: string): string {
-  return ctx.isRtl ? shapeArabic(text) : text;
-}
-const prepared = shapedLine;
-
-/**
- * Wraps on the ORIGINAL logical-order text first, then shapes each
- * resulting line independently. Bidi/Arabic shaping must happen
- * per-line, not on the whole paragraph before wrapping — shaping the
- * full paragraph and then slicing the ALREADY-reordered string into
- * width-based chunks scrambles it further (double-reversal: both
- * letter order within words and word order across the line come out
- * wrong). This was a real bug, confirmed from an actual generated PDF.
- */
-function wrapAndShape(ctx: PdfContext, text: string, fontSize: number, maxWidth: number): string[] {
-  ctx.doc.setFontSize(fontSize);
-  const rawLines = ctx.doc.splitTextToSize(text, maxWidth) as string[];
-  return ctx.isRtl ? rawLines.map((line) => shapeArabic(line)) : rawLines;
-}
-
-export function setFont(ctx: PdfContext, weight: "normal" | "bold") {
-  ctx.doc.setFont(ctx.isRtl ? "Amiri" : "helvetica", weight === "bold" && !ctx.isRtl ? "bold" : "normal");
-  // Amiri's embedded bold face isn't loaded (regular only, keeping the
-  // embed size reasonable); bold Arabic emphasis instead uses a larger
-  // size, handled by callers rather than a missing font style.
-}
-
-/** x-position for a left-aligned (LTR) or right-aligned (RTL) text block. */
 function startX(ctx: PdfContext): number {
   return ctx.isRtl ? PAGE.width - MARGIN.right : MARGIN.left;
 }
@@ -51,18 +31,22 @@ function align(ctx: PdfContext): "left" | "right" {
   return ctx.isRtl ? "right" : "left";
 }
 
+export function setFont(ctx: PdfContext, weight: "normal" | "bold") {
+  ctx.doc.setFont("helvetica", weight);
+}
+
 export function addHeaderFooter(ctx: PdfContext, pageNumber: number) {
   const { doc } = ctx;
   doc.setFontSize(9);
   setFont(ctx, "normal");
   doc.setTextColor(120, 120, 120);
-  doc.text(prepared(ctx, ctx.reportTitle), startX(ctx), 12, { align: align(ctx) });
+  doc.text(ctx.reportTitle, startX(ctx), 12, { align: align(ctx) });
   doc.setDrawColor(220, 220, 220);
   doc.line(MARGIN.left, 16, PAGE.width - MARGIN.right, 16);
 
   doc.setFontSize(8);
   doc.setTextColor(150, 150, 150);
-  doc.text(prepared(ctx, `${ctx.pageLabel} ${pageNumber}`), PAGE.width / 2, PAGE.height - 10, { align: "center" });
+  doc.text(`${ctx.pageLabel} ${pageNumber}`, PAGE.width / 2, PAGE.height - 10, { align: "center" });
   doc.setTextColor(20, 20, 20);
 }
 
@@ -93,7 +77,8 @@ export function ensureSpace(
 }
 
 export function measureWrappedLines(ctx: PdfContext, text: string, fontSize: number, maxWidth: number): string[] {
-  return wrapAndShape(ctx, text, fontSize, maxWidth);
+  ctx.doc.setFontSize(fontSize);
+  return ctx.doc.splitTextToSize(text, maxWidth) as string[];
 }
 
 /** Draws a section heading (e.g. "Known Facts"). Returns the new Y. */
@@ -102,7 +87,7 @@ export function drawHeading(ctx: PdfContext, text: string, y: number, size = 14)
   setFont(ctx, "bold");
   doc.setFontSize(size);
   doc.setTextColor(20, 60, 55); // dark teal, echoes the site's signal-teal accent on a print-friendly light page
-  doc.text(prepared(ctx, text), startX(ctx), y, { align: align(ctx) });
+  doc.text(text, startX(ctx), y, { align: align(ctx) });
   doc.setTextColor(20, 20, 20);
   return y + size * 0.5 + 3;
 }
@@ -124,7 +109,7 @@ export function drawParagraph(
   setFont(ctx, opts.bold ? "bold" : "normal");
   doc.setFontSize(fontSize);
   if (opts.color) doc.setTextColor(...opts.color);
-  const lines = wrapAndShape(ctx, text, fontSize, maxWidth);
+  const lines = measureWrappedLines(ctx, text, fontSize, maxWidth);
   const lineHeight = fontSize * 0.42;
   doc.text(lines, startX(ctx), y, { align: align(ctx) });
   if (opts.color) doc.setTextColor(20, 20, 20);
@@ -145,7 +130,7 @@ export function drawBulletList(ctx: PdfContext, items: string[], y: number, font
   const bulletWidth = 5;
   const textMaxWidth = CONTENT_WIDTH - bulletWidth;
   for (const item of items) {
-    const lines = wrapAndShape(ctx, item, fontSize, textMaxWidth);
+    const lines = measureWrappedLines(ctx, item, fontSize, textMaxWidth);
     const lineHeight = fontSize * 0.42;
     const bulletX = ctx.isRtl ? PAGE.width - MARGIN.right : MARGIN.left;
     const textX = ctx.isRtl ? bulletX - bulletWidth : bulletX + bulletWidth;
