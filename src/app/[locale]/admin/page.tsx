@@ -98,7 +98,7 @@ export default function AdminDashboardPage({ params }: { params: { locale: strin
               label={locale === "ar" ? "نسبة تسجيل النتيجة" : "Outcome Recording Rate"}
               value={`${Math.round(stats.outcomeRecordingRate * 100)}%`}
             />
-            <StatCard label={locale === "ar" ? "تكلفة AI الإجمالية" : "Total AI Cost"} value={`$${costs.totalCostUsd.toFixed(2)}`} />
+            <StatCard label={locale === "ar" ? "تكلفة AI الإجمالية" : "Total AI Cost"} value={`$${Number(costs.totalCostUsd).toFixed(2)}`} />
           </div>
 
           <section style={{ marginBottom: "1.5rem" }}>
@@ -131,7 +131,7 @@ export default function AdminDashboardPage({ params }: { params: { locale: strin
             </h2>
             {costs.byModel.map((m) => (
               <p key={m.model} style={{ margin: "0 0 0.3rem", fontSize: "0.88rem" }}>
-                {m.model}: {m.requests} {locale === "ar" ? "طلب" : "requests"} — ${m.costUsd.toFixed(4)}
+                {m.model}: {m.requests} {locale === "ar" ? "طلب" : "requests"} — ${Number(m.costUsd).toFixed(4)}
               </p>
             ))}
           </section>

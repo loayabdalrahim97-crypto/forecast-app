@@ -44,23 +44,28 @@ export async function GET() {
   return NextResponse.json(
     {
       totalRequests: totals._count,
-      totalCostUsd: totals._sum.estimatedCostUsd ?? 0,
+      // estimatedCostUsd is a Prisma Decimal column — Prisma's
+      // aggregate _sum returns a Decimal instance (serializes to a
+      // string, not a number), which broke the admin dashboard's
+      // .toFixed() call. Cast to a real number here so every consumer
+      // of this endpoint gets a plain JS number as documented.
+      totalCostUsd: Number(totals._sum.estimatedCostUsd ?? 0),
       totalInputTokens: totals._sum.inputTokens ?? 0,
       totalOutputTokens: totals._sum.outputTokens ?? 0,
       last7Days: {
         requests: last7Days._count,
-        costUsd: last7Days._sum.estimatedCostUsd ?? 0,
+        costUsd: Number(last7Days._sum.estimatedCostUsd ?? 0),
       },
       byModel: byModel.map((m: { model: string; _sum: { estimatedCostUsd: unknown }; _count: number }) => ({
         model: m.model,
         requests: m._count,
-        costUsd: m._sum.estimatedCostUsd ?? 0,
+        costUsd: Number(m._sum.estimatedCostUsd ?? 0),
       })),
       byRequestType: byRequestType.map(
         (r: { requestType: string; _sum: { estimatedCostUsd: unknown }; _count: number }) => ({
           requestType: r.requestType,
           requests: r._count,
-          costUsd: r._sum.estimatedCostUsd ?? 0,
+          costUsd: Number(r._sum.estimatedCostUsd ?? 0),
         })
       ),
     },
