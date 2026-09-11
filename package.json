@@ -16,7 +16,7 @@
   "dependencies": {
     "@prisma/client": "^5.18.0",
     "bcryptjs": "^2.4.3",
-    "bidi-shaper": "^0.1.2",
+    "html2canvas": "^1.4.1",
     "jspdf": "^4.2.1",
     "next": "^14.2.0",
     "next-auth": "^4.24.0",
