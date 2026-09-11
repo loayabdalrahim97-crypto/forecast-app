@@ -87,6 +87,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       outcomeDate: parsed.data.outcomeDate ? new Date(parsed.data.outcomeDate) : new Date(),
       userResponse: parsed.data.userResponse,
       result: parsed.data.result,
+      matchedScenarioTitle: comparison.data.matchedScenarioTitle,
       whatWentRight: comparison.data.whatWentRight,
       whatWasMissed: comparison.data.whatWasMissed,
       wrongAssumptions: comparison.data.wrongAssumptions,

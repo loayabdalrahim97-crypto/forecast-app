@@ -28,6 +28,11 @@ model User {
   timezone          String?  @default("UTC")
   currency          String   @default("USD")
 
+  // Account/profile upgrade — all optional, lightweight (no forced questionnaire)
+  profileImage      String?  // from Google OAuth if available
+  occupation        String?
+  decisionAreas     Json?    // string[] subset of Career/Relationships/Finance/Business/Personal/Other
+
   behavioralProfile BehavioralProfile?
   forecasts         Forecast[]
   insights          UserInsight[]
@@ -95,6 +100,10 @@ model Forecast {
 
   situationText    String
   mode             String   @default("general") // "general" | "decision" | "business"
+  // Decision History (§4) — optional category the person can tag a
+  // decision with; no title column added since one can be derived
+  // from situationText at display time without a migration.
+  category         String?  // "career" | "relationships" | "finance" | "business" | "personal" | "other"
   parentForecastId String?  // set when this is an update to a prior forecast
   parent           Forecast? @relation("ForecastHistory", fields: [parentForecastId], references: [id])
   updates          Forecast[] @relation("ForecastHistory")
@@ -187,6 +196,11 @@ model OutcomeRecord {
   outcomeDate    DateTime
   userResponse   String?
   result         String?
+  // Was computed by the AI comparison and returned to the client but
+  // never persisted — a real pre-existing gap. Needed now so a
+  // revisited old decision (§13) can show which scenario occurred
+  // without recomputing anything.
+  matchedScenarioTitle String?
   whatWentRight  Json?
   whatWasMissed  Json?
   wrongAssumptions Json?

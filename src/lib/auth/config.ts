@@ -55,9 +55,15 @@ export const authOptions: NextAuthOptions = {
       if (account?.provider === "google" && user.email) {
         const dbUser = await prisma.user.upsert({
           where: { email: user.email },
-          update: {},
-          create: { email: user.email, name: user.name ?? undefined },
+          // Only set the Google photo if we don't already have one —
+          // never overwrite a photo the user may have set another way,
+          // and don't touch it on every login.
+          update: { profileImage: undefined },
+          create: { email: user.email, name: user.name ?? undefined, profileImage: user.image ?? undefined },
         });
+        if (!dbUser.profileImage && user.image) {
+          await prisma.user.update({ where: { id: dbUser.id }, data: { profileImage: user.image } });
+        }
         user.id = dbUser.id;
       }
       return true;

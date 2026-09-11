@@ -56,6 +56,15 @@ export function NavBar({ locale }: { locale: string }) {
         </a>
         {status === "authenticated" ? (
           <>
+            <a href={`/${locale}/dashboard`} style={linkStyle}>
+              {locale === "ar" ? "لوحتي" : "Dashboard"}
+            </a>
+            <a href={`/${locale}/decisions`} style={linkStyle}>
+              {locale === "ar" ? "قراراتي" : "Decisions"}
+            </a>
+            <a href={`/${locale}/profile`} style={linkStyle}>
+              {locale === "ar" ? "ملفي" : "Profile"}
+            </a>
             <a href={`/${locale}/admin`} style={linkStyle}>
               {locale === "ar" ? "الإدارة" : "Admin"}
             </a>
