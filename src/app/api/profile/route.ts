@@ -75,3 +75,19 @@ export async function PATCH(req: NextRequest) {
 
   return NextResponse.json({ profile: user }, { status: 200 });
 }
+
+/**
+ * DELETE /api/profile — §10/§16 (Settings > Privacy > Delete account).
+ * Soft delete only (the `deletedAt` column already exists for exactly
+ * this) — decision history and other records stay intact for now
+ * rather than a hard cascade delete, which is safer as a first pass
+ * and easy to upgrade to a real purge job later without an API change.
+ */
+export async function DELETE() {
+  const session = await getServerSession(authOptions);
+  const userId = (session?.user as { id?: string } | undefined)?.id;
+  if (!userId) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+
+  await prisma.user.update({ where: { id: userId }, data: { deletedAt: new Date() } });
+  return NextResponse.json({ deleted: true }, { status: 200 });
+}

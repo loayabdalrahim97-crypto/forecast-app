@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import { DashboardShell } from "@/components/dashboard-nav";
 
 interface Decision {
   id: string;
@@ -59,6 +60,7 @@ export default function DashboardPage({ params }: { params: { locale: string } }
   const withOutcome = decisions?.filter((d) => d.hasOutcome).length ?? 0;
 
   return (
+    <DashboardShell locale={locale}>
     <main style={{ padding: "1.5rem 2rem 4rem", maxWidth: 720, margin: "0 auto" }}>
       <h1 style={{ fontSize: "1.6rem", margin: "1rem 0 0.3rem" }}>
         {locale === "ar" ? `أهلاً، ${session?.user?.name ?? ""}` : `Welcome back${session?.user?.name ? `, ${session.user.name}` : ""}`}
@@ -194,5 +196,6 @@ export default function DashboardPage({ params }: { params: { locale: string } }
         </>
       )}
     </main>
+    </DashboardShell>
   );
 }

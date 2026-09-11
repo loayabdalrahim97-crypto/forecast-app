@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import { DashboardShell } from "@/components/dashboard-nav";
 import { RealityCheckBarometer } from "@/components/reality-check-barometer";
 import { ScenarioAccordion, type AccordionScenario } from "@/components/scenario-accordion";
 
@@ -48,6 +49,21 @@ export default function RevisitDecisionPage({ params }: { params: { locale: stri
   const { status } = useSession();
   const [forecast, setForecast] = useState<StoredForecast | null>(null);
   const [loadStatus, setLoadStatus] = useState<"idle" | "loading" | "done" | "notfound" | "error">("idle");
+  const [deleteStatus, setDeleteStatus] = useState<"idle" | "confirming" | "deleting">("idle");
+
+  async function handleDelete() {
+    if (deleteStatus !== "confirming") {
+      setDeleteStatus("confirming");
+      return;
+    }
+    setDeleteStatus("deleting");
+    const res = await fetch(`/api/decisions/${id}`, { method: "DELETE" }).catch(() => null);
+    if (res?.ok) {
+      window.location.href = `/${locale}/decisions`;
+    } else {
+      setDeleteStatus("idle");
+    }
+  }
 
   useEffect(() => {
     if (status !== "authenticated") return;
@@ -71,11 +87,29 @@ export default function RevisitDecisionPage({ params }: { params: { locale: stri
   const byKind = (kind: string) => forecast?.variables.filter((v) => v.kind === kind).map((v) => v.content) ?? [];
 
   return (
+    <DashboardShell locale={locale}>
     <main style={{ padding: "1.5rem 2rem 4rem", maxWidth: 640, margin: "0 auto" }}>
       <a href={`/${locale}/decisions`} style={{ fontSize: "0.82rem", color: "var(--fc-text-muted)" }}>
         {locale === "ar" ? "← رجوع لتاريخ القرارات" : "← Back to Decision History"}
       </a>
-      <h1 style={{ fontSize: "1.5rem", margin: "0.75rem 0 1.5rem" }}>{locale === "ar" ? "مراجعة قرار" : "Revisit Decision"}</h1>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "0.75rem 0 1.5rem" }}>
+        <h1 style={{ fontSize: "1.5rem", margin: 0 }}>{locale === "ar" ? "مراجعة قرار" : "Revisit Decision"}</h1>
+        {loadStatus === "done" && (
+          <button
+            type="button"
+            onClick={handleDelete}
+            className="fc-btn fc-btn-secondary"
+            style={{ fontSize: "0.78rem", padding: "0.35rem 0.7rem", color: deleteStatus === "confirming" ? "var(--fc-band-high)" : undefined }}
+            disabled={deleteStatus === "deleting"}
+          >
+            {deleteStatus === "confirming"
+              ? locale === "ar" ? "تأكيد الحذف؟" : "Confirm delete?"
+              : deleteStatus === "deleting"
+                ? locale === "ar" ? "جاري الحذف..." : "Deleting..."
+                : locale === "ar" ? "احذف" : "Delete"}
+          </button>
+        )}
+      </div>
 
       {loadStatus === "loading" && <p>{locale === "ar" ? "جاري التحميل..." : "Loading..."}</p>}
       {loadStatus === "notfound" && <p>{locale === "ar" ? "ما لقيناه." : "Not found."}</p>}
@@ -140,5 +174,6 @@ export default function RevisitDecisionPage({ params }: { params: { locale: stri
         </div>
       )}
     </main>
+    </DashboardShell>
   );
 }

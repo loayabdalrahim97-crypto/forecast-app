@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import { DashboardShell } from "@/components/dashboard-nav";
 
 const AREAS = ["career", "relationships", "finance", "business", "personal", "other"];
 const AREA_LABEL: Record<string, { en: string; ar: string }> = {
@@ -71,6 +72,7 @@ export default function ProfilePage({ params }: { params: { locale: string } }) 
   }
 
   return (
+    <DashboardShell locale={locale}>
     <main style={{ padding: "1.5rem 2rem 4rem", maxWidth: 480, margin: "0 auto" }}>
       <h1 style={{ fontSize: "1.5rem", margin: "1rem 0 1.5rem" }}>{locale === "ar" ? "الملف الشخصي" : "Profile"}</h1>
 
@@ -140,5 +142,6 @@ export default function ProfilePage({ params }: { params: { locale: string } }) 
         </form>
       )}
     </main>
+    </DashboardShell>
   );
 }
