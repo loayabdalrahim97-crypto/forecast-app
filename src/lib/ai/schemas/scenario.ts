@@ -60,6 +60,9 @@ export const ScenarioGenerationOutputSchema = z.object({
     ),
   recommendedAction: RecommendedActionSchema,
   whatCouldChangeForecast: z.array(z.string().min(1).max(300)).max(3).default([]),
+  // §8 (quality polish): optional, contextual only — null when there's
+  // no genuinely important gap to name, not forced onto every report.
+  limitsOfForecast: z.string().min(1).max(400).nullable().default(null),
 });
 
 export type Scenario = z.infer<typeof ScenarioSchema>;
