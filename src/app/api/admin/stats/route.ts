@@ -2,20 +2,22 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/config";
 import { prisma } from "@/lib/db";
-import { isAdminEmail } from "@/lib/admin/is-admin";
+import { checkCurrentUserAdmin } from "@/lib/admin/check-admin";
 
 /**
  * GET /api/admin/stats
  *
  * Site-level usage numbers for the admin dashboard: users, forecasts,
  * scenarios generated, outcomes recorded, and a 7-day forecast trend.
- * Same fail-closed authorization as /api/admin/ai-costs.
+ * Real database-backed role check (§ Role-Based Access Control) — not
+ * an email allowlist checked at request time; see check-admin.ts.
  */
 export async function GET() {
   const session = await getServerSession(authOptions);
-  const email = (session?.user as { email?: string } | undefined)?.email;
+  const userId = (session?.user as { id?: string } | undefined)?.id;
+  const { isAdmin } = await checkCurrentUserAdmin(userId);
 
-  if (!isAdminEmail(email)) {
+  if (!isAdmin) {
     return NextResponse.json({ error: "Not authorized" }, { status: 403 });
   }
 

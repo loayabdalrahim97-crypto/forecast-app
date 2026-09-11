@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const ITEMS = [
   { href: "dashboard", icon: "🏠", en: "Home", ar: "الرئيسية" },
@@ -14,6 +15,16 @@ const BOTTOM_ITEMS = [
   { href: "usage", icon: "📊", en: "Usage", ar: "الاستخدام" },
   { href: "settings", icon: "⚙️", en: "Settings", ar: "الإعدادات" },
 ];
+
+// §"Important UX rule": normal users must never see the word "Admin"
+// anywhere, and never know a Management area exists. This link is
+// rendered only after a real server response confirms role === "admin"
+// — hiding it client-side is a UX nicety on top of the actual
+// enforcement, which is the server-side check on every /admin page and
+// API route (see check-admin.ts). A hidden button alone is never the
+// real protection.
+const MANAGEMENT_ITEM = { href: "admin", icon: "🛠️", en: "Management", ar: "الإدارة الداخلية" };
+
 
 const MOBILE_ITEMS = [
   { href: "dashboard", icon: "🏠", en: "Home", ar: "الرئيسية" },
@@ -40,6 +51,15 @@ export function DashboardShell({
   children: React.ReactNode;
 }) {
   const currentPath = usePathname() ?? "";
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/profile")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => setIsAdmin(data?.profile?.role === "admin"))
+      .catch(() => setIsAdmin(false));
+  }, []);
+
   return (
     <div className="fc-dash-shell">
       <aside className="fc-dash-sidebar">
@@ -78,6 +98,18 @@ export function DashboardShell({
           <a href={`/${locale}/profile`} className="fc-dash-nav-link" style={{ color: "var(--fc-text-secondary)" }}>
             <span aria-hidden>👤</span> {locale === "ar" ? "ملفي" : "Profile"}
           </a>
+          {isAdmin && (
+            <a
+              href={`/${locale}/${MANAGEMENT_ITEM.href}`}
+              className="fc-dash-nav-link"
+              style={{
+                color: isActive(currentPath, locale, MANAGEMENT_ITEM.href) ? "var(--fc-accent)" : "var(--fc-text-secondary)",
+                background: isActive(currentPath, locale, MANAGEMENT_ITEM.href) ? "var(--fc-accent-soft)" : "transparent",
+              }}
+            >
+              <span aria-hidden>{MANAGEMENT_ITEM.icon}</span> {locale === "ar" ? MANAGEMENT_ITEM.ar : MANAGEMENT_ITEM.en}
+            </a>
+          )}
         </div>
       </aside>
 

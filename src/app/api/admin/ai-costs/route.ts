@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/config";
 import { prisma } from "@/lib/db";
-import { isAdminEmail } from "@/lib/admin/is-admin";
+import { checkCurrentUserAdmin } from "@/lib/admin/check-admin";
 
 /**
  * GET /api/admin/ai-costs
@@ -10,12 +10,14 @@ import { isAdminEmail } from "@/lib/admin/is-admin";
  * §22: "AI Cost per Forecast / per User / by Model / by Plan." This
  * covers by-model and by-request-type totals — per-user and per-plan
  * breakdowns can be added the same way once billing/plans exist.
+ * Real database-backed role check — see check-admin.ts.
  */
 export async function GET() {
   const session = await getServerSession(authOptions);
-  const email = (session?.user as { email?: string } | undefined)?.email;
+  const userId = (session?.user as { id?: string } | undefined)?.id;
+  const { isAdmin } = await checkCurrentUserAdmin(userId);
 
-  if (!isAdminEmail(email)) {
+  if (!isAdmin) {
     return NextResponse.json({ error: "Not authorized" }, { status: 403 });
   }
 

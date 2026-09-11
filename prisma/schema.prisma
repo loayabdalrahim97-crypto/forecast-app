@@ -27,6 +27,11 @@ model User {
   countryCode       String?  // ISO 3166-1 alpha-2, kept separate from language
   timezone          String?  @default("UTC")
   currency          String   @default("USD")
+  // Server-side, database-backed authorization — the actual source of
+  // truth for admin access (ADMIN_EMAILS is now only a one-time
+  // bootstrap seed, checked and synced into this column on session
+  // read; see lib/admin/is-admin.ts).
+  role              String   @default("user") // "user" | "admin"
 
   // Account/profile upgrade — all optional, lightweight (no forced questionnaire)
   profileImage      String?  // from Google OAuth if available
@@ -254,6 +259,20 @@ model UserInsight {
   createdAt   DateTime @default(now())
 
   @@index([userId])
+}
+
+// ---------- Admin ----------
+
+model AdminActivityLog {
+  id          String   @id @default(cuid())
+  actorUserId String   // the admin who performed the action
+  action      String   // e.g. "role_change"
+  targetUserId String?
+  detail      String?  // never secrets — just a short human-readable summary
+  createdAt   DateTime @default(now())
+
+  @@index([actorUserId])
+  @@index([createdAt])
 }
 
 // ---------- AI usage / cost tracking ----------

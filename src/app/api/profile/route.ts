@@ -35,6 +35,7 @@ export async function GET() {
       occupation: true,
       decisionAreas: true,
       createdAt: true,
+      role: true,
     },
   });
   if (!user) return NextResponse.json({ error: "Not found" }, { status: 404 });
