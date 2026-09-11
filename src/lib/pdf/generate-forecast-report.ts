@@ -46,6 +46,7 @@ export interface ForecastReportData {
   scenarios: ReportScenario[];
   recommendedAction: { summary: string; conditionalBranches: { condition: string; action: string }[] } | null;
   whatCouldChangeForecast: string[];
+  limitsOfForecast: string | null;
   updateNote: string | null;
   outcome: {
     matchedScenarioTitle: string | null;
@@ -219,6 +220,13 @@ export async function generateForecastReport(data: ForecastReportData): Promise<
     ({ y, pageNumber } = ensureSpace(ctx, y, needed, pageNumber));
     y = drawHeading(ctx, labels.whatCouldChange, y, 15);
     y = drawBulletList(ctx, data.whatCouldChangeForecast, y);
+  }
+
+  if (data.limitsOfForecast) {
+    const needed = measureHeadingHeight(12) + measureParagraphHeight(ctx, data.limitsOfForecast, 9.5);
+    ({ y, pageNumber } = ensureSpace(ctx, y, needed, pageNumber));
+    y = drawHeading(ctx, labels.limitsOfForecast, y, 12);
+    y = drawParagraph(ctx, data.limitsOfForecast, y, { fontSize: 9.5, color: [130, 130, 130] });
   }
 
   // ---- PAGE 4: SCENARIO MAP ----
