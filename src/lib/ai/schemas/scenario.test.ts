@@ -125,6 +125,32 @@ describe("ScenarioGenerationOutputSchema", () => {
     });
     expect(result.success).toBe(false);
   });
+
+  it("defaults limitsOfForecast to null when omitted (most reports have nothing to say here)", () => {
+    const result = ScenarioGenerationOutputSchema.safeParse({
+      scenarios: [
+        { ...validScenario, outcomeType: "best_case" },
+        { ...validScenario, outcomeType: "most_likely" },
+        { ...validScenario, outcomeType: "worst_case" },
+      ],
+      recommendedAction: { summary: "Do X.", conditionalBranches: [] },
+    });
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.limitsOfForecast).toBeNull();
+  });
+
+  it("accepts a contextual limitsOfForecast string", () => {
+    const result = ScenarioGenerationOutputSchema.safeParse({
+      scenarios: [
+        { ...validScenario, outcomeType: "best_case" },
+        { ...validScenario, outcomeType: "most_likely" },
+        { ...validScenario, outcomeType: "worst_case" },
+      ],
+      recommendedAction: { summary: "Do X.", conditionalBranches: [] },
+      limitsOfForecast: "Whether the manager's tone reflects a specific concern can't be established from one message.",
+    });
+    expect(result.success).toBe(true);
+  });
 });
 
 describe("SituationAnalysisSchema", () => {
