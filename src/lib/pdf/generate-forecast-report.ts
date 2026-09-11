@@ -135,6 +135,17 @@ export async function generateForecastReport(data: ForecastReportData): Promise<
   );
   y += 4;
 
+  // Bottom Line moved to the very top of page 1 — a reader should see
+  // "what should I do" within seconds, before reading the situation
+  // back to themselves or the full breakdown. Everything below it is
+  // supporting detail for someone who wants to see the reasoning.
+  const bottomLineText =
+    data.recommendedAction?.summary ??
+    (data.scenarios.find((s) => s.outcomeType === "most_likely")?.recommendedResponse ?? labels.notAvailable);
+  y = drawHeading(ctx, labels.bottomLine, y, 13);
+  y = drawParagraph(ctx, bottomLineText, y, { bold: true });
+  y += 4;
+
   y = drawHeading(ctx, labels.situation, y);
   y = drawParagraph(ctx, data.situationText, y);
   y += 4;
@@ -153,16 +164,7 @@ export async function generateForecastReport(data: ForecastReportData): Promise<
         : `The most likely scenario considered: "${topScenario.title}".`;
       y = drawParagraph(ctx, scenarioLine, y);
     }
-    y += 3;
   }
-
-  y += 6;
-  ({ y, pageNumber } = ensureSpace(ctx, y, 20, pageNumber));
-  y = drawHeading(ctx, labels.bottomLine, y, 12);
-  const bottomLineText =
-    data.recommendedAction?.summary ??
-    (data.scenarios.find((s) => s.outcomeType === "most_likely")?.recommendedResponse ?? labels.notAvailable);
-  y = drawParagraph(ctx, bottomLineText, y, { bold: true });
 
   // ---- PAGE 2: WHAT WE KNOW ----
   pageNumber += 1;

@@ -14,25 +14,23 @@ export function ExecutiveSummary({
   const isRtl = locale === "ar";
   return (
     <div
+      className="fc-strip"
       style={{
-        position: "sticky",
-        top: 0,
-        zIndex: 10,
-        background: "var(--fc-bg-base)",
-        borderBottom: "1px solid var(--fc-border)",
-        padding: "0.85rem 0",
+        ["--fc-strip-color" as string]: "var(--fc-accent)",
         marginBottom: "1.5rem",
+        padding: "1.1rem 1.25rem",
       }}
     >
-      <p style={{ margin: 0, fontSize: "0.78rem", color: "var(--fc-text-muted)" }}>
-        {isRtl ? "الملخص التنفيذي" : "Executive Summary"}
+      <p style={{ margin: "0 0 0.4rem", fontSize: "0.8rem", fontWeight: 600, color: "var(--fc-accent)" }}>
+        {isRtl ? "شو أعمل هلق؟" : "What should I do now?"}
       </p>
-      <p style={{ margin: "0.25rem 0 0", fontSize: "0.9rem", lineHeight: 1.5 }}>
-        <strong>{topScenarioTitle}</strong>
-        {" — "}
+      <p style={{ margin: "0 0 0.6rem", fontSize: "1.1rem", lineHeight: 1.5, fontWeight: 600 }}>
         {mainRecommendation}
+      </p>
+      <p style={{ margin: 0, fontSize: "0.82rem", color: "var(--fc-text-muted)" }}>
+        {isRtl ? "بناءً على" : "Based on"}: <strong style={{ color: "var(--fc-text-secondary)" }}>{topScenarioTitle}</strong>
         {"  ·  "}
-        <span style={{ color: "var(--fc-text-secondary)" }}>{realityCheckBadgeLabel}</span>
+        {realityCheckBadgeLabel}
       </p>
     </div>
   );
