@@ -11,15 +11,21 @@ tracks what actually happened to improve future forecasts.
 
 ## Status
 
-This repository is being built in phases (see `docs/ARCHITECTURE.md` for
-the full phase plan). **Phase 1 — Repository, Architecture, Design System,
-Database, Authentication, Internationalization — is scaffolded here.**
+Live in production at theforesee.com (PayPal Sandbox billing — Live PayPal
+credentials not switched on yet). Auth, the Forecast Engine (situation
+analysis, scenario generation, behavioral profile, personalization),
+Decision/Business mode, outcome tracking, PDF export (7 languages), PayPal
+subscriptions (Free/Monthly/Annual), an admin dashboard, and rate limiting
+are all implemented and covered by the automated test suite (`npm test`).
 
-Phases 2–14 (Behavioral Profile, Situation Analyzer, Forecast Engine,
-Scenario UI, Decision/Business Mode, Outcome Tracking, Personalization,
-Billing, Admin/Analytics, SEO/Growth, Security/Testing/Performance,
-Documentation/Deployment) are **not yet implemented**. Each will land as
-its own scaffold with tests, following the same pattern established here.
+See `docs/ARCHITECTURE.md` for the original phase plan and
+`docs/ACQUISITION_HANDOFF.md` for the current single-source-of-truth
+status — both are kept close to the actual codebase, not aspirational.
+
+Not yet done: legal-page content beyond the initial draft should get a
+lawyer's review before Live PayPal is switched on; SEO/growth infra;
+further security hardening and mobile QA (see `ACQUISITION_HANDOFF.md` →
+"Known limitations").
 
 ## Stack
 

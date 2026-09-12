@@ -22,22 +22,27 @@ the Forecast Engine.
 
 ## Phase plan
 
+See `docs/ACQUISITION_HANDOFF.md` for the current, accurate status —
+the table below is the original plan and is kept for historical
+context only; several phases below moved faster than this table
+implies and it was not updated at the time.
+
 | Phase | Scope | Status |
 |---|---|---|
-| 1 | Repository, architecture, design system, database, auth, i18n | **Scaffolded (this commit)** |
-| 2 | Behavioral Profile (onboarding, storage, update flow) | Not started |
-| 3 | Situation Analyzer (facts/assumptions/unknowns extraction) | Schema scaffolded (`schemas/scenario.ts`), engine not built |
-| 4 | Forecast Engine (scenario generation, likelihood/impact) | Schema scaffolded, engine not built |
-| 5 | Scenario UI | Not started |
-| 6 | Decision Mode | Not started |
-| 7 | Business Mode | Not started |
-| 8 | History, Forecast Updates, Outcome Tracking | Data model exists, UI/logic not built |
-| 9 | Personalization Engine | Not started |
-| 10 | Stripe, Credits, Subscriptions, Referrals | Data model exists, integration not built |
-| 11 | Admin, Analytics, AI Cost dashboards | Data model exists, UI not built |
-| 12 | SEO, localized routes, sharing, growth infra | Not started |
-| 13 | Security hardening, full test suite, performance, mobile QA | Not started |
-| 14 | Full documentation set, deployment, acquisition handoff | This doc set is a starting skeleton |
+| 1 | Repository, architecture, design system, database, auth, i18n | Done |
+| 2 | Behavioral Profile (onboarding, storage, update flow) | Done |
+| 3 | Situation Analyzer (facts/assumptions/unknowns extraction) | Done |
+| 4 | Forecast Engine (scenario generation, likelihood/impact) | Done |
+| 5 | Scenario UI | Done |
+| 6 | Decision Mode | Done |
+| 7 | Business Mode | Done |
+| 8 | History, Forecast Updates, Outcome Tracking | Done |
+| 9 | Personalization Engine | Done |
+| 10 | PayPal, Credits/Usage, Subscriptions | Done (Sandbox; Live pending — see handoff doc) |
+| 11 | Admin, Analytics, AI Cost dashboards | Admin dashboard done; no external analytics provider wired up |
+| 12 | SEO, localized routes, sharing, growth infra | Not started (no sitemap/robots.txt yet) |
+| 13 | Security hardening, full test suite, performance, mobile QA | Test suite done (161 tests); broader hardening/perf/mobile QA not started |
+| 14 | Full documentation set, deployment, acquisition handoff | Deployed; `ACQUISITION_HANDOFF.md` kept current |
 
 ## Data integrity rule (§50, enforced in code)
 

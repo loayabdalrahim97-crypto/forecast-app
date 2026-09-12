@@ -3,6 +3,7 @@ import { Space_Grotesk, IBM_Plex_Sans } from "next/font/google";
 import { SUPPORTED_LOCALES, isRtl } from "@/lib/i18n/config";
 import { Providers } from "../providers";
 import { NavBar } from "@/components/nav-bar";
+import { Footer } from "@/components/footer";
 import "@/design-system/tokens.css";
 
 const heading = Space_Grotesk({
@@ -46,6 +47,7 @@ export default function LocaleLayout({
         <Providers>
           <NavBar locale={locale} />
           {children}
+          <Footer locale={locale} />
         </Providers>
       </body>
     </html>
