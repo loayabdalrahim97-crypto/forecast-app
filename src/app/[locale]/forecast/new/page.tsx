@@ -368,8 +368,13 @@ export default function NewForecastPage({ params }: { params: { locale: string }
           onChange={(e) => setSituationText(e.target.value)}
           placeholder={t(locale, "forecast.situationPlaceholder")}
           rows={5}
-          style={{ marginBottom: "1rem", resize: "vertical" }}
+          style={{ marginBottom: "0.4rem", resize: "vertical" }}
         />
+        <p style={{ fontSize: "0.78rem", color: "var(--fc-text-muted)", margin: "0 0 1rem" }}>
+          {locale === "ar"
+            ? "اذكر اللي متأكد منه فعلاً واللي قلقان منه."
+            : "Include what you know for sure and what you're worried about."}
+        </p>
         <button type="submit" className="fc-btn fc-btn-primary" disabled={status === "loading"}>
           {status === "loading" ? t(locale, "forecast.analyzingText") : t(locale, "forecast.submitButton")}
         </button>

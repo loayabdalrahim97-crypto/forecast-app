@@ -78,6 +78,11 @@ export default function PricingPage({ params }: { params: { locale: string } }) 
           <p style={{ color: "var(--fc-text-secondary)", marginBottom: "1.25rem" }}>
             {isAr ? "٣٠ توقعاً شهرياً" : "30 forecasts per month"}
           </p>
+          <p style={{ color: "var(--fc-text-muted)", fontSize: "0.8rem", marginBottom: "1.25rem", lineHeight: 1.6 }}>
+            {isAr
+              ? "احفظ توقعاتك وارجعلها لاحقاً · تتبّع النتائج الفعلية · رؤى مخصصة تتحسن مع الوقت"
+              : "Save & revisit past forecasts · Track real outcomes · Personalized insights over time"}
+          </p>
           {authStatus === "authenticated" ? (
             <PayPalSubscribeButton planId={planIds.monthlyPlanId} locale={locale} onSubscribed={handleSubscribed} />
           ) : (
@@ -110,8 +115,13 @@ export default function PricingPage({ params }: { params: { locale: string } }) 
           <p style={{ color: "var(--fc-text-secondary)", marginBottom: "0.4rem" }}>
             {isAr ? "٣٠ توقعاً شهرياً" : "30 forecasts per month"}
           </p>
-          <p style={{ fontSize: "0.8rem", color: "var(--fc-accent)", marginBottom: "1.25rem" }}>
+          <p style={{ fontSize: "0.8rem", color: "var(--fc-accent)", marginBottom: "0.75rem" }}>
             {isAr ? "توفير حوالي ٣٣٪ مقارنة بالشهري" : "Save ~33% vs. monthly"}
+          </p>
+          <p style={{ color: "var(--fc-text-muted)", fontSize: "0.8rem", marginBottom: "1.25rem", lineHeight: 1.6 }}>
+            {isAr
+              ? "احفظ توقعاتك وارجعلها لاحقاً · تتبّع النتائج الفعلية · رؤى مخصصة تتحسن مع الوقت"
+              : "Save & revisit past forecasts · Track real outcomes · Personalized insights over time"}
           </p>
           {authStatus === "authenticated" ? (
             <PayPalSubscribeButton planId={planIds.annualPlanId} locale={locale} onSubscribed={handleSubscribed} />

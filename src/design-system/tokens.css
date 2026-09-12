@@ -244,6 +244,12 @@ a {
   gap: 1rem;
 }
 
+.fc-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
 .fc-hero-grid {
   display: grid;
   grid-template-columns: 1.1fr 1fr;
@@ -270,6 +276,7 @@ a {
 
 @media (max-width: 640px) {
   .fc-grid-2,
+  .fc-grid-3,
   .fc-hero-grid {
     grid-template-columns: 1fr;
     gap: 1rem;

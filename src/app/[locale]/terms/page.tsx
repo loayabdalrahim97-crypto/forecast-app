@@ -25,7 +25,7 @@ export default function TermsPage({ params }: { params: { locale: string } }) {
           <section style={sectionStyle}>
             <h2 style={headingStyle}>1. قبول الشروط</h2>
             <p style={pStyle}>
-              باستخدامك لموقع وخدمة Foresee ("الخدمة")، فإنك توافق على هذه الشروط بالكامل. إذا كنت
+              باستخدامك لموقع وخدمة Foresee (&quot;الخدمة&quot;)، فإنك توافق على هذه الشروط بالكامل. إذا كنت
               لا توافق على أي جزء منها، يرجى عدم استخدام الخدمة.
             </p>
           </section>
@@ -62,7 +62,7 @@ export default function TermsPage({ params }: { params: { locale: string } }) {
           <section style={sectionStyle}>
             <h2 style={headingStyle}>5. إخلاء المسؤولية</h2>
             <p style={pStyle}>
-              تُقدَّم الخدمة "كما هي" دون أي ضمانات صريحة أو ضمنية. لا تتحمل Foresee مسؤولية أي
+              تُقدَّم الخدمة &quot;كما هي&quot; دون أي ضمانات صريحة أو ضمنية. لا تتحمل Foresee مسؤولية أي
               قرارات تُتخذ بناءً على السيناريوهات أو التوقعات المقدَّمة عبر الخدمة.
             </p>
           </section>
