@@ -221,25 +221,33 @@ export default function LocaleHome({ params: { locale } }: { params: { locale: s
         </div>
       </section>
 
-      <section style={{ marginTop: "4rem" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "1rem" }}>
-          <a href={`/${locale}/forecast/new`} className="fc-strip" style={{ textDecoration: "none", color: "inherit" }}>
-            <h3 style={{ margin: "0 0 0.4rem", fontSize: "1rem" }}>{t(locale, "hero.ctaPrimary")}</h3>
-            <p style={{ color: "var(--fc-text-secondary)", margin: 0, fontSize: "0.88rem" }}>
-              {t(locale, "forecast.situationLabel")}
-            </p>
+      {/* One clear primary action instead of three equal-weight cards
+          competing for attention — the free forecast is the intended
+          next step for a first-time visitor, so it gets the visual
+          weight; the other two paths stay available as smaller
+          secondary links rather than disappearing. */}
+      <section style={{ marginTop: "4rem", textAlign: "center" }}>
+        <a
+          href={`/${locale}/forecast/new`}
+          className="fc-btn fc-btn-primary"
+          style={{ fontSize: "1rem", padding: "0.85rem 1.75rem" }}
+        >
+          {t(locale, "hero.ctaPrimary")}
+        </a>
+        <div
+          style={{
+            marginTop: "1.1rem",
+            display: "flex",
+            gap: "1.5rem",
+            justifyContent: "center",
+            flexWrap: "wrap",
+          }}
+        >
+          <a href={`/${locale}/onboarding`} style={{ color: "var(--fc-text-secondary)", fontSize: "0.85rem" }}>
+            {t(locale, "onboarding.title")}
           </a>
-          <a href={`/${locale}/onboarding`} className="fc-strip" style={{ textDecoration: "none", color: "inherit" }}>
-            <h3 style={{ margin: "0 0 0.4rem", fontSize: "1rem" }}>{t(locale, "onboarding.title")}</h3>
-            <p style={{ color: "var(--fc-text-secondary)", margin: 0, fontSize: "0.88rem" }}>
-              {t(locale, "onboarding.intro")}
-            </p>
-          </a>
-          <a href={`/${locale}/signup`} className="fc-strip" style={{ textDecoration: "none", color: "inherit" }}>
-            <h3 style={{ margin: "0 0 0.4rem", fontSize: "1rem" }}>{t(locale, "nav.signup")}</h3>
-            <p style={{ color: "var(--fc-text-secondary)", margin: 0, fontSize: "0.88rem" }}>
-              {t(locale, "outcome.heading")}
-            </p>
+          <a href={`/${locale}/signup`} style={{ color: "var(--fc-text-secondary)", fontSize: "0.85rem" }}>
+            {t(locale, "nav.signup")}
           </a>
         </div>
       </section>
