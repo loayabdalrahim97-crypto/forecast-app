@@ -102,12 +102,51 @@ export class AIOrchestrator {
     throw lastError;
   }
 
+  /**
+   * The model is instructed to "output ONLY valid JSON, nothing else",
+   * but for some situations (long, emotionally loaded, or otherwise
+   * complex inputs) it doesn't reliably follow that — it sometimes
+   * wraps the JSON in explanatory prose before and/or after it. That
+   * previously broke parsing 100% of the time for those inputs (not
+   * randomly — the same situation would fail on every retry), because
+   * the old code only stripped ```json/``` markers and assumed
+   * whatever was left was pure JSON. Root fix: actively find and
+   * extract the JSON object from within the response instead of
+   * assuming the whole response is one, trying a few strategies from
+   * most to least specific.
+   */
+  private static extractJsonCandidate(rawText: string): string {
+    const trimmed = rawText.trim();
+
+    // 1) Prefer the first fenced ```json ... ``` block — this is what
+    // the model is asked to produce, so if it's present it's the most
+    // reliable signal even when surrounded by other prose.
+    const fenced = trimmed.match(/```json\s*([\s\S]*?)```/i);
+    if (fenced) return fenced[1].trim();
+
+    // 2) Any fenced block at all (model sometimes omits the "json" tag).
+    const anyFence = trimmed.match(/```\s*([\s\S]*?)```/);
+    if (anyFence) return anyFence[1].trim();
+
+    // 3) No fences: fall back to the outermost {...} span — handles
+    // plain prose-then-JSON or JSON-then-prose with no code fence at
+    // all, by matching from the first "{" to the LAST "}" in the text
+    // (the JSON payload is always the largest brace-delimited region).
+    const firstBrace = trimmed.indexOf("{");
+    const lastBrace = trimmed.lastIndexOf("}");
+    if (firstBrace !== -1 && lastBrace > firstBrace) {
+      return trimmed.slice(firstBrace, lastBrace + 1);
+    }
+
+    // 4) Nothing brace-shaped found at all — return as-is so the
+    // caller's JSON.parse fails with the original text for debugging.
+    return trimmed;
+  }
+
   private static parseAndValidate<T>(rawText: string, schema: z.ZodTypeAny): T {
     let json: unknown;
     try {
-      // Strip accidental markdown code fences before parsing.
-      const cleaned = rawText.replace(/```json|```/g, "").trim();
-      json = JSON.parse(cleaned);
+      json = JSON.parse(this.extractJsonCandidate(rawText));
     } catch {
       throw new AIValidationError("Model output was not valid JSON", rawText);
     }
