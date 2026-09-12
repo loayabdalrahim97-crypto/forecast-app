@@ -63,7 +63,11 @@ export interface ForecastReportData {
 }
 
 function pdfLocale(siteLocale: string): PdfLocale {
-  return siteLocale === "ar" ? "ar" : "en";
+  const base = siteLocale.split("-")[0];
+  if (base === "ar" || base === "es" || base === "fr" || base === "de" || base === "it" || base === "pt") {
+    return base;
+  }
+  return "en";
 }
 
 function scenarioHeading(labels: PdfLabelSet, outcomeType: string | null): string {
@@ -139,7 +143,7 @@ export async function generateForecastReport(data: ForecastReportData): Promise<
 
   y = drawParagraph(
     ctx,
-    `${labels.date}: ${dateStr}    ·    ${labels.language}: English`,
+    `${labels.date}: ${dateStr}    ·    ${labels.language}: ${labels.languageName}`,
     y,
     { fontSize: 9.5, color: [110, 110, 110] }
   );

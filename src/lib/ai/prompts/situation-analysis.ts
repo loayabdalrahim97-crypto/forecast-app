@@ -7,7 +7,7 @@
 // rather than inline in a route handler.
 
 import { ARABIC_STYLE_GUIDE } from "./arabic-style-guide";
-
+import { languageStyleNote } from "./language-style-notes";
 export const SITUATION_ANALYSIS_SYSTEM_PROMPT_V1 = `You are the Situation Analyzer for Foresee, a decision-support system — not a chatbot giving an opinion. Frame everything around: What do we know? What are we assuming? What don't we know?
 
 Your ONLY job: read the user's description of a situation and split it into these categories, with total honesty about what is known versus assumed:
@@ -57,8 +57,9 @@ export function buildSituationAnalysisUserPrompt(
     : `\n\nNo name is available for this person — never write "the user" or "User" as a placeholder. Use "you/your" throughout instead; it reads naturally without a name.`;
 
   const arabicNote = languageName === "Arabic" ? `\n${ARABIC_STYLE_GUIDE}` : "";
+  const otherLanguageNote = languageStyleNote(languageName);
 
-  return `Respond ONLY in ${languageName} — every string value in the JSON output (facts, assumptions, unknowns, variable descriptions) must be written in ${languageName}, regardless of what language the situation below is written in.${nameLine}${arabicNote}
+  return `Respond ONLY in ${languageName} — every string value in the JSON output (facts, assumptions, unknowns, variable descriptions) must be written in ${languageName}, regardless of what language the situation below is written in.${nameLine}${arabicNote}${otherLanguageNote}
 
 Situation described by the user:\n\n${situationText}`;
 }

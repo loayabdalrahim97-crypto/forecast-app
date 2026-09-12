@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { SUPPORTED_LOCALES } from "@/lib/i18n/config";
+import { LAUNCHED_LOCALES } from "@/lib/i18n/messages";
 import { LOCALE_DISPLAY_NAMES } from "@/lib/i18n/display-names";
 
 export function LanguageSwitcher({ locale }: { locale: string }) {
@@ -31,7 +31,7 @@ export function LanguageSwitcher({ locale }: { locale: string }) {
         cursor: "pointer",
       }}
     >
-      {SUPPORTED_LOCALES.map((l) => (
+      {LAUNCHED_LOCALES.map((l) => (
         <option key={l} value={l}>
           {LOCALE_DISPLAY_NAMES[l]}
         </option>

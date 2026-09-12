@@ -8,21 +8,7 @@ import { ExecutiveSummary } from "@/components/executive-summary";
 import { ScenarioAccordion, type AccordionScenario } from "@/components/scenario-accordion";
 import { DownloadPdfButton } from "@/components/download-pdf-button";
 import type { ForecastReportData } from "@/lib/pdf/generate-forecast-report";
-import enUs from "../../../../../messages/en-us.json";
-import ar from "../../../../../messages/ar.json";
-
-const MESSAGES: Record<string, typeof enUs> = { "en-us": enUs, ar };
-
-function t(locale: string, path: string): string {
-  const dict = MESSAGES[locale] ?? enUs;
-  const value = path.split(".").reduce<unknown>((acc, key) => {
-    if (acc && typeof acc === "object" && key in acc) {
-      return (acc as Record<string, unknown>)[key];
-    }
-    return undefined;
-  }, dict);
-  return typeof value === "string" ? value : path;
-}
+import { t } from "@/lib/i18n/messages";
 
 type Band = "low" | "moderate" | "high";
 

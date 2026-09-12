@@ -33,6 +33,7 @@ export async function GET() {
     totalOutcomesRecorded,
     recentSignups,
     recentForecasts,
+    forecastsByLocale,
   ] = await Promise.all([
     prisma.user.count(),
     prisma.forecast.count(),
@@ -49,6 +50,9 @@ export async function GET() {
       where: { createdAt: { gte: sevenDaysAgo } },
       select: { createdAt: true },
     }),
+    // §28: "Forecasts by language" - real counts only, grouped by the
+    // language each forecast was actually created in.
+    prisma.forecast.groupBy({ by: ["locale"], _count: { _all: true } }),
   ]);
 
   // Bucket the last 7 days of forecasts by day for a simple trend chart.
@@ -62,6 +66,15 @@ export async function GET() {
     if (key in dayBuckets) dayBuckets[key] += 1;
   }
 
+  const localeRows = forecastsByLocale as { locale: string; _count: { _all: number } }[];
+  const languageBreakdown = localeRows
+    .map((row) => ({
+      locale: row.locale,
+      count: row._count._all,
+      percentage: totalForecasts > 0 ? Math.round((row._count._all / totalForecasts) * 1000) / 10 : 0,
+    }))
+    .sort((a, b) => b.count - a.count);
+
   return NextResponse.json(
     {
       totalUsers,
@@ -73,6 +86,7 @@ export async function GET() {
       outcomeRecordingRate: totalForecasts > 0 ? totalOutcomesRecorded / totalForecasts : 0,
       recentSignups,
       forecastsByDay: Object.entries(dayBuckets).map(([date, count]) => ({ date, count })),
+      forecastsByLanguage: languageBreakdown,
     },
     { status: 200 }
   );

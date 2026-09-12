@@ -2,12 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { analyzeDecision } from "@/lib/forecast/analyze-decision";
-import { SUPPORTED_LOCALES } from "@/lib/i18n/config";
 import { AIValidationError } from "@/lib/ai/orchestrator";
 import { logAIRequest } from "@/lib/ai/log-request";
 
 const BodySchema = z.object({
-  locale: z.enum(SUPPORTED_LOCALES).default("en-us"),
   /** Optional — if omitted, the model infers the natural options (§15). */
   options: z.array(z.string().min(1).max(200)).max(6).optional().default([]),
 });
@@ -18,6 +16,8 @@ const BodySchema = z.object({
  * §15: Decision Mode. Reuses the forecast's existing Situation Analysis
  * (facts/assumptions) rather than re-deriving them, then compares 2-6
  * concrete options with best/base/worst case, risk, and reversibility.
+ *
+ * §3/§16-20: uses forecast.locale, never a client-supplied locale.
  */
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
   const forecast = await prisma.forecast.findUnique({
@@ -57,7 +57,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       facts,
       assumptions,
       explicitOptions: parsed.data.options,
-      locale: parsed.data.locale,
+      locale: forecast.locale,
     });
   } catch (err) {
     console.error("[decision] analysis failed:", err);

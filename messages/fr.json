@@ -1,0 +1,168 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "howItWorks": "Comment ça marche",
+    "pricing": "Tarifs",
+    "login": "Connexion",
+    "signup": "S'inscrire"
+  },
+  "hero": {
+    "title": "QUE POURRAIT-IL SE PASSER ENSUITE ?",
+    "subtitle": "INTELLIGENCE DE SCÉNARIOS COMPORTEMENTAUX PAR IA",
+    "tagline": "Foresee ne prédit pas l'avenir. Il vous aide à vous préparer à ce qui pourrait arriver.",
+    "ctaPrimary": "Faire une prévision gratuite",
+    "ctaSecondary": "Voir comment ça marche"
+  },
+  "forecast": {
+    "situationLabel": "Décrivez votre situation",
+    "situationPlaceholder": "Ex. : Mon manager veut me voir demain mais n'a pas précisé pourquoi...",
+    "submitButton": "Analyser",
+    "analyzingText": "Analyse en cours...",
+    "factsHeading": "Faits",
+    "assumptionsHeading": "Suppositions",
+    "unknownsHeading": "Inconnues",
+    "followUpHeading": "Quelques éléments qui aideraient",
+    "scenariosHeading": "Scénarios possibles",
+    "generateScenariosButton": "Générer les scénarios",
+    "generatingScenariosText": "Génération des scénarios...",
+    "likelihood": "Probabilité",
+    "confidence": "Confiance",
+    "impact": "Impact",
+    "recommendedResponse": "Réponse recommandée",
+    "contingencyPlan": "Plan de secours"
+  },
+  "outcome": {
+    "heading": "Que s'est-il réellement passé ?",
+    "label": "Décrivez le résultat réel",
+    "placeholder": "Ex. : Mon manager m'a proposé une augmentation conditionnée à un bilan dans 3 mois...",
+    "submitButton": "Enregistrer le résultat",
+    "recordingText": "Enregistrement...",
+    "matchedScenario": "Scénario le plus proche",
+    "noMatch": "Aucun scénario généré ne correspondait vraiment",
+    "whatWentRight": "Ce que la prévision a bien anticipé",
+    "whatWasMissed": "Ce que la prévision n'a pas anticipé",
+    "wrongAssumptions": "Suppositions qui se sont révélées fausses",
+    "alreadyRecorded": "Vous avez déjà enregistré un résultat pour cette prévision.",
+    "betterThanExpected": "Mieux que prévu",
+    "asExpected": "Comme prévu",
+    "worseThanExpected": "Pire que prévu",
+    "reminderLabel": "Me le rappeler",
+    "reminderNone": "Aucun rappel",
+    "reminder24h": "24 heures",
+    "reminder3d": "3 jours",
+    "reminder1w": "1 semaine",
+    "reminderNote": "Enregistré comme préférence — l'envoi de rappels n'est pas encore disponible."
+  },
+  "update": {
+    "button": "Mettre à jour la prévision avec plus d'informations",
+    "label": "Ajouter une nouvelle information",
+    "placeholder": "Ex. : Il a mentionné que c'était lié à des coupes budgétaires pour toute l'équipe...",
+    "submitButton": "Recalculer",
+    "recalculatingText": "Recalcul en cours...",
+    "staleScenarios": "La situation a changé — régénérez les scénarios pour tenir compte des nouvelles informations."
+  },
+  "realityCheck": {
+    "solidFacts": "Faits solides",
+    "assumptionsGaps": "Suppositions et zones d'ombre",
+    "grounded": "Fondé sur des données réelles",
+    "highAssumption": "Forte dépendance aux suppositions",
+    "mixed": "Éléments mitigés"
+  },
+  "decision": {
+    "heading": "Face à une décision ?",
+    "optionsLabel": "Listez vos options séparées par des virgules (facultatif — laissez vide pour que Foresee les déduise)",
+    "optionsPlaceholder": "Ex. : Démissionner, Rester",
+    "submitButton": "Analyser la décision",
+    "analyzingText": "Analyse de la décision...",
+    "recommendation": "Recommandation",
+    "keyVariables": "Variables clés",
+    "bestCase": "Meilleur scénario",
+    "baseCase": "Scénario de base",
+    "worstCase": "Pire scénario",
+    "risk": "Risque",
+    "reversibility": "Réversibilité",
+    "upside": "Avantage",
+    "downside": "Inconvénient"
+  },
+  "errors": {
+    "generic": "Une erreur s'est produite. Veuillez réessayer.",
+    "rateLimited": "Vous avez atteint la limite de prévisions gratuites. Inscrivez-vous pour continuer.",
+    "notAuthenticated": "Veuillez vous connecter pour enregistrer votre profil comportemental."
+  },
+  "onboarding": {
+    "title": "Découvrez votre style de décision",
+    "intro": "Quelques questions rapides — pas de diagnostic, juste des tendances qui aident Foresee à personnaliser vos scénarios.",
+    "progress": "Question {current} sur {total}",
+    "finishButton": "Terminer",
+    "nextButton": "Suivant",
+    "backButton": "Retour",
+    "completeTitle": "C'est prêt",
+    "completeBody": "Votre profil comportemental est enregistré. Vous pouvez le modifier à tout moment.",
+    "questions": {
+      "decision_style": {
+        "prompt": "Face à une décision, vous êtes plutôt...",
+        "options": { "analytical": "Analytique — je pèse le pour et le contre", "intuitive": "Intuitif — je me fie à mon instinct", "mixed": "Un mélange des deux" }
+      },
+      "risk_tolerance": {
+        "prompt": "À quel point êtes-vous à l'aise avec la prise de risques ?",
+        "options": { "low": "Je préfère la sécurité", "moderate": "Un peu de risque, ça va", "high": "Je suis à l'aise avec le risque" }
+      },
+      "conflict_style": {
+        "prompt": "Face à un désaccord, vous avez tendance à...",
+        "options": { "direct": "L'aborder directement", "diplomatic": "Chercher un compromis", "avoidant": "Essayer de l'éviter" }
+      },
+      "communication_style": {
+        "prompt": "Votre style de communication est plutôt...",
+        "options": { "direct": "Direct et concis", "indirect": "Indirect et contextuel", "expressive": "Expressif et détaillé" }
+      },
+      "uncertainty_tolerance": {
+        "prompt": "Comment gérez-vous le fait de ne pas savoir ce qui va se passer ?",
+        "options": { "low": "C'est inconfortable pour moi", "moderate": "Je peux gérer", "high": "Ça ne me dérange pas" }
+      },
+      "planning_style": {
+        "prompt": "Vous préférez...",
+        "options": { "structured": "Tout planifier en détail", "flexible": "Avoir un plan souple", "spontaneous": "Vous laisser porter" }
+      },
+      "decision_speed": {
+        "prompt": "Quand vous devez décider, vous avez tendance à...",
+        "options": { "fast": "Décider rapidement", "deliberate": "Prendre votre temps", "slow": "Avoir besoin de beaucoup de temps" }
+      },
+      "pressure_response": {
+        "prompt": "Sous pression, vous avez tendance à devenir...",
+        "options": { "focused": "Plus concentré", "stressed": "Plus stressé", "variable": "Ça dépend" }
+      },
+      "social_interpretation": {
+        "prompt": "Quand le message de quelqu'un est ambigu, vous avez tendance à l'interpréter comme...",
+        "options": { "neutral": "Neutre jusqu'à en savoir plus", "positive": "Probablement anodin", "cautious": "Un signal à surveiller" }
+      },
+      "negative_interpretation": {
+        "prompt": "Avez-vous tendance à imaginer le pire quand l'information est incomplète ?",
+        "options": { "yes": "Oui, souvent", "no": "Pas vraiment" }
+      },
+      "overthinking": {
+        "prompt": "Avez-vous tendance à ressasser vos décisions ?",
+        "options": { "yes": "Oui, souvent", "no": "Pas vraiment" }
+      },
+      "conflict_avoidance": {
+        "prompt": "Avez-vous tendance à éviter le conflit même quand quelque chose vous dérange ?",
+        "options": { "yes": "Oui, souvent", "no": "Pas vraiment" }
+      },
+      "catastrophizing": {
+        "prompt": "Avez-vous tendance à imaginer d'abord le pire scénario ?",
+        "options": { "yes": "Oui, souvent", "no": "Pas vraiment" }
+      },
+      "risk_sensitivity": {
+        "prompt": "À quel point les inconvénients potentiels pèsent-ils sur vos décisions ?",
+        "options": { "low": "Pas beaucoup", "moderate": "Un peu", "high": "Beaucoup" }
+      },
+      "need_for_certainty": {
+        "prompt": "À quel point est-il important pour vous d'être certain avant d'agir ?",
+        "options": { "low": "Pas très important", "moderate": "Assez important", "high": "Très important" }
+      },
+      "adaptability": {
+        "prompt": "Quand les plans changent de façon inattendue, vous...",
+        "options": { "low": "Avez du mal à vous adapter", "moderate": "Vous adaptez avec un peu d'effort", "high": "Vous adaptez facilement" }
+      }
+    }
+  }
+}

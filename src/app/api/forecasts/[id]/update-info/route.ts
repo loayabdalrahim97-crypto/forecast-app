@@ -48,11 +48,15 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
   const combinedText = `${forecast.situationText}\n\nAdditional information:\n${parsed.data.additionalInfo}`;
 
+  // §18: use the forecast's own locale (the language it was created
+  // in), never a locale sent by the client — the person may have
+  // switched the site's UI language since creating this forecast, but
+  // an update must stay in the language the forecast itself is in.
   let analysisResult;
   try {
     analysisResult = await analyzeSituation(
       combinedText,
-      parsed.data.locale,
+      forecast.locale,
       forecast.userId
         ? deriveFirstName((await prisma.user.findUnique({ where: { id: forecast.userId }, select: { name: true } }))?.name)
         : null
@@ -71,7 +75,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   const followUp = await generateFollowUpQuestions({
     situationText: combinedText,
     unknowns: analysis.unknowns,
-    locale: parsed.data.locale,
+    locale: forecast.locale,
   }).catch(() => ({ data: { questions: [] as string[] }, meta: null }));
 
   const updated = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {

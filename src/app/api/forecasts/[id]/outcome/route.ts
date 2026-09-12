@@ -76,7 +76,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
         })
       ),
       actualOutcome: parsed.data.actualOutcome,
-      locale: parsed.data.locale,
+      locale: forecast.locale,
     });
   } catch (err) {
     console.error("[outcome] comparison failed:", err);

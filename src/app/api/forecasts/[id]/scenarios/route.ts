@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/config";
 import { prisma } from "@/lib/db";
@@ -8,17 +7,12 @@ import { groupVariablesByKind } from "@/lib/forecast/variable-rows";
 import type { ForecastVariableRow } from "@/lib/forecast/variable-rows";
 import { summarizeBehavioralProfile } from "@/lib/forecast/behavioral-summary";
 import { deriveFirstName } from "@/lib/forecast/derive-first-name";
-import { SUPPORTED_LOCALES } from "@/lib/i18n/config";
 import { AIValidationError } from "@/lib/ai/orchestrator";
 import { isWithinRateLimit, FREE_FORECAST_RATE_LIMIT } from "@/lib/rate-limit/free-forecast-limit";
 import { getClientIp } from "@/lib/rate-limit/get-client-ip";
 import { logAIRequest } from "@/lib/ai/log-request";
 
 const RATE_LIMIT_EVENT_NAME = "anonymous_scenarios_generated";
-
-const BodySchema = z.object({
-  locale: z.enum(SUPPORTED_LOCALES).default("en-us"),
-});
 
 /**
  * POST /api/forecasts/:id/scenarios
@@ -29,6 +23,12 @@ const BodySchema = z.object({
  * "likelyUserResponse" reflects their actual tendencies — anonymous
  * Free Forecast users just don't get that personalization (§8, still
  * fully functional without it).
+ *
+ * §3/§16-20: language is ALWAYS forecast.locale (the language it was
+ * created in) — this endpoint no longer accepts a locale from the
+ * request body at all. A forecast created in Arabic generates Arabic
+ * scenarios even if the person has since switched the site's UI to
+ * English; there is no client-controlled way to override that.
  */
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
   const forecast = await prisma.forecast.findUnique({
@@ -38,17 +38,6 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
   if (!forecast) {
     return NextResponse.json({ error: "Forecast not found" }, { status: 404 });
-  }
-
-  let body: unknown = {};
-  try {
-    body = await req.json();
-  } catch {
-    // Empty body is fine — locale defaults to en-us.
-  }
-  const parsed = BodySchema.safeParse(body);
-  if (!parsed.success) {
-    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
   // ForecastVariable.kind is a plain String column in the database
@@ -94,7 +83,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       situationText: forecast.situationText,
       ...grouped,
       behavioralProfileSummary,
-      locale: parsed.data.locale,
+      locale: forecast.locale,
       firstName,
       decisionPaths: (forecast.decisionPaths as string[] | null) ?? null,
     });

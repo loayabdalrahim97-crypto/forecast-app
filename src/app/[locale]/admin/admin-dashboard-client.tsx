@@ -13,6 +13,7 @@ interface Stats {
   outcomeRecordingRate: number;
   recentSignups: { email: string; createdAt: string }[];
   forecastsByDay: { date: string; count: number }[];
+  forecastsByLanguage: { locale: string; count: number; percentage: number }[];
 }
 
 interface CostStats {
@@ -122,6 +123,31 @@ export function AdminDashboardClient({ locale }: { locale: string }) {
                   {m.model}: {m.requests} {locale === "ar" ? "طلب" : "requests"} — ${Number(m.costUsd).toFixed(4)}
                 </p>
               ))}
+            </section>
+
+            <section style={{ marginBottom: "1.5rem" }}>
+              <h2 style={{ fontSize: "1rem", margin: "0 0 0.75rem" }}>
+                {locale === "ar" ? "التوقعات حسب اللغة" : "Forecasts by Language"}
+              </h2>
+              {stats.forecastsByLanguage.length === 0 ? (
+                <p style={{ fontSize: "0.85rem", color: "var(--fc-text-muted)" }}>
+                  {locale === "ar" ? "لا توجد بيانات كافية." : "Not enough data."}
+                </p>
+              ) : (
+                stats.forecastsByLanguage.map((row) => (
+                  <div key={row.locale} style={{ marginBottom: "0.5rem" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.85rem", marginBottom: "0.2rem" }}>
+                      <span>{row.locale}</span>
+                      <span style={{ color: "var(--fc-text-muted)" }}>
+                        {row.count} ({row.percentage}%)
+                      </span>
+                    </div>
+                    <div style={{ height: 5, background: "var(--fc-bg-elevated)", borderRadius: 3, overflow: "hidden" }}>
+                      <div style={{ height: "100%", width: `${row.percentage}%`, background: "var(--fc-accent)" }} />
+                    </div>
+                  </div>
+                ))
+              )}
             </section>
 
             <section style={{ marginBottom: "1.5rem" }}>

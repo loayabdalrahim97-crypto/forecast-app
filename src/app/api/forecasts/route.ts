@@ -94,6 +94,7 @@ export async function POST(req: NextRequest) {
     data: {
       userId,
       situationText: parsed.data.situationText,
+      locale: parsed.data.locale,
       mode: "general",
       decisionPaths: analysis.decisionPaths ?? [],
       variables: {

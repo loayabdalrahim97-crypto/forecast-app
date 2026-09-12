@@ -1,14 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { analyzeBusiness } from "@/lib/forecast/analyze-business";
-import { SUPPORTED_LOCALES } from "@/lib/i18n/config";
 import { AIValidationError } from "@/lib/ai/orchestrator";
 import { logAIRequest } from "@/lib/ai/log-request";
-
-const BodySchema = z.object({
-  locale: z.enum(SUPPORTED_LOCALES).default("en-us"),
-});
 
 /**
  * POST /api/forecasts/:id/business
@@ -18,27 +12,18 @@ const BodySchema = z.object({
  * than reusing the general Situation Analyzer's — §16 explicitly
  * requires distinguishing "estimates" (AI-provided, basis stated) as a
  * THIRD category, which the general analyzer doesn't have.
+ *
+ * §3/§16-20: uses forecast.locale, never a client-supplied locale.
  */
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(_req: NextRequest, { params }: { params: { id: string } }) {
   const forecast = await prisma.forecast.findUnique({ where: { id: params.id } });
   if (!forecast) {
     return NextResponse.json({ error: "Forecast not found" }, { status: 404 });
   }
 
-  let body: unknown = {};
-  try {
-    body = await req.json();
-  } catch {
-    // Empty body is fine.
-  }
-  const parsed = BodySchema.safeParse(body);
-  if (!parsed.success) {
-    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
-  }
-
   let result;
   try {
-    result = await analyzeBusiness(forecast.situationText, parsed.data.locale);
+    result = await analyzeBusiness(forecast.situationText, forecast.locale);
   } catch (err) {
     console.error("[business] analysis failed:", err);
     if (err instanceof AIValidationError) {

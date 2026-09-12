@@ -104,6 +104,11 @@ model Forecast {
   user             User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   situationText    String
+  // §3/§16-20: the language the forecast was CREATED in — every
+  // subsequent action on this forecast (scenario generation, updates,
+  // outcome comparison, PDF) must use this, never whatever the UI's
+  // current locale happens to be at the time of that later action.
+  locale           String   @default("en-us")
   mode             String   @default("general") // "general" | "decision" | "business"
   // Decision History (§4) — optional category the person can tag a
   // decision with; no title column added since one can be derived

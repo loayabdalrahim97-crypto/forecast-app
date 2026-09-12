@@ -2,31 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { BEHAVIORAL_PROFILE_QUESTIONS } from "@/lib/behavioral-profile/questions";
-import enUs from "../../../../messages/en-us.json";
-import ar from "../../../../messages/ar.json";
-
-// Minimal message lookup for Phase 2 — a real i18n library (next-intl)
-// wires this up properly in a later pass; this keeps onboarding
-// functional without blocking on that integration (§4 still respected:
-// no hard-coded strings, everything comes from messages/*.json).
-const MESSAGES: Record<string, typeof enUs> = { "en-us": enUs, ar };
-
-function t(locale: string, path: string, vars?: Record<string, string | number>): string {
-  const dict = MESSAGES[locale] ?? enUs;
-  const value = path.split(".").reduce<unknown>((acc, key) => {
-    if (acc && typeof acc === "object" && key in acc) {
-      return (acc as Record<string, unknown>)[key];
-    }
-    return undefined;
-  }, dict);
-  let str = typeof value === "string" ? value : path;
-  if (vars) {
-    for (const [k, v] of Object.entries(vars)) {
-      str = str.replace(`{${k}}`, String(v));
-    }
-  }
-  return str;
-}
+import { t } from "@/lib/i18n/messages";
 
 type Answers = Record<string, string>;
 

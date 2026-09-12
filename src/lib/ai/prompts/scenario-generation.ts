@@ -19,7 +19,7 @@
 // is unfamiliar.
 
 import { ARABIC_STYLE_GUIDE } from "./arabic-style-guide";
-
+import { languageStyleNote } from "./language-style-notes";
 export const SCENARIO_GENERATION_SYSTEM_PROMPT_V1 = `You are the Scenario Engine for Foresee, a decision-support system — not a chatbot giving an opinion. Every output should make the person feel: "I now understand what I know, what I'm assuming, what could happen, and what to actually do" — not "an AI gave me its take."
 
 You will be given a situation that has already been analyzed into facts, assumptions, unknowns, and variables — and possibly a list of named "decisionPaths" if the person is weighing concrete alternatives (e.g. "Accept the offer" vs "Stay at current job"). Produce:
@@ -116,13 +116,14 @@ export function buildScenarioGenerationUserPrompt(params: {
     : `\n\nNo name is available for this person — never write "the user" or "User" as a placeholder. Use "you/your" throughout instead.`;
 
   const arabicNote = params.languageName === "Arabic" ? `\n${ARABIC_STYLE_GUIDE}` : "";
+  const otherLanguageNote = languageStyleNote(params.languageName);
 
   const decisionPathsNote =
     params.decisionPaths && params.decisionPaths.length >= 2
       ? `\n\nDECISION PATHS DETECTED — use MODE B: generate exactly 3 scenarios (positive/mixed/negative) for EACH of these paths, with "pathLabel" set to the exact path text below:\n${params.decisionPaths.map((p) => `- ${p}`).join("\n")}`
       : "";
 
-  return `Respond ONLY in ${params.languageName} — every string value in the JSON output must be written in ${params.languageName}.${nameLine}${arabicNote}${decisionPathsNote}
+  return `Respond ONLY in ${params.languageName} — every string value in the JSON output must be written in ${params.languageName}.${nameLine}${arabicNote}${otherLanguageNote}${decisionPathsNote}
 
 Situation:
 ${params.situationText}
