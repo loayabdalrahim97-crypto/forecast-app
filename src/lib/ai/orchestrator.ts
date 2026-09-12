@@ -44,6 +44,18 @@ export interface OrchestratedResult<T> {
  * purpose so it can be unit tested and reused outside Next.js.
  */
 export class AIOrchestrator {
+  /**
+   * Retries the ENTIRE call (transport + schema validation) as one
+   * unit, not just the transport request. Previously, a transport
+   * error (network/5xx) was retried but a schema-validation failure
+   * (malformed or truncated JSON from the model — which happens
+   * occasionally with any LLM, independent of network conditions) was
+   * not: it threw immediately on the first bad response, surfacing a
+   * generic error to the user, who then had to manually resubmit two
+   * or three times until the model happened to return valid JSON.
+   * Folding validation into the same retry loop makes that recovery
+   * automatic instead of requiring the user to notice and retry by hand.
+   */
   static async run<T>(req: OrchestratedRequest): Promise<OrchestratedResult<T>> {
     const provider = AIProviderFactory.get(req.providerId ?? "anthropic");
     const tier = ModelRouter.tierFor(req.requestType);
@@ -55,36 +67,39 @@ export class AIOrchestrator {
       cacheableSystemPrompt: true,
     };
 
-    const result = await this.callWithRetry(provider, params, tier);
-    const parsed = this.parseAndValidate<T>(result.rawText, req.schema);
+    const maxAttempts = 3;
+    let lastError: unknown;
 
-    return {
-      data: parsed,
-      meta: {
-        provider: result.provider,
-        model: result.model,
-        requestType: req.requestType,
-        inputTokens: result.inputTokens,
-        outputTokens: result.outputTokens,
-        cachedTokens: result.cachedTokens,
-        cacheCreationTokens: result.cacheCreationTokens,
-        latencyMs: result.latencyMs,
-      },
-    };
-  }
-
-  private static async callWithRetry(
-    provider: ReturnType<typeof AIProviderFactory.get>,
-    params: AICallParams,
-    tier: "cheap" | "standard" | "premium",
-    attempt = 1
-  ): Promise<AICallResult> {
-    try {
-      return await provider.complete(params, tier);
-    } catch (err) {
-      if (attempt >= 2) throw err;
-      return this.callWithRetry(provider, params, tier, attempt + 1);
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        const result = await provider.complete(params, tier);
+        const parsed = this.parseAndValidate<T>(result.rawText, req.schema);
+        return {
+          data: parsed,
+          meta: {
+            provider: result.provider,
+            model: result.model,
+            requestType: req.requestType,
+            inputTokens: result.inputTokens,
+            outputTokens: result.outputTokens,
+            cachedTokens: result.cachedTokens,
+            cacheCreationTokens: result.cacheCreationTokens,
+            latencyMs: result.latencyMs,
+          },
+        };
+      } catch (err) {
+        lastError = err;
+        // Nothing to gain from retrying a request body the model will
+        // never be able to satisfy differently on retry vs. one where
+        // the failure is plausibly transient/random (network hiccup,
+        // occasional truncation, occasional malformed JSON) — but we
+        // can't distinguish those cheaply here, so retry uniformly and
+        // let the final attempt's error surface if it never recovers.
+        if (attempt === maxAttempts) break;
+      }
     }
+
+    throw lastError;
   }
 
   private static parseAndValidate<T>(rawText: string, schema: z.ZodTypeAny): T {
