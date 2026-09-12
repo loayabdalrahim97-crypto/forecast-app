@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { Prisma } from "@prisma/client";
-import { objectEnumValues } from "@prisma/client/runtime/library";
+import type { Prisma } from "@prisma/client";
 import { UpdateForecastSchema } from "@/lib/forecast/update-schema";
 import { analyzeSituation, generateFollowUpQuestions } from "@/lib/forecast/analyze-situation";
 import { analysisToVariableRows } from "@/lib/forecast/variable-rows";
@@ -83,7 +82,14 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       where: { id: forecast.id },
       data: {
         situationText: combinedText,
-        decisionPaths: analysisResult.data.decisionPaths ?? objectEnumValues.instances.JsonNull,
+        // Empty array (not null) when no paths are detected — Prisma's
+        // typed update() requires a special JsonNull sentinel to
+        // explicitly clear a Json column to null, and this generated
+        // client build doesn't expose one publicly. An empty array
+        // means exactly the same thing for every consumer of this
+        // field (all of them check `.length >= 2`), so this sidesteps
+        // the issue entirely rather than fighting the type system.
+        decisionPaths: analysisResult.data.decisionPaths ?? [],
       },
     });
     // Stale — the person must regenerate deliberately.
