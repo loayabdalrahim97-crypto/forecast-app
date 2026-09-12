@@ -15,20 +15,20 @@
   },
   "forecast": {
     "situationLabel": "صف موقفك",
-    "situationPlaceholder": "مثال: مديري طلب مني اجتماع بكرة بدون ما يوضح السبب...",
+    "situationPlaceholder": "مثال: طلب مني مديري اجتماعًا غدًا دون أن يوضح السبب...",
     "submitButton": "حلل الموقف",
     "analyzingText": "جاري التحليل...",
     "factsHeading": "الحقائق",
     "assumptionsHeading": "الافتراضات",
-    "unknownsHeading": "المجاهيل",
-    "followUpHeading": "كم شي بيساعد لو عرفناهم",
+    "unknownsHeading": "المعلومات المجهولة",
+    "followUpHeading": "أسئلة إضافية قد تساعد",
     "scenariosHeading": "السيناريوهات المحتملة",
     "generateScenariosButton": "ولّد السيناريوهات",
     "generatingScenariosText": "جاري توليد السيناريوهات...",
     "likelihood": "الاحتمالية",
     "confidence": "درجة الثقة",
     "impact": "الأثر",
-    "recommendedResponse": "الاستجابة الموصى بها",
+    "recommendedResponse": "الاستجابة المقترحة",
     "contingencyPlan": "خطة الطوارئ"
   },
   "outcome": {
@@ -38,7 +38,7 @@
     "submitButton": "سجّل النتيجة",
     "recordingText": "جارٍ التسجيل...",
     "matchedScenario": "أقرب سيناريو مطابق",
-    "noMatch": "لم يطابق أي سيناريو من السيناريوهات المطروحة",
+    "noMatch": "لم تُطابق النتيجة أيًا من السيناريوهات المطروحة",
     "whatWentRight": "ما الذي كان التوقع محقاً فيه",
     "whatWasMissed": "ما الذي فات التوقع",
     "wrongAssumptions": "افتراضات تبيّن أنها غير صحيحة",
@@ -56,10 +56,10 @@
   "update": {
     "button": "حدّث التوقع بمعلومات إضافية",
     "label": "أضف معلومة جديدة",
-    "placeholder": "مثال: ذكر لي أن السبب هو تخفيضات في ميزانية الفريق بأكمله...",
+    "placeholder": "مثال: أخبرني أن السبب خفضٌ في ميزانية الفريق بأكمله...",
     "submitButton": "أعد الحساب",
     "recalculatingText": "جاري إعادة الحساب...",
-    "staleScenarios": "الموقف تغيّر — ولّد السيناريوهات من جديد عشان تعكس المعلومة الجديدة."
+    "staleScenarios": "الموقف تغيّر — ولّد السيناريوهات من جديد حتى تعكس المعلومة الجديدة."
   },
   "realityCheck": {
     "solidFacts": "حقائق راسخة",
@@ -69,13 +69,13 @@
     "mixed": "أدلة متوازنة"
   },
   "decision": {
-    "heading": "بتواجه قرار؟",
-    "optionsLabel": "اكتب خياراتك مفصولة بفاصلة (اختياري — اتركه فاضي وخلي Foresee يستنتجهم)",
+    "heading": "هل تواجه قرارًا؟",
+    "optionsLabel": "اكتب خياراتك مفصولة بفاصلة (اختياري — اتركه فارغًا ودع Foresee يستنتجها)",
     "optionsPlaceholder": "مثال: استقالة، بقاء",
     "submitButton": "حلل القرار",
     "analyzingText": "جاري تحليل القرار...",
     "recommendation": "التوصية",
-    "keyVariables": "المتغيرات الأساسية",
+    "keyVariables": "المتغيرات الرئيسية",
     "bestCase": "أفضل احتمال",
     "baseCase": "الاحتمال الأرجح",
     "worstCase": "أسوأ احتمال",
@@ -91,7 +91,7 @@
   },
   "onboarding": {
     "title": "تعرّف على أسلوبك في اتخاذ القرار",
-    "intro": "بضعة أسئلة سريعة — بدون تشخيص، فقط أنماط تساعد Foresee يخصص سيناريوهاتك.",
+    "intro": "بضعة أسئلة سريعة — بدون تشخيص، فقط أنماط تساعد Foresee على تخصيص سيناريوهاتك.",
     "progress": "سؤال {current} من {total}",
     "finishButton": "إنهاء",
     "nextButton": "التالي",

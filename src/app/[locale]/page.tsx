@@ -30,18 +30,18 @@ export default function LocaleHome({ params: { locale } }: { params: { locale: s
     ? [
         {
           number: "١",
-          title: "اوصف موقفك",
-          body: "اكتب اللي عم يصير بكم جملة بلغتك الطبيعية — بدون أي صيغة خاصة.",
+          title: "صف موقفك",
+          body: "اكتب ما يحدث في بضع جمل بأسلوبك الطبيعي — دون أي صيغة خاصة.",
         },
         {
           number: "٢",
           title: "فصل الحقائق عن الافتراضات",
-          body: "Foresee يفصل تلقائياً بين اللي متأكد منه واللي مجرد تخمين أو خوف.",
+          body: "يفصل Foresee تلقائيًا بين ما تعرفه فعلاً وما هو مجرد تخمين أو مخاوف.",
         },
         {
           number: "٣",
-          title: "شوف 3 سيناريوهات واقعية + إجراءات مقترحة",
-          body: "أفضل حالة، الحالة الأرجح، وأسوأ حالة — كل وحدة مع خطوة عملية توصى فيها.",
+          title: "احصل على 3 سيناريوهات واقعية وإجراءات مقترحة",
+          body: "أفضل سيناريو، والسيناريو الأرجح، وأسوأ سيناريو — لكل واحد منها خطوة عملية موصى بها.",
         },
       ]
     : [
@@ -65,22 +65,22 @@ export default function LocaleHome({ params: { locale } }: { params: { locale: s
   const exampleScenarios = isRtlLocale
     ? [
         {
-          label: "أفضل حالة",
+          label: "أفضل سيناريو",
           color: "var(--fc-positive)",
           title: "موافقة فورية بدون شروط",
-          body: "المدير يوافق على الزيادة مباشرة بنفس الاجتماع.",
+          body: "يوافق المدير على الزيادة مباشرة في نفس الاجتماع.",
         },
         {
-          label: "الحالة الأرجح",
+          label: "السيناريو الأرجح",
           color: "var(--fc-band-moderate)",
           title: "موافقة مبدئية مربوطة بمراجعة",
-          body: "يوافق من حيث المبدأ، بس بربطها بمراجعة أداء بعد 3 شهور.",
+          body: "يوافق من حيث المبدأ، لكنه يربطها بمراجعة أداء بعد ثلاثة أشهر.",
         },
         {
-          label: "أسوأ حالة",
+          label: "أسوأ سيناريو",
           color: "var(--fc-band-high)",
           title: "تأجيل بسبب الميزانية",
-          body: "يرفض حالياً بحجة تجميد الميزانية، مع ترك الباب مفتوح للربع الجاي.",
+          body: "يرفض حالياً بحجة تجميد الميزانية، مع ترك الباب مفتوحاً للربع القادم.",
         },
       ]
     : [
@@ -185,7 +185,7 @@ export default function LocaleHome({ params: { locale } }: { params: { locale: s
           }}
         >
           {isRtlLocale
-            ? "معظم الناس يركّزون على نتيجة وحدة يخافون منها. Foresee يعرض لك كامل مجال الاحتمالات الواقعية ويساعدك تستعد لكل وحدة منها."
+            ? "معظم الناس يركّزون على نتيجة واحدة يخافون منها، بينما يعرض لك Foresee المدى الكامل للاحتمالات الواقعية ويساعدك على الاستعداد لكل واحدة منها."
             : "Most people fixate on one feared outcome. Foresee shows you the full range of realistic possibilities and helps you prepare for each."}
         </p>
       </section>
@@ -195,7 +195,7 @@ export default function LocaleHome({ params: { locale } }: { params: { locale: s
           without any interaction. */}
       <section style={{ marginTop: "3.5rem" }}>
         <p style={{ fontSize: "0.8rem", color: "var(--fc-text-muted)", textAlign: "center", marginBottom: "1.25rem" }}>
-          {isRtlLocale ? "شوف فورسي وهو شغال" : "See Foresee in action"}
+          {isRtlLocale ? "شاهد Foresee في العمل" : "See Foresee in action"}
         </p>
         <div className="fc-grid-3">
           {exampleScenarios.map((s) => (

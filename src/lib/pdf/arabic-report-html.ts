@@ -59,7 +59,7 @@ export function buildArabicReportHtml(data: ForecastReportData): string {
     [S.uncontrollableVariables, data.uncontrollableVariables],
   ];
 
-  const factsAssumptionsLine = `تحديد ${data.facts.length} حقيقة، و${data.assumptions.length} افتراضاً، و${data.unknowns.length} معلومة مجهولة. ${escapeHtml(data.realityCheckLabel)}.`;
+  const factsAssumptionsLine = `${S.knownFacts}: ${data.facts.length} · ${S.assumptions}: ${data.assumptions.length} · ${S.unknowns}: ${data.unknowns.length}`;
   const topScenario = sortedScenarios.find((s) => s.outcomeType === "most_likely") ?? sortedScenarios[0];
 
   return `

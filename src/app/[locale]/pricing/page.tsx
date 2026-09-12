@@ -80,7 +80,7 @@ export default function PricingPage({ params }: { params: { locale: string } }) 
           </p>
           <p style={{ color: "var(--fc-text-muted)", fontSize: "0.8rem", marginBottom: "1.25rem", lineHeight: 1.6 }}>
             {isAr
-              ? "احفظ توقعاتك وارجعلها لاحقاً · تتبّع النتائج الفعلية · رؤى مخصصة تتحسن مع الوقت"
+              ? "احفظ توقعاتك وراجعها لاحقاً · تتبّع النتائج الفعلية · رؤى مخصصة تتحسن مع الوقت"
               : "Save & revisit past forecasts · Track real outcomes · Personalized insights over time"}
           </p>
           {authStatus === "authenticated" ? (
@@ -120,7 +120,7 @@ export default function PricingPage({ params }: { params: { locale: string } }) 
           </p>
           <p style={{ color: "var(--fc-text-muted)", fontSize: "0.8rem", marginBottom: "1.25rem", lineHeight: 1.6 }}>
             {isAr
-              ? "احفظ توقعاتك وارجعلها لاحقاً · تتبّع النتائج الفعلية · رؤى مخصصة تتحسن مع الوقت"
+              ? "احفظ توقعاتك وراجعها لاحقاً · تتبّع النتائج الفعلية · رؤى مخصصة تتحسن مع الوقت"
               : "Save & revisit past forecasts · Track real outcomes · Personalized insights over time"}
           </p>
           {authStatus === "authenticated" ? (

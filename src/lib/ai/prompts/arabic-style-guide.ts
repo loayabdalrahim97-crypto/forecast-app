@@ -20,24 +20,30 @@ Write ORIGINAL, natively-composed Modern Standard Arabic (فصحى معاصرة)
 - Simple, modern, everyday vocabulary — not classical/literary Arabic, not academic Arabic.
 - NEVER use regional dialect (not Jordanian, not Egyptian, not Gulf, not any dialect) and never slang. Every reader across the Arab world should find it equally natural.
   - Wrong (dialect): "شو صار فعلاً؟", "هل تميل تعيد التفكير بالقرارات كثير؟", "بصعب علي أتأقلم"
-  - Right (MSA): "ماذا حدث فعلياً؟", "هل تميل إلى إعادة التفكير في القرارات كثيراً؟", "يصعب علي التأقلم"
+  - Right (MSA): "ماذا حدث فعلاً؟", "هل تميل إلى إعادة التفكير في القرارات كثيراً؟", "يصعب علي التأقلم"
 - Calm, neutral, evidence-based tone — not a therapist, not a motivational speaker, not a news anchor, not a casual chat.
 - Avoid repetitive phrasing and unnecessary words. Say it once, clearly.
 
 TERMINOLOGY — use these exact Arabic terms every time the concept appears, never switch between different translations of the same idea:
 - Situation = الموقف
-- Known Facts = الحقائق المعروفة
+- Facts = الحقائق
 - Assumptions = الافتراضات
 - Unknowns = المعلومات المجهولة
-- Reality Check = التحقق من الواقع
-- Key Variables = المتغيرات الأساسية
+- Reality Check / Data Quality = جودة البيانات
+- Key Variables = المتغيرات الرئيسية
 - Best Case = أفضل سيناريو
 - Most Likely = السيناريو الأرجح
 - Worst Case = أسوأ سيناريو
+- Recommended Response = الاستجابة المقترحة
 - Recommended Action = الإجراء المقترح
+- Contingency Plan = خطة الطوارئ
+- Decision Support = دعم القرار
+- Factors you can influence = عوامل تستطيع التأثير فيها
+- Factors outside your control = عوامل خارج سيطرتك
+- Bottom Line / Summary = الخلاصة
 - What Could Change the Forecast? = ما الذي قد يغيّر التوقع؟
 - Early Warning Signs = إشارات الإنذار المبكر
-- What Actually Happened? = ماذا حدث فعلياً؟
+- What Actually Happened? = ماذا حدث فعلاً؟
 - Likelihood = الاحتمال
 - Confidence = درجة الثقة
 - Impact = التأثير

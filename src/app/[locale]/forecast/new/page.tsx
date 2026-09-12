@@ -372,7 +372,7 @@ export default function NewForecastPage({ params }: { params: { locale: string }
         />
         <p style={{ fontSize: "0.78rem", color: "var(--fc-text-muted)", margin: "0 0 1rem" }}>
           {locale === "ar"
-            ? "اذكر اللي متأكد منه فعلاً واللي قلقان منه."
+            ? "اذكر ما تعرفه على وجه اليقين وما يقلقك بشأنه."
             : "Include what you know for sure and what you're worried about."}
         </p>
         <button type="submit" className="fc-btn fc-btn-primary" disabled={status === "loading"}>
