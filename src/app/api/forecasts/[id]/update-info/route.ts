@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import type { Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+import { objectEnumValues } from "@prisma/client/runtime/library";
 import { UpdateForecastSchema } from "@/lib/forecast/update-schema";
 import { analyzeSituation, generateFollowUpQuestions } from "@/lib/forecast/analyze-situation";
 import { analysisToVariableRows } from "@/lib/forecast/variable-rows";
@@ -80,7 +81,10 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     });
     await tx.forecast.update({
       where: { id: forecast.id },
-      data: { situationText: combinedText, decisionPaths: analysisResult.data.decisionPaths },
+      data: {
+        situationText: combinedText,
+        decisionPaths: analysisResult.data.decisionPaths ?? objectEnumValues.instances.JsonNull,
+      },
     });
     // Stale — the person must regenerate deliberately.
     await tx.scenario.deleteMany({ where: { forecastId: forecast.id } });
