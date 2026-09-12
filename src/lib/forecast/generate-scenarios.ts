@@ -19,6 +19,8 @@ export async function generateScenarios(params: {
   behavioralProfileSummary: string[];
   locale: string;
   firstName?: string | null;
+  /** Named alternatives from Situation Analysis, if any (Decision Paths mode). */
+  decisionPaths?: string[] | null;
 }) {
   const languageName = languageNameForLocale(params.locale);
   return AIOrchestrator.run<ScenarioGenerationOutput>({
@@ -33,7 +35,9 @@ export async function generateScenarios(params: {
     // then 4096->4608 wasn't enough for a longer/Arabic situation).
     // Setting a generous ceiling once instead of nudging it up again —
     // the model stops naturally once it's done; this just removes the
-    // artificial cutoff as the failure point.
-    maxOutputTokens: 8192,
+    // artificial cutoff as the failure point. Raised again for Decision
+    // Paths mode, which can produce up to 12 scenarios (4 paths x 3)
+    // instead of 3.
+    maxOutputTokens: 12288,
   });
 }

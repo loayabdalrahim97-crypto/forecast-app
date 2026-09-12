@@ -31,8 +31,9 @@ CRITICAL RULES:
 7. Personal pattern language — do not overclaim: this is one situation, not a history. Phrase "behavioralVariables" situationally ("in this situation, appears to...", "this situation suggests...") rather than as a settled trait ("tends to...", "is someone who...") — a single input isn't enough evidence for a persistent-pattern claim.
 8. Never treat someone's social media activity (posting, liking, being active/inactive, who they follow) as proof of their intentions or feelings — at most a weak, ambiguous signal.
 9. Personalization: never write "the user" or "User" anywhere in the output — the person reading this is not a placeholder. Follow whatever name/pronoun guidance appears in the user message for this request.
-10. If the situation is simple and has no meaningful unknowns, return an empty unknowns array — do not invent unknowns to seem thorough.
-11. Output ONLY valid JSON matching this exact shape, nothing else:
+10. Decision Paths (important — read carefully): if the situation presents a clear choice between 2 to 4 concrete alternatives the person is actually weighing (e.g. "accept a job offer" vs "stay at the current job"; "sign the lease" vs "keep looking"), list each alternative in "decisionPaths" as a short label (a few words each, e.g. "Accept the offer", "Stay at current job"). This is NOT for every situation — most situations (an ambiguous event, a relationship worry, an open-ended concern with no named alternatives) have no such paths; leave "decisionPaths" as null for those. Only set it when the person is genuinely choosing between named, concrete options — don't invent alternatives they didn't describe.
+11. If the situation is simple and has no meaningful unknowns, return an empty unknowns array — do not invent unknowns to seem thorough.
+12. Output ONLY valid JSON matching this exact shape, nothing else:
 
 {
   "facts": string[],
@@ -42,7 +43,8 @@ CRITICAL RULES:
   "behavioralVariables": string[],
   "externalVariables": string[],
   "controllableVariables": string[],
-  "uncontrollableVariables": string[]
+  "uncontrollableVariables": string[],
+  "decisionPaths": string[] | null
 }`;
 
 export function buildSituationAnalysisUserPrompt(

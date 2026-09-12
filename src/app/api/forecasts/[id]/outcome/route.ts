@@ -56,17 +56,23 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   const assumptions = forecast.variables
     .filter((v: { kind: string; content: string }) => v.kind === "assumption")
     .map((v: { kind: string; content: string }) => v.content);
+  const unknowns = forecast.variables
+    .filter((v: { kind: string; content: string }) => v.kind === "unknown")
+    .map((v: { kind: string; content: string }) => v.content);
 
   let comparison;
   try {
     comparison = await compareOutcomeToForecast({
       situationText: forecast.situationText,
       assumptions,
+      unknowns,
+      decisionPaths: (forecast.decisionPaths as string[] | null) ?? null,
       scenarios: forecast.scenarios.map(
-        (s: { title: string; description: string; likelihood: string }) => ({
+        (s: { title: string; description: string; likelihood: string; pathLabel: string | null }) => ({
           title: s.title,
           description: s.description,
           likelihood: s.likelihood,
+          pathLabel: s.pathLabel,
         })
       ),
       actualOutcome: parsed.data.actualOutcome,
@@ -91,6 +97,8 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       whatWentRight: comparison.data.whatWentRight,
       whatWasMissed: comparison.data.whatWasMissed,
       wrongAssumptions: comparison.data.wrongAssumptions,
+      coverageGap: comparison.data.coverageGap,
+      unknownsResolved: comparison.data.unknownsResolved,
     },
   });
 
@@ -100,6 +108,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     {
       outcomeRecord,
       matchedScenarioTitle: comparison.data.matchedScenarioTitle,
+      coverageGap: comparison.data.coverageGap,
     },
     { status: 201 }
   );

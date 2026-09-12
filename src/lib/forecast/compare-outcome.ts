@@ -12,7 +12,9 @@ export type OutcomeComparison = z.infer<typeof OutcomeComparisonSchema>;
 export async function compareOutcomeToForecast(params: {
   situationText: string;
   assumptions: string[];
-  scenarios: Array<{ title: string; description: string; likelihood: string }>;
+  unknowns: string[];
+  decisionPaths?: string[] | null;
+  scenarios: Array<{ title: string; description: string; likelihood: string; pathLabel?: string | null }>;
   actualOutcome: string;
   locale: string;
 }) {

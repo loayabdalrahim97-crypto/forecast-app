@@ -96,6 +96,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       behavioralProfileSummary,
       locale: parsed.data.locale,
       firstName,
+      decisionPaths: (forecast.decisionPaths as string[] | null) ?? null,
     });
   } catch (err) {
     console.error("[scenarios] generation failed:", err);
@@ -115,6 +116,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       data: result.data.scenarios.map((s) => ({
         forecastId: forecast.id,
         outcomeType: s.outcomeType,
+        pathLabel: s.pathLabel,
         title: s.title,
         description: s.description,
         likelihood: s.likelihood,

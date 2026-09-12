@@ -39,4 +39,22 @@ describe("buildScenarioGenerationUserPrompt", () => {
     const englishPrompt = buildScenarioGenerationUserPrompt(baseParams);
     expect(englishPrompt).not.toContain("NEVER use regional dialect");
   });
+
+  it("injects the Decision Paths instruction with exact path labels when 2+ paths are given", () => {
+    const prompt = buildScenarioGenerationUserPrompt({
+      ...baseParams,
+      decisionPaths: ["Accept the offer", "Stay at current job"],
+    });
+    expect(prompt).toContain("DECISION PATHS DETECTED");
+    expect(prompt).toContain("- Accept the offer");
+    expect(prompt).toContain("- Stay at current job");
+  });
+
+  it("does not inject the Decision Paths instruction when null or omitted", () => {
+    const promptNull = buildScenarioGenerationUserPrompt({ ...baseParams, decisionPaths: null });
+    expect(promptNull).not.toContain("DECISION PATHS DETECTED");
+
+    const promptOmitted = buildScenarioGenerationUserPrompt(baseParams);
+    expect(promptOmitted).not.toContain("DECISION PATHS DETECTED");
+  });
 });

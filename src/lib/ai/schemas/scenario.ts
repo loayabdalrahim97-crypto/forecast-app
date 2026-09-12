@@ -6,10 +6,25 @@ const LikelihoodBand = z.enum(["low", "moderate", "high"]);
 const ConfidenceBand = z.enum(["low", "moderate", "high"]);
 const ImpactBand = z.enum(["low", "moderate", "high"]);
 
-export const ScenarioOutcomeType = z.enum(["best_case", "most_likely", "worst_case"]);
+export const ScenarioOutcomeType = z.enum([
+  "best_case",
+  "most_likely",
+  "worst_case",
+  // Decision Paths mode only (§ Decision Options fix): one scenario
+  // set per named alternative, each tagged positive/mixed/negative
+  // rather than best/likely/worst — "most likely" doesn't make sense
+  // per-path (that framing belongs to the overall situation, not to
+  // one specific choice among several).
+  "positive",
+  "mixed",
+  "negative",
+]);
 
 export const ScenarioSchema = z.object({
   outcomeType: ScenarioOutcomeType,
+  // Which named decision path this scenario belongs to (e.g. "Accept
+  // the offer"). null in the ordinary single-track mode.
+  pathLabel: z.string().min(1).max(80).nullable().default(null),
   title: z.string().min(1).max(120),
   description: z.string().min(1).max(1000),
   likelihood: LikelihoodBand,
@@ -47,17 +62,53 @@ export const RecommendedActionSchema = z.object({
     .default([]),
 });
 
+// Two valid shapes for "scenarios":
+// 1. Ordinary (no decision paths): exactly 3 items, one each of
+//    best_case/most_likely/worst_case, pathLabel null on all three.
+// 2. Decision Paths mode: 2-4 distinct pathLabels, each with EXACTLY
+//    3 scenarios (one positive, one mixed, one negative) — never a
+//    mix of the two outcomeType vocabularies, and never a path with
+//    only 1-2 scenarios (that would silently under-cover a path,
+//    exactly the coverage gap this feature exists to prevent).
+function validateScenarioSet(scenarios: z.infer<typeof ScenarioSchema>[]): boolean {
+  const withPath = scenarios.filter((s) => s.pathLabel !== null);
+  const withoutPath = scenarios.filter((s) => s.pathLabel === null);
+
+  if (withPath.length === 0) {
+    if (scenarios.length !== 3) return false;
+    const types = scenarios.map((s) => s.outcomeType).sort();
+    return JSON.stringify(types) === JSON.stringify(["best_case", "most_likely", "worst_case"]);
+  }
+
+  // Decision Paths mode: every scenario must have a pathLabel (no
+  // mixing standard + path-grouped in the same set).
+  if (withoutPath.length > 0) return false;
+
+  const byPath = new Map<string, z.infer<typeof ScenarioSchema>[]>();
+  for (const s of withPath) {
+    const list = byPath.get(s.pathLabel as string) ?? [];
+    list.push(s);
+    byPath.set(s.pathLabel as string, list);
+  }
+  if (byPath.size < 2 || byPath.size > 4) return false;
+
+  for (const group of byPath.values()) {
+    if (group.length !== 3) return false;
+    const types = group.map((s) => s.outcomeType).sort();
+    if (JSON.stringify(types) !== JSON.stringify(["mixed", "negative", "positive"])) return false;
+  }
+  return true;
+}
+
 export const ScenarioGenerationOutputSchema = z.object({
   scenarios: z
     .array(ScenarioSchema)
-    .length(3)
-    .refine(
-      (scenarios) => {
-        const types = scenarios.map((s) => s.outcomeType).sort();
-        return JSON.stringify(types) === JSON.stringify(["best_case", "most_likely", "worst_case"]);
-      },
-      { message: "Scenarios must contain exactly one best_case, one most_likely, and one worst_case" }
-    ),
+    .min(3)
+    .max(12)
+    .refine(validateScenarioSet, {
+      message:
+        "Scenarios must be either exactly 3 standard (best_case/most_likely/worst_case) with no pathLabel, or grouped into 2-4 decision paths of exactly 3 (positive/mixed/negative) each",
+    }),
   recommendedAction: RecommendedActionSchema,
   whatCouldChangeForecast: z.array(z.string().min(1).max(300)).max(3).default([]),
   // §8 (quality polish): optional, contextual only — null when there's
@@ -77,6 +128,13 @@ export const SituationAnalysisSchema = z.object({
   externalVariables: z.array(z.string()).default([]),
   controllableVariables: z.array(z.string()).default([]),
   uncontrollableVariables: z.array(z.string()).default([]),
+  // Decision Paths (outcome-tracking accuracy fix): when the situation
+  // presents a clear choice between 2-4 concrete alternatives (e.g.
+  // "accept the offer" vs "stay"), name each path in a few words.
+  // null when there's no clear alternative-path decision — the
+  // ordinary single-track scenario generation handles that case
+  // unchanged, exactly as before.
+  decisionPaths: z.array(z.string().min(1).max(80)).min(2).max(4).nullable().default(null),
 });
 
 // §12: at most 3 follow-up questions, 0 is valid (over-asking is a
@@ -95,6 +153,16 @@ export const OutcomeComparisonSchema = z.object({
   whatWentRight: z.array(z.string()).default([]),
   whatWasMissed: z.array(z.string()).default([]),
   wrongAssumptions: z.array(z.string()).default([]),
+  // Outcome Learning fix: what actually happened doesn't just get
+  // silently folded into "wrongAssumptions" when the real cause is
+  // that an entire alternative decision path was never modeled — that
+  // is a structural coverage problem, not a wrong belief, and it's
+  // reported differently (never as "AI accuracy").
+  coverageGap: z.string().max(400).nullable().default(null),
+  // "Unknown became known" — unknowns from the original forecast that
+  // this outcome has now resolved, so a future revisit isn't left
+  // wondering why they were ever listed as unknown.
+  unknownsResolved: z.array(z.string()).default([]),
 });
 
 // §19: personalization insights, one per detected tendency. Kept to at

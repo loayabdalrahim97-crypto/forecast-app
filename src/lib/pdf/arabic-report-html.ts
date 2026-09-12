@@ -19,6 +19,9 @@ function section(heading: string, items: string[]): string {
 function scenarioLabel(outcomeType: string | null): string {
   if (outcomeType === "best_case") return S.bestCase;
   if (outcomeType === "worst_case") return S.worstCase;
+  if (outcomeType === "positive") return S.positiveOutcome;
+  if (outcomeType === "negative") return S.negativeOutcome;
+  if (outcomeType === "mixed") return S.mixedOutcome;
   return S.mostLikely;
 }
 
@@ -33,10 +36,21 @@ function scenarioLabel(outcomeType: string | null): string {
 export function buildArabicReportHtml(data: ForecastReportData): string {
   const dateStr = new Date().toLocaleDateString("ar", { year: "numeric", month: "long", day: "numeric" });
 
-  const order = ["best_case", "most_likely", "worst_case"];
+  const order = ["best_case", "most_likely", "worst_case", "positive", "mixed", "negative"];
   const sortedScenarios = [...data.scenarios].sort(
     (a, b) => order.indexOf(a.outcomeType ?? "most_likely") - order.indexOf(b.outcomeType ?? "most_likely")
   );
+  const hasPaths = data.scenarios.some((s) => s.pathLabel);
+  const pathGroups: { pathLabel: string | null; scenarios: typeof sortedScenarios }[] = hasPaths
+    ? Array.from(
+        sortedScenarios.reduce((map, s) => {
+          const key = s.pathLabel ?? "";
+          if (!map.has(key)) map.set(key, []);
+          map.get(key)!.push(s);
+          return map;
+        }, new Map<string, typeof sortedScenarios>())
+      ).map(([pathLabel, scenarios]) => ({ pathLabel, scenarios }))
+    : [{ pathLabel: null, scenarios: sortedScenarios }];
 
   const variableGroups: Array<[string, string[]]> = [
     [S.behavioralVariables, data.behavioralVariables],
@@ -92,24 +106,34 @@ export function buildArabicReportHtml(data: ForecastReportData): string {
     <div style="page-break-before: always;"></div>
 
     <h2 style="font-size:16px;color:#0f3c37;">${escapeHtml(S.scenarioMap)}</h2>
-    ${sortedScenarios
+    ${pathGroups
       .map(
-        (sc) => `
-      <div style="border-right:3px solid ${sc.outcomeType === "best_case" ? "#4caf7d" : sc.outcomeType === "worst_case" ? "#c85041" : "#c8963c"}; padding:10px 14px; margin-bottom:10px; background:#f7f9f8; border-radius:4px;">
-        <p style="margin:0 0 2px; color:#888; font-size:11px;">${escapeHtml(scenarioLabel(sc.outcomeType))}</p>
-        <p style="margin:0 0 4px; font-weight:700; font-size:14px;">${escapeHtml(sc.title)}</p>
-        <p style="margin:0 0 6px; color:#555; font-size:12.5px;">${escapeHtml(sc.description)}</p>
-        <p style="margin:0; font-size:11.5px; color:#777;">${escapeHtml(S.likelihood)}: ${sc.likelihood} &nbsp; ${escapeHtml(S.confidence)}: ${sc.confidence} &nbsp; ${escapeHtml(S.impact)}: ${sc.impact}</p>
-      </div>`
+        (group) => `
+      ${group.pathLabel ? `<h3 style="font-size:14px;color:#0f3c37;margin:14px 0 6px;">${escapeHtml(S.decisionPath)}: ${escapeHtml(group.pathLabel)}</h3>` : ""}
+      ${group.scenarios
+        .map(
+          (sc) => `
+        <div style="border-right:3px solid ${sc.outcomeType === "best_case" || sc.outcomeType === "positive" ? "#4caf7d" : sc.outcomeType === "worst_case" || sc.outcomeType === "negative" ? "#c85041" : "#c8963c"}; padding:10px 14px; margin-bottom:10px; background:#f7f9f8; border-radius:4px;">
+          <p style="margin:0 0 2px; color:#888; font-size:11px;">${escapeHtml(scenarioLabel(sc.outcomeType))}</p>
+          <p style="margin:0 0 4px; font-weight:700; font-size:14px;">${escapeHtml(sc.title)}</p>
+          <p style="margin:0 0 6px; color:#555; font-size:12.5px;">${escapeHtml(sc.description)}</p>
+          <p style="margin:0; font-size:11.5px; color:#777;">${escapeHtml(S.likelihood)}: ${sc.likelihood} &nbsp; ${escapeHtml(S.confidence)}: ${sc.confidence} &nbsp; ${escapeHtml(S.impact)}: ${sc.impact}</p>
+        </div>`
+        )
+        .join("")}`
       )
       .join("")}
 
     <div style="page-break-before: always;"></div>
 
     <h2 style="font-size:16px;color:#0f3c37;">${escapeHtml(S.scenarioDetails)}</h2>
-    ${sortedScenarios
+    ${pathGroups
       .map(
-        (sc) => `
+        (group) => `
+      ${group.pathLabel ? `<h3 style="font-size:15px;color:#0f3c37;margin:16px 0 6px;">${escapeHtml(S.decisionPath)}: ${escapeHtml(group.pathLabel)}</h3>` : ""}
+      ${group.scenarios
+        .map(
+          (sc) => `
       <h3 style="font-size:14px; margin:14px 0 4px;">${escapeHtml(scenarioLabel(sc.outcomeType))} — ${escapeHtml(sc.title)}</h3>
       <p style="margin:0 0 8px;">${escapeHtml(sc.description)}</p>
       ${section(S.whyItCouldHappen, sc.evidence)}
@@ -118,6 +142,8 @@ export function buildArabicReportHtml(data: ForecastReportData): string {
       ${sc.recommendedResponse ? `<p style="margin:0 0 10px;"><strong>${escapeHtml(S.recommendedResponse)}:</strong> ${escapeHtml(sc.recommendedResponse)}</p>` : ""}
       <hr style="border:none;border-top:1px solid #ddd;margin:10px 0;" />
     `
+        )
+        .join("")}`
       )
       .join("")}
 

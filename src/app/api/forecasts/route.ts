@@ -95,6 +95,7 @@ export async function POST(req: NextRequest) {
       userId,
       situationText: parsed.data.situationText,
       mode: "general",
+      decisionPaths: analysis.decisionPaths,
       variables: {
         createMany: {
           data: analysisToVariableRows(analysis),

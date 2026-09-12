@@ -109,6 +109,11 @@ model Forecast {
   // decision with; no title column added since one can be derived
   // from situationText at display time without a migration.
   category         String?  // "career" | "relationships" | "finance" | "business" | "personal" | "other"
+  // Decision Paths fix: named alternatives detected in Situation
+  // Analysis (e.g. ["Accept the offer", "Stay at current job"]),
+  // stored here so the separate scenarios-generation request can read
+  // them back. null when no clear alternative-path decision exists.
+  decisionPaths    Json?
   parentForecastId String?  // set when this is an update to a prior forecast
   parent           Forecast? @relation("ForecastHistory", fields: [parentForecastId], references: [id])
   updates          Forecast[] @relation("ForecastHistory")
@@ -159,7 +164,11 @@ model Scenario {
   forecast              Forecast @relation(fields: [forecastId], references: [id], onDelete: Cascade)
 
   title                 String
-  outcomeType           String?  // "best_case" | "most_likely" | "worst_case" — nullable so existing rows from before this field existed don't break `db push`
+  outcomeType           String?  // "best_case" | "most_likely" | "worst_case" | "positive" | "mixed" | "negative" — nullable so existing rows from before this field existed don't break `db push`
+  // Decision Paths fix: which named alternative this scenario belongs
+  // to (e.g. "Accept the offer"). null in the ordinary single-track
+  // mode (best_case/most_likely/worst_case).
+  pathLabel             String?
   description           String
   likelihood            String   // "low" | "moderate" | "high" (no fake precision, see docs)
   confidence            String
@@ -209,6 +218,11 @@ model OutcomeRecord {
   whatWentRight  Json?
   whatWasMissed  Json?
   wrongAssumptions Json?
+  // Outcome Learning fix: a structural gap (an alternative decision
+  // path that was never modeled) reported distinctly from a wrong
+  // assumption — see outcome-comparison.ts for the full rationale.
+  coverageGap    String?
+  unknownsResolved Json?
 
   createdAt      DateTime @default(now())
 }

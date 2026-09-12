@@ -7,6 +7,7 @@ import { CopyButton } from "@/components/copy-button";
 export interface AccordionScenario {
   id: string;
   outcomeType: string | null;
+  pathLabel?: string | null;
   title: string;
   description: string;
   likelihood: string;
@@ -23,12 +24,17 @@ export interface AccordionScenario {
   contingencyPlan: string | null;
 }
 
-const ORDER = ["best_case", "most_likely", "worst_case"];
+const ORDER = ["best_case", "most_likely", "worst_case", "positive", "mixed", "negative"];
 
 const HEADING: Record<string, { en: string; ar: string }> = {
   best_case: { en: "Best Case / Constructive Outcome", ar: "أفضل احتمال / نتيجة إيجابية" },
   most_likely: { en: "Most Likely / Standard Outcome", ar: "الاحتمال الأرجح / النتيجة المتوقعة" },
   worst_case: { en: "Worst Case / Challenging Outcome", ar: "أسوأ احتمال / نتيجة صعبة" },
+  // Decision Paths mode — one set of these per named alternative,
+  // rather than a single best/likely/worst across the whole situation.
+  positive: { en: "If This Goes Well", ar: "لو سار هذا بشكل جيد" },
+  mixed: { en: "Mixed Outcome", ar: "نتيجة مختلطة" },
+  negative: { en: "If This Goes Poorly", ar: "لو سار هذا بشكل سيئ" },
 };
 
 function asStringList(value: unknown): string[] {
@@ -50,9 +56,9 @@ function ScenarioAccordionItem({
   const outcomeType = scenario.outcomeType ?? "most_likely";
   const heading = isRtl ? HEADING[outcomeType]?.ar : HEADING[outcomeType]?.en;
   const stripColor =
-    outcomeType === "best_case"
+    outcomeType === "best_case" || outcomeType === "positive"
       ? "var(--fc-positive)"
-      : outcomeType === "worst_case"
+      : outcomeType === "worst_case" || outcomeType === "negative"
         ? "var(--fc-band-high)"
         : "var(--fc-band-moderate)";
 
@@ -196,20 +202,69 @@ function ScenarioAccordionItem({
 }
 
 export function ScenarioAccordion({ locale, scenarios }: { locale: string; scenarios: AccordionScenario[] }) {
-  const sorted = [...scenarios].sort(
-    (a, b) => ORDER.indexOf(a.outcomeType ?? "most_likely") - ORDER.indexOf(b.outcomeType ?? "most_likely")
-  );
+  const isRtl = locale === "ar";
+  const hasPaths = scenarios.some((s) => s.pathLabel);
+
+  if (!hasPaths) {
+    const sorted = [...scenarios].sort(
+      (a, b) => ORDER.indexOf(a.outcomeType ?? "most_likely") - ORDER.indexOf(b.outcomeType ?? "most_likely")
+    );
+    return (
+      <div>
+        {sorted.map((s) => (
+          <ScenarioAccordionItem
+            key={s.id}
+            locale={locale}
+            scenario={s}
+            defaultOpen={s.outcomeType !== "worst_case" && s.outcomeType !== "negative"}
+          />
+        ))}
+      </div>
+    );
+  }
+
+  // Decision Paths mode: group scenarios by their named alternative so
+  // it's visually unmistakable that these are two (or more) different
+  // choices being modeled, not one combined set of outcomes.
+  const groups = new Map<string, AccordionScenario[]>();
+  for (const s of scenarios) {
+    const key = s.pathLabel ?? "";
+    const list = groups.get(key) ?? [];
+    list.push(s);
+    groups.set(key, list);
+  }
 
   return (
     <div>
-      {sorted.map((s) => (
-        <ScenarioAccordionItem
-          key={s.id}
-          locale={locale}
-          scenario={s}
-          defaultOpen={s.outcomeType !== "worst_case"}
-        />
-      ))}
+      {Array.from(groups.entries()).map(([pathLabel, group]) => {
+        const sorted = [...group].sort(
+          (a, b) => ORDER.indexOf(a.outcomeType ?? "mixed") - ORDER.indexOf(b.outcomeType ?? "mixed")
+        );
+        return (
+          <div key={pathLabel} style={{ marginBottom: "1.75rem" }}>
+            <h3
+              style={{
+                fontSize: "1rem",
+                margin: "0 0 0.75rem",
+                paddingBottom: "0.5rem",
+                borderBottom: "1px solid var(--fc-border)",
+                textAlign: isRtl ? "right" : "left",
+              }}
+            >
+              {isRtl ? "المسار: " : "Path: "}
+              {pathLabel}
+            </h3>
+            {sorted.map((s) => (
+              <ScenarioAccordionItem
+                key={s.id}
+                locale={locale}
+                scenario={s}
+                defaultOpen={s.outcomeType !== "negative"}
+              />
+            ))}
+          </div>
+        );
+      })}
     </div>
   );
 }

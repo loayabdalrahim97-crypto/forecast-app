@@ -31,6 +31,84 @@ describe("ScenarioGenerationOutputSchema", () => {
     expect(result.success).toBe(true);
   });
 
+  describe("Decision Paths mode (accept-offer / stay example)", () => {
+    const pathScenario = (pathLabel: string, outcomeType: string) => ({
+      ...validScenario,
+      pathLabel,
+      outcomeType,
+      title: `${pathLabel} - ${outcomeType}`,
+    });
+
+    it("accepts a well-formed 2-path set (3 positive/mixed/negative each)", () => {
+      const result = ScenarioGenerationOutputSchema.safeParse({
+        scenarios: [
+          pathScenario("Accept the offer", "positive"),
+          pathScenario("Accept the offer", "mixed"),
+          pathScenario("Accept the offer", "negative"),
+          pathScenario("Stay at current job", "positive"),
+          pathScenario("Stay at current job", "mixed"),
+          pathScenario("Stay at current job", "negative"),
+        ],
+        recommendedAction: { summary: "Ask for a written commitment before deciding.", conditionalBranches: [] },
+      });
+      expect(result.success).toBe(true);
+      if (result.success) expect(result.data.scenarios).toHaveLength(6);
+    });
+
+    it("rejects a path with only 2 scenarios instead of 3 (a silent coverage gap)", () => {
+      const result = ScenarioGenerationOutputSchema.safeParse({
+        scenarios: [
+          pathScenario("Accept the offer", "positive"),
+          pathScenario("Accept the offer", "negative"),
+          pathScenario("Stay at current job", "positive"),
+          pathScenario("Stay at current job", "mixed"),
+          pathScenario("Stay at current job", "negative"),
+        ],
+        recommendedAction: { summary: "Do X.", conditionalBranches: [] },
+      });
+      expect(result.success).toBe(false);
+    });
+
+    it("rejects mixing standard outcome types with path-labeled scenarios", () => {
+      const result = ScenarioGenerationOutputSchema.safeParse({
+        scenarios: [
+          { ...validScenario, outcomeType: "best_case" },
+          pathScenario("Accept the offer", "positive"),
+          pathScenario("Accept the offer", "mixed"),
+          pathScenario("Accept the offer", "negative"),
+        ],
+        recommendedAction: { summary: "Do X.", conditionalBranches: [] },
+      });
+      expect(result.success).toBe(false);
+    });
+
+    it("rejects more than 4 distinct decision paths", () => {
+      const paths = ["A", "B", "C", "D", "E"];
+      const scenarios = paths.flatMap((p) => [
+        pathScenario(p, "positive"),
+        pathScenario(p, "mixed"),
+        pathScenario(p, "negative"),
+      ]);
+      const result = ScenarioGenerationOutputSchema.safeParse({
+        scenarios,
+        recommendedAction: { summary: "Do X.", conditionalBranches: [] },
+      });
+      expect(result.success).toBe(false);
+    });
+
+    it("rejects a single path (need at least 2 alternatives for Decision Paths mode)", () => {
+      const result = ScenarioGenerationOutputSchema.safeParse({
+        scenarios: [
+          pathScenario("Accept the offer", "positive"),
+          pathScenario("Accept the offer", "mixed"),
+          pathScenario("Accept the offer", "negative"),
+        ],
+        recommendedAction: { summary: "Do X.", conditionalBranches: [] },
+      });
+      expect(result.success).toBe(false);
+    });
+  });
+
   it("rejects fewer than 3 scenarios", () => {
     const result = ScenarioGenerationOutputSchema.safeParse({
       scenarios: [

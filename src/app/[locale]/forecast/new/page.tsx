@@ -332,6 +332,7 @@ export default function NewForecastPage({ params }: { params: { locale: string }
       realityCheckLabel: realityCheckBadgeLabel,
       scenarios: scenarios.map((s) => ({
         outcomeType: s.outcomeType,
+        pathLabel: s.pathLabel ?? null,
         title: s.title,
         description: s.description,
         likelihood: s.likelihood,

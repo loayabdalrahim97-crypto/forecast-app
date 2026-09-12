@@ -26,6 +26,7 @@ import { PDF_LABELS, type PdfLocale, type PdfLabelSet } from "./pdf-labels";
 
 export interface ReportScenario {
   outcomeType: string | null;
+  pathLabel?: string | null;
   title: string;
   description: string;
   likelihood: string;
@@ -66,8 +67,9 @@ function pdfLocale(siteLocale: string): PdfLocale {
 }
 
 function scenarioHeading(labels: PdfLabelSet, outcomeType: string | null): string {
-  if (outcomeType === "best_case") return labels.bestCase;
-  if (outcomeType === "worst_case") return labels.worstCase;
+  if (outcomeType === "best_case" || outcomeType === "positive") return outcomeType === "positive" ? labels.positiveOutcome : labels.bestCase;
+  if (outcomeType === "worst_case" || outcomeType === "negative") return outcomeType === "negative" ? labels.negativeOutcome : labels.worstCase;
+  if (outcomeType === "mixed") return labels.mixedOutcome;
   return labels.mostLikely;
 }
 
@@ -175,40 +177,69 @@ export async function generateForecastReport(data: ForecastReportData): Promise<
   );
   y += 2;
 
-  // Scenario comparison — 3 compact cards side by side instead of a
-  // full prose page per scenario.
+  // Scenario comparison — 3 compact cards side by side per path
+  // (Decision Paths mode) or a single row of 3 (ordinary mode)
+  // instead of a full prose page per scenario.
   if (data.scenarios.length > 0) {
-    const order = ["best_case", "most_likely", "worst_case"];
-    const sorted = [...data.scenarios].sort(
-      (a, b) => order.indexOf(a.outcomeType ?? "most_likely") - order.indexOf(b.outcomeType ?? "most_likely")
-    );
+    const order = ["best_case", "most_likely", "worst_case", "positive", "mixed", "negative"];
+    const hasPaths = data.scenarios.some((s) => s.pathLabel);
+
+    const pathGroups: { pathLabel: string | null; scenarios: ReportScenario[] }[] = hasPaths
+      ? Array.from(
+          data.scenarios.reduce((map, s) => {
+            const key = s.pathLabel ?? "";
+            if (!map.has(key)) map.set(key, []);
+            map.get(key)!.push(s);
+            return map;
+          }, new Map<string, ReportScenario[]>())
+        ).map(([pathLabel, scenarios]) => ({ pathLabel, scenarios }))
+      : [{ pathLabel: null, scenarios: data.scenarios }];
+
+    ({ y, pageNumber } = ensureSpace(ctx, y, 20, pageNumber));
+    y = drawHeading(ctx, labels.scenarioMap, y, 12);
+
     const gap = 5;
     const cardWidth = (CONTENT_WIDTH - gap * 2) / 3;
-    const cards = sorted.map((s) => ({
-      badge: scenarioHeading(labels, s.outcomeType),
-      title: s.title,
-      description: s.description,
-      impact: s.impact,
-      confidence: s.confidence,
-      response: s.recommendedResponse,
-    }));
-    const rowHeight = Math.max(...cards.map((c) => estimateCompactScenarioCardHeight(ctx, c, cardWidth)));
-    ({ y, pageNumber } = ensureSpace(ctx, y, rowHeight + 4, pageNumber));
 
-    y = drawHeading(ctx, labels.scenarioMap, y, 12);
-    const rowTop = y;
-    let maxBottom = rowTop;
-    cards.forEach((card, i) => {
-      const accent =
-        sorted[i].outcomeType === "best_case"
-          ? ([76, 175, 125] as [number, number, number])
-          : sorted[i].outcomeType === "worst_case"
-            ? bandColor("high")
-            : bandColor("moderate");
-      const bottom = drawCompactScenarioCard(ctx, MARGIN.left + i * (cardWidth + gap), cardWidth, rowTop, card, accent);
-      maxBottom = Math.max(maxBottom, bottom);
-    });
-    y = maxBottom + 3;
+    for (const group of pathGroups) {
+      const sorted = [...group.scenarios].sort(
+        (a, b) => order.indexOf(a.outcomeType ?? "most_likely") - order.indexOf(b.outcomeType ?? "most_likely")
+      );
+      const cards = sorted.map((s) => ({
+        badge: scenarioHeading(labels, s.outcomeType),
+        title: s.title,
+        description: s.description,
+        impact: s.impact,
+        confidence: s.confidence,
+        response: s.recommendedResponse,
+      }));
+      const rowHeight = Math.max(...cards.map((c) => estimateCompactScenarioCardHeight(ctx, c, cardWidth)));
+      const pathHeadingHeight = group.pathLabel ? 7 : 0;
+      ({ y, pageNumber } = ensureSpace(ctx, y, rowHeight + pathHeadingHeight + 6, pageNumber));
+
+      if (group.pathLabel) {
+        setFont(ctx, "bold");
+        doc.setFontSize(10.5);
+        doc.setTextColor(20, 60, 55);
+        doc.text(`${labels.decisionPath}: ${group.pathLabel}`, MARGIN.left, y, { align: "left" });
+        doc.setTextColor(20, 20, 20);
+        y += pathHeadingHeight;
+      }
+
+      const rowTop = y;
+      let maxBottom = rowTop;
+      cards.forEach((card, i) => {
+        const accent =
+          sorted[i].outcomeType === "best_case" || sorted[i].outcomeType === "positive"
+            ? ([76, 175, 125] as [number, number, number])
+            : sorted[i].outcomeType === "worst_case" || sorted[i].outcomeType === "negative"
+              ? bandColor("high")
+              : bandColor("moderate");
+        const bottom = drawCompactScenarioCard(ctx, MARGIN.left + i * (cardWidth + gap), cardWidth, rowTop, card, accent);
+        maxBottom = Math.max(maxBottom, bottom);
+      });
+      y = maxBottom + 6;
+    }
   }
 
   // ---- PAGE 2: FACTS/ASSUMPTIONS/UNKNOWNS + KEY VARIABLES + DECISION SUPPORT ----

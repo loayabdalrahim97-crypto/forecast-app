@@ -11,6 +11,7 @@ const baseAnalysis: SituationAnalysis = {
   externalVariables: [],
   controllableVariables: [],
   uncontrollableVariables: [],
+  decisionPaths: null,
 };
 
 describe("analysisToVariableRows", () => {
