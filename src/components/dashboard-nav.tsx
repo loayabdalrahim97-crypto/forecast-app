@@ -13,6 +13,7 @@ const ITEMS = [
 
 const BOTTOM_ITEMS = [
   { href: "usage", icon: "📊", en: "Usage", ar: "الاستخدام" },
+  { href: "billing", icon: "💳", en: "Billing", ar: "الفوترة" },
   { href: "settings", icon: "⚙️", en: "Settings", ar: "الإعدادات" },
 ];
 

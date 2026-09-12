@@ -3,21 +3,7 @@
 import { useSession, signOut } from "next-auth/react";
 import { LanguageSwitcher } from "./language-switcher";
 import { Logo } from "./logo";
-import enUs from "../../messages/en-us.json";
-import ar from "../../messages/ar.json";
-
-const MESSAGES: Record<string, typeof enUs> = { "en-us": enUs, ar };
-
-function t(locale: string, path: string): string {
-  const dict = MESSAGES[locale] ?? enUs;
-  const value = path.split(".").reduce<unknown>((acc, key) => {
-    if (acc && typeof acc === "object" && key in acc) {
-      return (acc as Record<string, unknown>)[key];
-    }
-    return undefined;
-  }, dict);
-  return typeof value === "string" ? value : path;
-}
+import { t } from "@/lib/i18n/messages";
 
 const linkStyle = {
   color: "var(--fc-text-secondary)",
@@ -53,6 +39,9 @@ export function NavBar({ locale }: { locale: string }) {
         </a>
         <a href={`/${locale}/onboarding`} style={linkStyle}>
           {t(locale, "onboarding.title")}
+        </a>
+        <a href={`/${locale}/pricing`} style={linkStyle}>
+          {t(locale, "nav.pricing")}
         </a>
         {status === "authenticated" ? (
           <>

@@ -341,13 +341,38 @@ model Subscription {
   userId               String   @unique
   user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  plan                 String   // "free" | "pro" | "premium" | "business"
-  status               String   // "active" | "past_due" | "canceled" | ...
+  plan                 String   // "free" | "pro_monthly" | "pro_annual"
+  status               String   @default("active") // "active" | "approval_pending" | "suspended" | "cancelled" | "expired" | "payment_failed"
+  provider             String   @default("none") // "none" (free plan) | "paypal"
+
+  // Legacy Stripe fields — never wired to any code, kept only so an
+  // existing (empty in practice) column isn't dropped without cause.
   stripeCustomerId     String?
   stripeSubscriptionId String?
+
+  // PayPal Subscriptions API fields.
+  paypalSubscriptionId String?  @unique
+  paypalPlanId         String?
+
+  currentPeriodStart   DateTime?
   currentPeriodEnd     DateTime?
+  cancelAtPeriodEnd    Boolean  @default(false)
+
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
+
+  @@index([paypalSubscriptionId])
+}
+
+// Idempotency for PayPal webhooks (§7): the same event can be
+// delivered more than once, so processing must record which event IDs
+// have already been handled before doing anything with side effects.
+model WebhookEvent {
+  id          String   @id @default(cuid())
+  provider    String   // "paypal"
+  eventId     String   @unique
+  eventType   String
+  processedAt DateTime @default(now())
 }
 
 model Payment {
@@ -357,7 +382,9 @@ model Payment {
 
   amountCents     Int
   currency        String
+  provider        String   @default("stripe") // "stripe" | "paypal"
   stripePaymentId String?  @unique
+  paypalEventId   String?  @unique
   status          String
   createdAt       DateTime @default(now())
 

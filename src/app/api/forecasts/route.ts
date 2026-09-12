@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import type { Prisma } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/config";
 import { prisma } from "@/lib/db";
@@ -10,6 +11,7 @@ import { AIValidationError } from "@/lib/ai/orchestrator";
 import { isWithinRateLimit, FREE_FORECAST_RATE_LIMIT } from "@/lib/rate-limit/free-forecast-limit";
 import { getClientIp } from "@/lib/rate-limit/get-client-ip";
 import { logAIRequest } from "@/lib/ai/log-request";
+import { getUsageStatus, assertUnderUsageLimit } from "@/lib/billing/usage";
 
 const RATE_LIMIT_EVENT_NAME = "anonymous_forecast_created";
 
@@ -23,11 +25,13 @@ const RATE_LIMIT_EVENT_NAME = "anonymous_forecast_created";
  * variables as separate rows. §12: only asks follow-up questions when
  * there are unknowns worth asking about.
  *
- * §8/§26: signed-in users are trusted (their account is the abuse
- * boundary — a real credit system comes in a later phase). Anonymous
- * requests are rate-limited by IP using AnalyticsEvent as a lightweight
- * request log, since that table already exists for exactly this kind
- * of "did this happen recently" query.
+ * §2/§3: signed-in users are now subject to real, server-enforced
+ * monthly usage limits (Free: 3, Pro: 30) — checked once cheaply
+ * before the expensive AI call so a blocked user never causes AI
+ * spend, then re-checked atomically inside the same transaction that
+ * saves the Forecast row, so two simultaneous requests can't both
+ * slip through. Anonymous requests keep the existing IP rate limit
+ * unchanged (§8/§26).
  */
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -45,6 +49,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         { error: "Free forecast limit reached. Sign up to continue." },
         { status: 429 }
+      );
+    }
+  } else {
+    // Cheap pre-check before spending on an AI call — a full atomic
+    // re-check happens again at save time below.
+    const usage = await getUsageStatus(userId);
+    if (!usage.allowed) {
+      return NextResponse.json(
+        {
+          error: "Monthly forecast limit reached.",
+          code: "USAGE_LIMIT_REACHED",
+          usage: { plan: usage.plan, limit: usage.limit, used: usage.used, periodEnd: usage.periodEnd },
+        },
+        { status: 402 }
       );
     }
   }
@@ -90,21 +108,51 @@ export async function POST(req: NextRequest) {
     locale: parsed.data.locale,
   }).catch(() => ({ data: { questions: [] as string[] }, meta: null }));
 
-  const forecast = await prisma.forecast.create({
-    data: {
-      userId,
-      situationText: parsed.data.situationText,
-      locale: parsed.data.locale,
-      mode: "general",
-      decisionPaths: analysis.decisionPaths ?? [],
-      variables: {
-        createMany: {
-          data: analysisToVariableRows(analysis),
-        },
+  let forecast;
+  try {
+    forecast = await prisma.$transaction(
+      async (tx: Prisma.TransactionClient) => {
+        if (userId) {
+          const usage = await assertUnderUsageLimit(tx, userId);
+          if (!usage.allowed) {
+            // Thrown inside the transaction so nothing is saved and the
+            // transaction rolls back cleanly — no partial Forecast row,
+            // no consumed usage, matching "only consume on success".
+            throw new UsageLimitError(usage.plan, usage.limit, usage.used, usage.periodEnd);
+          }
+        }
+        return tx.forecast.create({
+          data: {
+            userId,
+            situationText: parsed.data.situationText,
+            locale: parsed.data.locale,
+            mode: "general",
+            decisionPaths: analysis.decisionPaths ?? [],
+            variables: {
+              createMany: {
+                data: analysisToVariableRows(analysis),
+              },
+            },
+          },
+          include: { variables: true },
+        });
       },
-    },
-    include: { variables: true },
-  });
+      { isolationLevel: "Serializable" }
+    );
+  } catch (err) {
+    if (err instanceof UsageLimitError) {
+      return NextResponse.json(
+        {
+          error: "Monthly forecast limit reached.",
+          code: "USAGE_LIMIT_REACHED",
+          usage: { plan: err.plan, limit: err.limit, used: err.used, periodEnd: err.periodEnd },
+        },
+        { status: 402 }
+      );
+    }
+    console.error("[forecasts] failed to save forecast:", err);
+    return NextResponse.json({ error: "Failed to save forecast" }, { status: 500 });
+  }
 
   await logAIRequest(analysisResult.meta, { userId, forecastId: forecast.id });
   if (followUp.meta) {
@@ -124,6 +172,17 @@ export async function POST(req: NextRequest) {
     },
     { status: 201 }
   );
+}
+
+class UsageLimitError extends Error {
+  constructor(
+    public plan: string,
+    public limit: number,
+    public used: number,
+    public periodEnd: Date
+  ) {
+    super("Usage limit reached");
+  }
 }
 
 /**

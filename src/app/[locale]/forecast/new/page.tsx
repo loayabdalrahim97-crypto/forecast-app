@@ -95,6 +95,7 @@ export default function NewForecastPage({ params }: { params: { locale: string }
   const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
   const [result, setResult] = useState<ForecastResult | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [usageLimitInfo, setUsageLimitInfo] = useState<{ plan: string; limit: number; used: number } | null>(null);
 
   const [scenarioStatus, setScenarioStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
   const [scenarios, setScenarios] = useState<AccordionScenario[]>([]);
@@ -131,6 +132,7 @@ export default function NewForecastPage({ params }: { params: { locale: string }
 
     setStatus("loading");
     setErrorMessage(null);
+    setUsageLimitInfo(null);
     setScenarios([]);
     setScenarioStatus("idle");
     setScenariosStale(false);
@@ -141,7 +143,12 @@ export default function NewForecastPage({ params }: { params: { locale: string }
         body: JSON.stringify({ situationText, locale }),
       });
       if (!res.ok) {
-        setErrorMessage(res.status === 429 ? t(locale, "errors.rateLimited") : t(locale, "errors.generic"));
+        if (res.status === 402) {
+          const body = await res.json().catch(() => null);
+          setUsageLimitInfo(body?.usage ?? { plan: "free", limit: 3, used: 3 });
+        } else {
+          setErrorMessage(res.status === 429 ? t(locale, "errors.rateLimited") : t(locale, "errors.generic"));
+        }
         setStatus("error");
         return;
       }
@@ -370,6 +377,22 @@ export default function NewForecastPage({ params }: { params: { locale: string }
 
       {status === "error" && errorMessage && (
         <p style={{ color: "var(--fc-band-high)", marginTop: "1rem" }}>{errorMessage}</p>
+      )}
+
+      {status === "error" && usageLimitInfo && (
+        <div className="fc-strip" style={{ marginTop: "1rem", ["--fc-strip-color" as string]: "var(--fc-accent)" }}>
+          <p style={{ margin: "0 0 0.5rem", fontWeight: 600 }}>
+            {locale === "ar"
+              ? `استخدمت توقعاتك المجانية الـ${usageLimitInfo.limit} لهذا الشهر.`
+              : `You've used your ${usageLimitInfo.limit} free forecasts this month.`}
+          </p>
+          <p style={{ margin: "0 0 1rem", color: "var(--fc-text-secondary)", fontSize: "0.92rem" }}>
+            {locale === "ar" ? "استمر مع Foresee Pro — ٣٠ توقعاً شهرياً." : "Continue with Foresee Pro — 30 forecasts a month."}
+          </p>
+          <a href={`/${locale}/pricing`} className="fc-btn fc-btn-primary" style={{ display: "inline-block" }}>
+            {locale === "ar" ? "الترقية عبر PayPal" : "Upgrade with PayPal"}
+          </a>
+        </div>
       )}
 
       {status === "done" && result && (
