@@ -128,6 +128,25 @@ a {
   color: var(--fc-accent);
 }
 
+/* Logo mark: sized via CSS (not just the SVG's width/height attributes)
+   so it can shrink slightly on small screens without a second prop or
+   JS — CSS width/height on an <svg> overrides the presentational
+   attribute. Desktop size intentionally larger/more prominent than the
+   previous fixed 22px; mobile size stays modest so it never crowds the
+   nav bar or wraps awkwardly next to the wordmark. */
+.fc-logo-mark {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .fc-logo-mark {
+    width: 26px;
+    height: 26px;
+  }
+}
+
 /* ---- Shared primitives (used via className, not re-implemented per page) ---- */
 
 .fc-btn {

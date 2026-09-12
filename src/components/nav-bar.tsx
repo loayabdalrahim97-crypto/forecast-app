@@ -23,13 +23,13 @@ export function NavBar({ locale }: { locale: string }) {
           textDecoration: "none",
           fontFamily: "var(--fc-font-heading)",
           fontWeight: 600,
-          fontSize: "1.05rem",
+          fontSize: "1.2rem",
           display: "flex",
           alignItems: "center",
-          gap: "0.5rem",
+          gap: "0.6rem",
         }}
       >
-        <Logo size={22} />
+        <Logo size={30} className="fc-logo-mark" />
         Foresee
       </a>
       <div className="fc-nav-links">
