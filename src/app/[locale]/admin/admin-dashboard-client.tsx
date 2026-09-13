@@ -77,7 +77,7 @@ export function AdminDashboardClient({ locale }: { locale: string }) {
         </div>
 
         {loadStatus === "loading" && <p>{locale === "ar" ? "جاري التحميل..." : "Loading..."}</p>}
-        {loadStatus === "error" && <p style={{ color: "var(--fc-band-high)" }}>{locale === "ar" ? "صار خطأ بالتحميل." : "Failed to load."}</p>}
+        {loadStatus === "error" && <p style={{ color: "var(--fc-band-high)" }}>{locale === "ar" ? "حدث خطأ في التحميل." : "Failed to load."}</p>}
 
         {loadStatus === "done" && stats && costs && (
           <>

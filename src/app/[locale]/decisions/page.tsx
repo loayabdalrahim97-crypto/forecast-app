@@ -60,7 +60,7 @@ export default function DecisionHistoryPage({ params }: { params: { locale: stri
   if (status === "unauthenticated") {
     return (
       <main style={{ padding: "1.5rem 2rem 4rem", maxWidth: 640, margin: "0 auto" }}>
-        <p>{locale === "ar" ? "لازم تسجل دخول لأول." : "You need to sign in first."}</p>
+        <p>{locale === "ar" ? "يجب تسجيل الدخول أولاً." : "You need to sign in first."}</p>
       </main>
     );
   }
@@ -72,7 +72,7 @@ export default function DecisionHistoryPage({ params }: { params: { locale: stri
 
       <input
         className="fc-input"
-        placeholder={locale === "ar" ? "ابحث بموقف..." : "Search a situation..."}
+        placeholder={locale === "ar" ? "ابحث في موقف..." : "Search a situation..."}
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         style={{ marginBottom: "1rem" }}
@@ -127,7 +127,7 @@ export default function DecisionHistoryPage({ params }: { params: { locale: stri
         <p>{locale === "ar" ? "جاري التحميل..." : "Loading..."}</p>
       ) : decisions.length === 0 ? (
         <div className="fc-strip">
-          <p style={{ margin: 0 }}>{locale === "ar" ? "ما في قرارات تطابق هالفلتر." : "No decisions match this filter."}</p>
+          <p style={{ margin: 0 }}>{locale === "ar" ? "لا توجد قرارات تطابق هذا الفلتر." : "No decisions match this filter."}</p>
         </div>
       ) : (
         decisions.map((d) => (

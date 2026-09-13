@@ -48,7 +48,7 @@ export default function DashboardPage({ params }: { params: { locale: string } }
   if (status === "unauthenticated") {
     return (
       <main style={{ padding: "1.5rem 2rem 4rem", maxWidth: 640, margin: "0 auto" }}>
-        <p>{locale === "ar" ? "لازم تسجل دخول لأول." : "You need to sign in first."}</p>
+        <p>{locale === "ar" ? "يجب تسجيل الدخول أولاً." : "You need to sign in first."}</p>
         <a href={`/${locale}/login`} className="fc-btn fc-btn-primary">
           {locale === "ar" ? "تسجيل دخول" : "Log in"}
         </a>
@@ -66,7 +66,7 @@ export default function DashboardPage({ params }: { params: { locale: string } }
         {locale === "ar" ? `أهلاً، ${session?.user?.name ?? ""}` : `Welcome back${session?.user?.name ? `, ${session.user.name}` : ""}`}
       </h1>
       <p style={{ color: "var(--fc-text-secondary)", margin: "0 0 1.5rem" }}>
-        {locale === "ar" ? "قرارك الشخصي محفوظ هون، وبيصير أفيد كل ما تستخدمه أكتر." : "Your personal decision workspace — it gets more useful the more you use it."}
+        {locale === "ar" ? "مساحتك الشخصية لاتخاذ القرار — تصبح أكثر فائدة كلما استخدمتها أكثر." : "Your personal decision workspace — it gets more useful the more you use it."}
       </p>
 
       <a href={`/${locale}/forecast/new`} className="fc-btn fc-btn-primary" style={{ marginBottom: "2rem", display: "inline-block" }}>
@@ -99,7 +99,7 @@ export default function DashboardPage({ params }: { params: { locale: string } }
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
             <h2 style={{ fontSize: "1.05rem", margin: 0 }}>{locale === "ar" ? "أحدث القرارات" : "Recent decisions"}</h2>
             <a href={`/${locale}/decisions`} style={{ fontSize: "0.85rem", color: "var(--fc-accent)" }}>
-              {locale === "ar" ? "شوف الكل" : "View all"}
+              {locale === "ar" ? "عرض الكل" : "View all"}
             </a>
           </div>
           {decisions.slice(0, 5).map((d) => (
@@ -115,7 +115,7 @@ export default function DashboardPage({ params }: { params: { locale: string } }
 
           <section style={{ marginTop: "2rem", paddingTop: "1.5rem", borderTop: "1px solid var(--fc-border)" }}>
             <h2 style={{ fontSize: "1.05rem", margin: "0 0 1rem" }}>
-              {locale === "ar" ? "ملف القرار الخاص فيك" : "Your Decision Profile"}
+              {locale === "ar" ? "ملف قرارك" : "Your Decision Profile"}
             </h2>
             {!profile ? (
               <p style={{ color: "var(--fc-text-muted)", fontSize: "0.88rem" }}>

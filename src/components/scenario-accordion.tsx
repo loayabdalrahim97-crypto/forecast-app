@@ -27,14 +27,14 @@ export interface AccordionScenario {
 const ORDER = ["best_case", "most_likely", "worst_case", "positive", "mixed", "negative"];
 
 const HEADING: Record<string, { en: string; ar: string }> = {
-  best_case: { en: "Best Case / Constructive Outcome", ar: "أفضل احتمال / نتيجة إيجابية" },
-  most_likely: { en: "Most Likely / Standard Outcome", ar: "الاحتمال الأرجح / النتيجة المتوقعة" },
-  worst_case: { en: "Worst Case / Challenging Outcome", ar: "أسوأ احتمال / نتيجة صعبة" },
+  best_case: { en: "Best Case / Constructive Outcome", ar: "أفضل سيناريو" },
+  most_likely: { en: "Most Likely / Standard Outcome", ar: "السيناريو الأرجح" },
+  worst_case: { en: "Worst Case / Challenging Outcome", ar: "أسوأ سيناريو" },
   // Decision Paths mode — one set of these per named alternative,
   // rather than a single best/likely/worst across the whole situation.
-  positive: { en: "If This Goes Well", ar: "لو سار هذا بشكل جيد" },
+  positive: { en: "If This Goes Well", ar: "إن سارت الأمور بشكل جيد" },
   mixed: { en: "Mixed Outcome", ar: "نتيجة مختلطة" },
-  negative: { en: "If This Goes Poorly", ar: "لو سار هذا بشكل سيئ" },
+  negative: { en: "If This Goes Poorly", ar: "إن سارت الأمور بشكل سيئ" },
 };
 
 function asStringList(value: unknown): string[] {
@@ -115,7 +115,7 @@ function ScenarioAccordionItem({
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "0.75rem" }}>
                 <div>
                   <p style={{ margin: "0 0 0.3rem", fontSize: "0.75rem", color: "var(--fc-text-muted)" }}>
-                    {isRtl ? "الاستجابة الموصى بها" : "Recommended Response"}
+                    {isRtl ? "الاستجابة المقترحة" : "Recommended Response"}
                   </p>
                   <p style={{ margin: 0, fontSize: "0.9rem" }}>{scenario.recommendedResponse}</p>
                 </div>
@@ -167,8 +167,8 @@ function ScenarioAccordionItem({
                 { key: "assumptions", label: isRtl ? "الافتراضات" : "Assumptions" },
                 { key: "triggers", label: isRtl ? "المحفزات" : "Triggers" },
                 { key: "earlyWarningSigns", label: isRtl ? "إشارات إنذار مبكر" : "Early Warning Signs" },
-                { key: "likelihoodIncreasesIf", label: isRtl ? "الاحتمالية بتزيد لو" : "Likelihood increases if" },
-                { key: "likelihoodDecreasesIf", label: isRtl ? "الاحتمالية بتقل لو" : "Likelihood decreases if" },
+                { key: "likelihoodIncreasesIf", label: isRtl ? "تزداد الاحتمالية إذا" : "Likelihood increases if" },
+                { key: "likelihoodDecreasesIf", label: isRtl ? "تقل الاحتمالية إذا" : "Likelihood decreases if" },
               ].map(({ key, label }) => {
                 const items = asStringList((scenario as unknown as Record<string, unknown>)[key]);
                 if (items.length === 0) return null;

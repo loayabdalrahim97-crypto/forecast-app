@@ -48,7 +48,7 @@ export default function BillingPage({ params }: { params: { locale: string } }) 
   if (authStatus === "unauthenticated") {
     return (
       <main style={{ padding: "1.5rem 2rem 4rem", maxWidth: 560, margin: "0 auto" }}>
-        <p>{isAr ? "لازم تسجل دخول لأول." : "You need to sign in first."}</p>
+        <p>{isAr ? "يجب تسجيل الدخول أولاً." : "You need to sign in first."}</p>
       </main>
     );
   }
@@ -111,7 +111,7 @@ export default function BillingPage({ params }: { params: { locale: string } }) 
                 {billing.subscription.status === "payment_failed" && (
                   <p style={{ margin: "0.5rem 0 0", fontSize: "0.85rem", color: "var(--fc-band-high)" }}>
                     {isAr
-                      ? "في مشكلة بدفعتك عبر PayPal. رجاءً حدّث وسيلة الدفع للحفاظ على وصول Pro."
+                      ? "توجد مشكلة في دفعتك عبر PayPal. يرجى تحديث وسيلة الدفع للحفاظ على وصولك إلى خطة Pro."
                       : "There's a problem with your PayPal payment. Please update your payment method to keep Pro access."}
                   </p>
                 )}

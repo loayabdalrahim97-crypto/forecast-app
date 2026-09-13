@@ -63,7 +63,7 @@ export function RealityCheckBarometer({
 
       <p style={{ fontSize: "0.78rem", color: "var(--fc-text-muted)", marginTop: "0.5rem", marginBottom: 0 }}>
         {result.factsCount} {isRtl ? "حقائق" : "Facts"} · {result.assumptionsCount}{" "}
-        {isRtl ? "افتراضات" : "Assumptions"} · {result.unknownsCount} {isRtl ? "مجاهيل" : "Unknowns"}
+        {isRtl ? "افتراضات" : "Assumptions"} · {result.unknownsCount} {isRtl ? "معلومات مجهولة" : "Unknowns"}
       </p>
     </div>
   );

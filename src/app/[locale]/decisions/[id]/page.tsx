@@ -129,7 +129,7 @@ export default function RevisitDecisionPage({ params }: { params: { locale: stri
 
           <SectionList heading={locale === "ar" ? "الحقائق" : "Known Facts"} items={byKind("fact")} />
           <SectionList heading={locale === "ar" ? "الافتراضات" : "Assumptions"} items={byKind("assumption")} />
-          <SectionList heading={locale === "ar" ? "المجاهيل" : "Unknowns"} items={byKind("unknown")} />
+          <SectionList heading={locale === "ar" ? "المعلومات المجهولة" : "Unknowns"} items={byKind("unknown")} />
 
           {forecast.scenarios.length > 0 && (
             <section style={{ marginTop: "1.5rem" }}>
@@ -148,7 +148,7 @@ export default function RevisitDecisionPage({ params }: { params: { locale: stri
           )}
 
           <section style={{ marginTop: "1.5rem", paddingTop: "1.5rem", borderTop: "1px solid var(--fc-border)" }}>
-            <h2 style={{ fontSize: "1.05rem", margin: "0 0 1rem" }}>{locale === "ar" ? "ماذا حدث فعلياً؟" : "What Actually Happened?"}</h2>
+            <h2 style={{ fontSize: "1.05rem", margin: "0 0 1rem" }}>{locale === "ar" ? "ماذا حدث فعلاً؟" : "What Actually Happened?"}</h2>
             {!forecast.outcomeRecord ? (
               <p style={{ color: "var(--fc-text-muted)" }}>
                 {locale === "ar" ? "لم تُسجَّل نتيجة لهذا القرار بعد." : "No outcome recorded for this decision yet."}
@@ -167,7 +167,7 @@ export default function RevisitDecisionPage({ params }: { params: { locale: stri
                 )}
                 <SectionList heading={locale === "ar" ? "ما الذي كان صحيحاً" : "What went right"} items={forecast.outcomeRecord.whatWentRight} />
                 <SectionList heading={locale === "ar" ? "ما الذي فات" : "What was missed"} items={forecast.outcomeRecord.whatWasMissed} />
-                <SectionList heading={locale === "ar" ? "افتراضات غلط" : "Wrong assumptions"} items={forecast.outcomeRecord.wrongAssumptions} />
+                <SectionList heading={locale === "ar" ? "افتراضات خاطئة" : "Wrong assumptions"} items={forecast.outcomeRecord.wrongAssumptions} />
               </>
             )}
           </section>

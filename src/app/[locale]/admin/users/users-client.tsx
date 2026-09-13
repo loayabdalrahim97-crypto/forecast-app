@@ -59,7 +59,7 @@ export function UsersClient({ locale }: { locale: string }) {
 
         <input
           className="fc-input"
-          placeholder={locale === "ar" ? "ابحث بالإيميل أو الاسم..." : "Search by email or name..."}
+          placeholder={locale === "ar" ? "ابحث بالبريد الإلكتروني أو الاسم..." : "Search by email or name..."}
           value={q}
           onChange={(e) => {
             setPage(1);
@@ -71,7 +71,7 @@ export function UsersClient({ locale }: { locale: string }) {
         {users === null ? (
           <p>{locale === "ar" ? "جاري التحميل..." : "Loading..."}</p>
         ) : users.length === 0 ? (
-          <p style={{ color: "var(--fc-text-muted)" }}>{locale === "ar" ? "ما في نتائج." : "No results."}</p>
+          <p style={{ color: "var(--fc-text-muted)" }}>{locale === "ar" ? "لا توجد نتائج." : "No results."}</p>
         ) : (
           users.map((u) => (
             <div key={u.id} className="fc-strip" style={{ marginBottom: "0.6rem", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>

@@ -60,7 +60,7 @@ export default function InsightsPage({ params }: { params: { locale: string } })
   if (status === "unauthenticated") {
     return (
       <main style={{ padding: "1.5rem 2rem 4rem", maxWidth: 640, margin: "0 auto" }}>
-        <p>{locale === "ar" ? "لازم تسجل دخول لأول." : "You need to sign in first."}</p>
+        <p>{locale === "ar" ? "يجب تسجيل الدخول أولاً." : "You need to sign in first."}</p>
       </main>
     );
   }

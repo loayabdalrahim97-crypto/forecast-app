@@ -66,7 +66,7 @@ export default function SettingsPage({ params }: { params: { locale: string } })
   if (status === "unauthenticated") {
     return (
       <main style={{ padding: "1.5rem 2rem 4rem", maxWidth: 640, margin: "0 auto" }}>
-        <p>{locale === "ar" ? "لازم تسجل دخول لأول." : "You need to sign in first."}</p>
+        <p>{locale === "ar" ? "يجب تسجيل الدخول أولاً." : "You need to sign in first."}</p>
       </main>
     );
   }
@@ -111,7 +111,7 @@ export default function SettingsPage({ params }: { params: { locale: string } })
                 </button>
                 {saveStatus === "saved" && (
                   <span style={{ marginInlineStart: "0.75rem", color: "var(--fc-positive)", fontSize: "0.85rem" }}>
-                    {locale === "ar" ? "انحفظ" : "Saved"}
+                    {locale === "ar" ? "تم الحفظ" : "Saved"}
                   </span>
                 )}
               </form>
@@ -121,7 +121,7 @@ export default function SettingsPage({ params }: { params: { locale: string } })
               <h2 style={{ fontSize: "1rem", margin: "0 0 0.75rem" }}>{locale === "ar" ? "الخصوصية" : "Privacy"}</h2>
               <p style={{ fontSize: "0.85rem", color: "var(--fc-text-secondary)", margin: "0 0 0.75rem" }}>
                 {locale === "ar"
-                  ? "تقدر تحذف أي توقع لحاله من صفحة \"توقعاتي\" — افتح التوقع ودوس \"احذف\"."
+                  ? "يمكنك حذف أي توقع بشكل منفرد من صفحة \"توقعاتي\" — افتح التوقع واضغط \"احذف\"."
                   : 'You can delete any individual forecast from "My Forecasts" — open it and press "Delete".'}
               </p>
               <button

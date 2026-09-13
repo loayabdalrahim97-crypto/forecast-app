@@ -461,10 +461,10 @@ export default function NewForecastPage({ params }: { params: { locale: string }
                 </p>
                 {[
                   { items: forecastDiff.addedFacts, label: locale === "ar" ? "حقائق جديدة" : "New facts", sign: "+" },
-                  { items: forecastDiff.removedAssumptions, label: locale === "ar" ? "افتراضات اترفعت" : "Assumptions resolved", sign: "−" },
-                  { items: forecastDiff.removedUnknowns, label: locale === "ar" ? "مجاهيل اتوضحت" : "Unknowns clarified", sign: "−" },
+                  { items: forecastDiff.removedAssumptions, label: locale === "ar" ? "افتراضات لم تعد قائمة" : "Assumptions resolved", sign: "−" },
+                  { items: forecastDiff.removedUnknowns, label: locale === "ar" ? "معلومات مجهولة اتضحت" : "Unknowns clarified", sign: "−" },
                   { items: forecastDiff.addedAssumptions, label: locale === "ar" ? "افتراضات جديدة" : "New assumptions", sign: "+" },
-                  { items: forecastDiff.addedUnknowns, label: locale === "ar" ? "مجاهيل جديدة" : "New unknowns", sign: "+" },
+                  { items: forecastDiff.addedUnknowns, label: locale === "ar" ? "معلومات مجهولة جديدة" : "New unknowns", sign: "+" },
                 ]
                   .filter((g) => g.items.length > 0)
                   .map((g) => (

@@ -20,7 +20,7 @@ export default function UsagePage({ params }: { params: { locale: string } }) {
   if (status === "unauthenticated") {
     return (
       <main style={{ padding: "1.5rem 2rem 4rem", maxWidth: 640, margin: "0 auto" }}>
-        <p>{locale === "ar" ? "لازم تسجل دخول لأول." : "You need to sign in first."}</p>
+        <p>{locale === "ar" ? "يجب تسجيل الدخول أولاً." : "You need to sign in first."}</p>
       </main>
     );
   }
@@ -48,7 +48,7 @@ export default function UsagePage({ params }: { params: { locale: string } }) {
           </p>
           <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--fc-text-muted)" }}>
             {locale === "ar"
-              ? "حسابك المسجّل ما عليه حد أقصى لعدد التوقعات هلق — نظام حصص/اشتراكات حقيقي جاي بمرحلة قادمة."
+              ? "حسابك المسجّل ليس عليه حد أقصى لعدد التوقعات حالياً — نظام حصص/اشتراكات حقيقي سيُطرح في مرحلة قادمة."
               : "Your signed-in account has no forecast limit right now — a real usage/credit system is coming in a later phase."}
           </p>
         </div>

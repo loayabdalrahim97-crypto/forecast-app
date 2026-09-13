@@ -66,7 +66,7 @@ export default function ProfilePage({ params }: { params: { locale: string } }) 
   if (status === "unauthenticated") {
     return (
       <main style={{ padding: "1.5rem 2rem 4rem", maxWidth: 480, margin: "0 auto" }}>
-        <p>{locale === "ar" ? "لازم تسجل دخول لأول." : "You need to sign in first."}</p>
+        <p>{locale === "ar" ? "يجب تسجيل الدخول أولاً." : "You need to sign in first."}</p>
       </main>
     );
   }
@@ -131,12 +131,12 @@ export default function ProfilePage({ params }: { params: { locale: string } }) 
           </button>
           {saveStatus === "saved" && (
             <span style={{ marginInlineStart: "0.75rem", color: "var(--fc-positive)", fontSize: "0.85rem" }}>
-              {locale === "ar" ? "انحفظ" : "Saved"}
+              {locale === "ar" ? "تم الحفظ" : "Saved"}
             </span>
           )}
           {saveStatus === "error" && (
             <span style={{ marginInlineStart: "0.75rem", color: "var(--fc-band-high)", fontSize: "0.85rem" }}>
-              {locale === "ar" ? "صار خطأ" : "Something went wrong"}
+              {locale === "ar" ? "حدث خطأ" : "Something went wrong"}
             </span>
           )}
         </form>
