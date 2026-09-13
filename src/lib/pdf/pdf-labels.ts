@@ -54,7 +54,7 @@ export const PDF_LABELS = {
   },
   ar: {
     languageName: "العربية",
-    brand: "فورسي",
+    brand: "Foresee",
     tagline: "ذكاء اصطناعي لاتخاذ القرار",
     reportTitle: "تقرير فورسي",
     page: "صفحة",
