@@ -21,8 +21,23 @@ export function middleware(request: NextRequest) {
   const acceptLanguage = request.headers.get("accept-language")?.split(",")[0] ?? null;
   const locale = resolveLocale({ acceptLanguage });
 
+  // Behind Railway's proxy, request.nextUrl's origin can resolve to the
+  // internal *.up.railway.app hostname rather than the public custom
+  // domain the visitor actually used — cloning it blindly then leaks
+  // that internal domain into the redirect's address bar. Explicitly
+  // rebuild the origin from the forwarded headers (what the visitor's
+  // browser actually sees) so the redirect stays on the domain they
+  // came in on.
+  const forwardedHost = request.headers.get("x-forwarded-host") ?? request.headers.get("host");
+  const forwardedProto = request.headers.get("x-forwarded-proto") ?? "https";
+
   const url = request.nextUrl.clone();
   url.pathname = `/${locale}${pathname}`;
+  if (forwardedHost) {
+    url.host = forwardedHost;
+    url.protocol = `${forwardedProto}:`;
+    url.port = "";
+  }
   return NextResponse.redirect(url);
 }
 
