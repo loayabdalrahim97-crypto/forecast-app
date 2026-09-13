@@ -1,0 +1,168 @@
+{
+  "nav": {
+    "home": "الرئيسية",
+    "howItWorks": "كيف يعمل",
+    "pricing": "الأسعار",
+    "login": "تسجيل الدخول",
+    "signup": "إنشاء حساب"
+  },
+  "hero": {
+    "title": "ماذا يمكن أن يحدث بعد ذلك؟",
+    "subtitle": "ذكاء سلوكي للتنبؤ بالسيناريوهات",
+    "tagline": "Foresee لا يتنبأ بالمستقبل، بل يساعدك على الاستعداد لما قد يحدث بعد ذلك.",
+    "ctaPrimary": "جرّب توقعًا مجانيًا",
+    "ctaSecondary": "شاهد كيف يعمل"
+  },
+  "forecast": {
+    "situationLabel": "صف موقفك",
+    "situationPlaceholder": "مثال: طلب مني مديري اجتماعًا غدًا دون أن يوضح السبب...",
+    "submitButton": "حلل الموقف",
+    "analyzingText": "جاري التحليل...",
+    "factsHeading": "الحقائق",
+    "assumptionsHeading": "الافتراضات",
+    "unknownsHeading": "المعلومات المجهولة",
+    "followUpHeading": "أسئلة إضافية قد تساعد",
+    "scenariosHeading": "السيناريوهات المحتملة",
+    "generateScenariosButton": "ولّد السيناريوهات",
+    "generatingScenariosText": "جاري توليد السيناريوهات...",
+    "likelihood": "الاحتمالية",
+    "confidence": "درجة الثقة",
+    "impact": "الأثر",
+    "recommendedResponse": "الاستجابة المقترحة",
+    "contingencyPlan": "خطة الطوارئ"
+  },
+  "outcome": {
+    "heading": "ماذا حدث فعلياً؟",
+    "label": "صف النتيجة الفعلية",
+    "placeholder": "مثال: عرض عليّ مديري زيادة مشروطة بمراجعة أداء بعد ثلاثة أشهر...",
+    "submitButton": "سجّل النتيجة",
+    "recordingText": "جارٍ التسجيل...",
+    "matchedScenario": "أقرب سيناريو مطابق",
+    "noMatch": "لم تُطابق النتيجة أيًا من السيناريوهات المطروحة",
+    "whatWentRight": "ما الذي كان التوقع محقاً فيه",
+    "whatWasMissed": "ما الذي فات التوقع",
+    "wrongAssumptions": "افتراضات تبيّن أنها غير صحيحة",
+    "alreadyRecorded": "سبق أن سجّلت نتيجة لهذا التوقع.",
+    "betterThanExpected": "حدث ما هو أفضل من المتوقع",
+    "asExpected": "حدث كما هو متوقع",
+    "worseThanExpected": "حدث ما هو أسوأ",
+    "reminderLabel": "ذكّرني بتسجيل هذا",
+    "reminderNone": "بدون تذكير",
+    "reminder24h": "٢٤ ساعة",
+    "reminder3d": "٣ أيام",
+    "reminder1w": "أسبوع",
+    "reminderNote": "يُحفظ هذا كتفضيل — لم تُفعَّل عملية إرسال التذكير الفعلي بعد."
+  },
+  "update": {
+    "button": "حدّث التوقع بمعلومات إضافية",
+    "label": "أضف معلومة جديدة",
+    "placeholder": "مثال: أخبرني أن السبب خفضٌ في ميزانية الفريق بأكمله...",
+    "submitButton": "أعد الحساب",
+    "recalculatingText": "جاري إعادة الحساب...",
+    "staleScenarios": "الموقف تغيّر — ولّد السيناريوهات من جديد حتى تعكس المعلومة الجديدة."
+  },
+  "realityCheck": {
+    "solidFacts": "حقائق راسخة",
+    "assumptionsGaps": "افتراضات ومعلومات ناقصة",
+    "grounded": "مبني على بيانات حقيقية",
+    "highAssumption": "اعتماد كبير على الافتراضات",
+    "mixed": "أدلة متوازنة"
+  },
+  "decision": {
+    "heading": "هل تواجه قرارًا؟",
+    "optionsLabel": "اكتب خياراتك مفصولة بفاصلة (اختياري — اتركه فارغًا ودع Foresee يستنتجها)",
+    "optionsPlaceholder": "مثال: استقالة، بقاء",
+    "submitButton": "حلل القرار",
+    "analyzingText": "جاري تحليل القرار...",
+    "recommendation": "التوصية",
+    "keyVariables": "المتغيرات الرئيسية",
+    "bestCase": "أفضل احتمال",
+    "baseCase": "الاحتمال الأرجح",
+    "worstCase": "أسوأ احتمال",
+    "risk": "المخاطرة",
+    "reversibility": "قابلية التراجع",
+    "upside": "الإيجابيات",
+    "downside": "السلبيات"
+  },
+  "errors": {
+    "generic": "حدث خطأ ما. حاول مرة أخرى.",
+    "rateLimited": "لقد وصلت إلى الحد الأقصى للتوقعات المجانية. أنشئ حسابًا للمتابعة.",
+    "notAuthenticated": "الرجاء تسجيل الدخول لحفظ ملفك السلوكي."
+  },
+  "onboarding": {
+    "title": "تعرّف على أسلوبك في اتخاذ القرار",
+    "intro": "بضعة أسئلة سريعة — بدون تشخيص، فقط أنماط تساعد Foresee على تخصيص سيناريوهاتك.",
+    "progress": "سؤال {current} من {total}",
+    "finishButton": "إنهاء",
+    "nextButton": "التالي",
+    "backButton": "رجوع",
+    "completeTitle": "تم الحفظ",
+    "completeBody": "تم حفظ ملفك السلوكي. يمكنك تحديثه في أي وقت.",
+    "questions": {
+      "decision_style": {
+        "prompt": "عند اتخاذ قرار، أنت أقرب إلى...",
+        "options": { "analytical": "تحليلي — أزن الإيجابيات والسلبيات", "intuitive": "حدسي — أعتمد على شعوري", "mixed": "مزيج من الاثنين" }
+      },
+      "risk_tolerance": {
+        "prompt": "ما مدى راحتك في تحمل المخاطر؟",
+        "options": { "low": "أفضّل الأمان", "moderate": "بعض المخاطرة مقبول", "high": "مرتاح مع المخاطرة" }
+      },
+      "conflict_style": {
+        "prompt": "عند وجود خلاف، عادةً...",
+        "options": { "direct": "أتعامل معه مباشرة", "diplomatic": "أبحث عن حل وسط", "avoidant": "أحاول تجنبه" }
+      },
+      "communication_style": {
+        "prompt": "أسلوبك في التواصل أقرب إلى...",
+        "options": { "direct": "مباشر وواضح", "indirect": "غير مباشر ومرتبط بالسياق", "expressive": "تعبيري ومفصّل" }
+      },
+      "uncertainty_tolerance": {
+        "prompt": "كيف تتعامل مع عدم معرفة ما سيحدث؟",
+        "options": { "low": "يزعجني الأمر", "moderate": "أستطيع التعامل معه", "high": "مرتاح معه" }
+      },
+      "planning_style": {
+        "prompt": "تفضّل أن...",
+        "options": { "structured": "تخطط بالتفصيل", "flexible": "تضع خطة مرنة", "spontaneous": "تسير مع الأحداث" }
+      },
+      "decision_speed": {
+        "prompt": "عند اتخاذ قرار، عادةً...",
+        "options": { "fast": "تقرر بسرعة", "deliberate": "تأخذ وقتك", "slow": "تحتاج وقتاً طويلاً" }
+      },
+      "pressure_response": {
+        "prompt": "تحت الضغط، تصبح...",
+        "options": { "focused": "أكثر تركيزاً", "stressed": "أكثر توتراً", "variable": "يعتمد على الموقف" }
+      },
+      "social_interpretation": {
+        "prompt": "عندما تكون رسالة شخص غامضة، عادةً تفسّرها...",
+        "options": { "neutral": "بشكل محايد إلى أن تعرف المزيد", "positive": "غالباً أمراً عادياً", "cautious": "أمراً يستحق الحذر" }
+      },
+      "negative_interpretation": {
+        "prompt": "هل تميل إلى افتراض الأسوأ عندما تكون المعلومات ناقصة؟",
+        "options": { "yes": "نعم، كثيراً", "no": "لا، ليس كثيراً" }
+      },
+      "overthinking": {
+        "prompt": "هل تميل إلى إعادة التفكير بالقرارات كثيراً؟",
+        "options": { "yes": "نعم، كثيراً", "no": "لا، ليس كثيراً" }
+      },
+      "conflict_avoidance": {
+        "prompt": "هل تميل إلى تجنب الخلاف حتى لو كان هناك ما يزعجك؟",
+        "options": { "yes": "نعم، كثيراً", "no": "لا، ليس كثيراً" }
+      },
+      "catastrophizing": {
+        "prompt": "هل تميل إلى تخيل أسوأ احتمال أولاً؟",
+        "options": { "yes": "نعم، كثيراً", "no": "لا، ليس كثيراً" }
+      },
+      "risk_sensitivity": {
+        "prompt": "إلى أي مدى تؤثر الاحتمالات السلبية على قراراتك؟",
+        "options": { "low": "ليس كثيراً", "moderate": "بشكل معتدل", "high": "كثيراً" }
+      },
+      "need_for_certainty": {
+        "prompt": "ما مدى أهمية أن تكون متأكداً قبل أن تتصرف؟",
+        "options": { "low": "ليس مهماً كثيراً", "moderate": "مهم إلى حد ما", "high": "مهم جداً" }
+      },
+      "adaptability": {
+        "prompt": "عندما تتغير الخطط فجأة...",
+        "options": { "low": "يصعب علي التأقلم", "moderate": "أتأقلم ببعض الجهد", "high": "أتأقلم بسهولة" }
+      }
+    }
+  }
+}
