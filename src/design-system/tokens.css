@@ -71,8 +71,8 @@
 
   /* Type — set as vars by next/font in the locale layout; these are
      the fallback stacks if that hasn't loaded yet. */
-  --fc-font-heading: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
-  --fc-font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --fc-font-heading: "Space Grotesk", var(--fc-font-arabic-loaded), ui-sans-serif, system-ui, sans-serif;
+  --fc-font-sans: "IBM Plex Sans", var(--fc-font-arabic-loaded), ui-sans-serif, system-ui, sans-serif;
   --fc-font-mono: "IBM Plex Mono", ui-monospace, monospace;
 }
 

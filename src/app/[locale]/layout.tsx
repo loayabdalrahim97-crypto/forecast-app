@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import Script from "next/script";
-import { Space_Grotesk, IBM_Plex_Sans } from "next/font/google";
+import { Space_Grotesk, IBM_Plex_Sans, Noto_Sans_Arabic } from "next/font/google";
 import { SUPPORTED_LOCALES, isRtl } from "@/lib/i18n/config";
 import { Providers } from "../providers";
 import { NavBar } from "@/components/nav-bar";
@@ -26,6 +26,22 @@ const body = IBM_Plex_Sans({
   display: "swap",
 });
 
+// Neither font above ships Arabic glyphs (both are "latin"-subset only),
+// so every Arabic character on this site — including inside the
+// generated PDF report, which is captured from this same live DOM —
+// was falling back to whatever generic system font each visitor's
+// browser happened to substitute, which is inconsistent in quality and
+// was confirmed (by rendering an actual exported report) to garble
+// specific letter combinations in certain headings. Loading a real
+// Arabic-covering font here fixes it at the source for the whole site,
+// not just the PDF.
+const arabic = Noto_Sans_Arabic({
+  subsets: ["arabic"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--fc-font-arabic-loaded",
+  display: "swap",
+});
+
 export function generateStaticParams() {
   return SUPPORTED_LOCALES.map((locale) => ({ locale }));
 }
@@ -40,7 +56,7 @@ export default function LocaleLayout({
   const dir = isRtl(locale) ? "rtl" : "ltr";
 
   return (
-    <html lang={locale} dir={dir} className={`${heading.variable} ${body.variable}`}>
+    <html lang={locale} dir={dir} className={`${heading.variable} ${body.variable} ${arabic.variable}`}>
       {GA_MEASUREMENT_ID && (
         <>
           <Script

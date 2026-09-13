@@ -18,6 +18,15 @@ export async function renderHtmlToPdf(html: string, filename: string): Promise<v
   document.body.appendChild(container);
 
   try {
+    // Wait for every web font (including the Arabic font, which may
+    // still be swapping in from its "loading" placeholder) to finish
+    // loading before capturing — capturing mid-swap is a well-known
+    // cause of inconsistent/garbled glyph shaping in canvas-rendered
+    // text, especially for connected scripts like Arabic.
+    if (typeof document !== "undefined" && "fonts" in document) {
+      await document.fonts.ready;
+    }
+
     const target = container.firstElementChild as HTMLElement;
     const canvas = await html2canvas(target, {
       backgroundColor: "#ffffff",

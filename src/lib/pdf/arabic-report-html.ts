@@ -63,7 +63,7 @@ export function buildArabicReportHtml(data: ForecastReportData): string {
   const topScenario = sortedScenarios.find((s) => s.outcomeType === "most_likely") ?? sortedScenarios[0];
 
   return `
-  <div dir="rtl" lang="ar" style="font-family: 'Segoe UI', Tahoma, Arial, sans-serif; color:#141414; background:#ffffff; width:750px; padding:40px; line-height:1.7; font-size:14px;">
+  <div dir="rtl" lang="ar" style="font-family: var(--fc-font-sans, 'Segoe UI'), Tahoma, Arial, sans-serif; color:#141414; background:#ffffff; width:750px; padding:40px; line-height:1.9; font-size:14px;">
     <div style="border-bottom:1px solid #ddd; padding-bottom:14px; margin-bottom:16px;">
       <h1 style="font-size:26px; color:#0f2d2a; margin:0 0 4px;">${escapeHtml(S.brand)}</h1>
       <p style="color:#5a9687; margin:0; font-size:13px;">${escapeHtml(S.tagline)}</p>
