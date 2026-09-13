@@ -63,7 +63,7 @@ function scenarioBadge(outcomeType: string | null): { label: string; color: stri
 function scenarioCard(sc: ForecastReportData["scenarios"][number]): string {
   const badge = scenarioBadge(sc.outcomeType);
   return `
-    <div style="flex:1;min-width:0;border-top:3px solid ${badge.color};padding:10px 4px 0;">
+    <div data-keep="1" style="flex:1;min-width:0;border-top:3px solid ${badge.color};padding:10px 4px 0;">
       <p style="margin:0 0 4px;font-size:10px;font-weight:700;color:${badge.color};">${escapeHtml(badge.label)}</p>
       <p style="margin:0 0 5px;font-size:12.5px;font-weight:700;color:#141414;line-height:1.35;">${escapeHtml(sc.title)}</p>
       <p style="margin:0 0 8px;font-size:10px;color:#666;line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">${escapeHtml(sc.description)}</p>
@@ -132,7 +132,7 @@ export function buildArabicReportHtml(data: ForecastReportData): string {
   return `
   <div dir="rtl" lang="ar" style="font-family: var(--fc-font-sans, 'Segoe UI'), Tahoma, Arial, sans-serif; color:#141414; background:#ffffff; width:750px; padding:40px; line-height:1.7; font-size:13px;">
 
-    <div style="border-bottom:1px solid #ddd; padding-bottom:14px; margin-bottom:16px;">
+    <div data-keep="1" style="border-bottom:1px solid #ddd; padding-bottom:14px; margin-bottom:16px;">
       <h1 style="font-size:24px; color:#0f2d2a; margin:0 0 3px;">Foresee</h1>
       <p style="color:#5a9687; margin:0; font-size:12px;">AI Decision Intelligence</p>
     </div>
@@ -141,34 +141,42 @@ export function buildArabicReportHtml(data: ForecastReportData): string {
       ${escapeHtml(S.date)}: ${dateStr} &nbsp;·&nbsp; ${escapeHtml(S.language)}: العربية
     </p>
 
-    ${heading(S.bottomLine)}
-    <p style="margin:0 0 18px;font-weight:700;font-size:13px;">${escapeHtml(bottomLineText)}</p>
-
-    ${heading(S.situation, 13)}
-    <p style="margin:0 0 18px;color:#333;">${escapeHtml(data.situationText)}</p>
-
-    ${heading(S.dataQuality, 13)}
-    <div style="display:flex;justify-content:space-between;font-size:10px;color:#5a5a5a;margin:0 0 3px;">
-      <span>${solidFactsPct}% ${escapeHtml(S.knownFacts)}</span>
-      <span>${100 - solidFactsPct}% ${escapeHtml(S.assumptions)}/${escapeHtml(S.unknowns)}</span>
+    <div data-keep="1">
+      ${heading(S.bottomLine)}
+      <p style="margin:0 0 18px;font-weight:700;font-size:13px;">${escapeHtml(bottomLineText)}</p>
     </div>
-    <div style="display:flex;height:5px;border-radius:3px;overflow:hidden;margin:0 0 6px;">
-      <div style="width:${solidFactsPct}%;background:${GREEN};"></div>
-      <div style="width:${100 - solidFactsPct}%;background:${AMBER};"></div>
+
+    <div data-keep="1">
+      ${heading(S.situation, 13)}
+      <p style="margin:0 0 18px;color:#333;">${escapeHtml(data.situationText)}</p>
     </div>
-    <p style="margin:0 0 22px;font-size:10px;color:#999;">
-      ${data.facts.length} ${escapeHtml(S.knownFacts)} · ${data.assumptions.length} ${escapeHtml(S.assumptions)} · ${data.unknowns.length} ${escapeHtml(S.unknowns)} — ${escapeHtml(data.realityCheckLabel)}
-    </p>
+
+    <div data-keep="1">
+      ${heading(S.dataQuality, 13)}
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:#5a5a5a;margin:0 0 3px;">
+        <span>${solidFactsPct}% ${escapeHtml(S.knownFacts)}</span>
+        <span>${100 - solidFactsPct}% ${escapeHtml(S.assumptions)}/${escapeHtml(S.unknowns)}</span>
+      </div>
+      <div style="display:flex;height:5px;border-radius:3px;overflow:hidden;margin:0 0 6px;">
+        <div style="width:${solidFactsPct}%;background:${GREEN};"></div>
+        <div style="width:${100 - solidFactsPct}%;background:${AMBER};"></div>
+      </div>
+      <p style="margin:0 0 22px;font-size:10px;color:#999;">
+        ${data.facts.length} ${escapeHtml(S.knownFacts)} · ${data.assumptions.length} ${escapeHtml(S.assumptions)} · ${data.unknowns.length} ${escapeHtml(S.unknowns)} — ${escapeHtml(data.realityCheckLabel)}
+      </p>
+    </div>
 
     ${
       sortedScenarios.length > 0
         ? `
-      ${heading(S.scenarioMap, 14)}
+      <div data-keep="1">
+        ${heading(S.scenarioMap, 14)}
+      </div>
       ${pathGroups
         .map(
           (group) => `
         ${group.pathLabel ? `<p style="margin:12px 0 8px;font-size:11.5px;font-weight:700;color:#0f3c37;">${escapeHtml(S.decisionPath)}: ${escapeHtml(group.pathLabel)}</p>` : ""}
-        <div style="display:flex;gap:14px;margin:0 0 20px;align-items:stretch;">
+        <div data-keep="1" style="display:flex;gap:14px;margin:0 0 20px;align-items:stretch;">
           ${group.scenarios.map(scenarioCard).join("")}
         </div>`
         )
@@ -179,7 +187,7 @@ export function buildArabicReportHtml(data: ForecastReportData): string {
 
     <div style="page-break-before: always;"></div>
 
-    <div style="display:flex;gap:20px;margin:0 0 20px;">
+    <div data-keep="1" style="display:flex;gap:20px;margin:0 0 20px;">
       ${column(S.knownFacts, data.facts, GREEN)}
       ${column(S.assumptions, data.assumptions, AMBER)}
       ${column(S.unknowns, data.unknowns, GREY)}
@@ -190,15 +198,19 @@ export function buildArabicReportHtml(data: ForecastReportData): string {
     ${
       data.recommendedAction
         ? `
-      ${heading(S.decisionSupport, 14)}
-      <p style="margin:0 0 14px;font-weight:700;font-size:12px;">${escapeHtml(data.recommendedAction.summary)}</p>
+      <div data-keep="1">
+        ${heading(S.decisionSupport, 14)}
+        <p style="margin:0 0 14px;font-weight:700;font-size:12px;">${escapeHtml(data.recommendedAction.summary)}</p>
+      </div>
       ${
         data.recommendedAction.conditionalBranches.length > 0
           ? `
-        ${heading(S.ifThen, 12)}
-        ${data.recommendedAction.conditionalBranches
-          .map((b) => `<p style="margin:0 0 7px;font-size:11px;">${escapeHtml(b.condition)} ← ${escapeHtml(b.action)}</p>`)
-          .join("")}
+        <div data-keep="1">
+          ${heading(S.ifThen, 12)}
+          ${data.recommendedAction.conditionalBranches
+            .map((b) => `<p style="margin:0 0 7px;font-size:11px;">${escapeHtml(b.condition)} ← ${escapeHtml(b.action)}</p>`)
+            .join("")}
+        </div>
       `
           : ""
       }
