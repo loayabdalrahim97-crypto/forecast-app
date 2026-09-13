@@ -10,7 +10,7 @@ function escapeHtml(s: string): string {
 function section(heading: string, items: string[]): string {
   if (items.length === 0) return "";
   return `
-    <h2 style="font-size:15px;color:#0f3c37;margin:14px 0 6px;">${escapeHtml(heading)}</h2>
+    <h2 style="line-height:1.4;direction:rtl;font-size:15px;color:#0f3c37;margin:14px 0 6px;">${escapeHtml(heading)}</h2>
     <ul style="margin:0 0 10px;padding-inline-start:20px;">
       ${items.map((i) => `<li style="margin-bottom:5px;line-height:1.6;">${escapeHtml(i)}</li>`).join("")}
     </ul>`;
@@ -73,17 +73,17 @@ export function buildArabicReportHtml(data: ForecastReportData): string {
       ${escapeHtml(S.date)}: ${dateStr} &nbsp;·&nbsp; ${escapeHtml(S.language)}: العربية &nbsp;·&nbsp; ${escapeHtml(S.dataQuality)}: ${escapeHtml(data.realityCheckLabel)}
     </p>
 
-    <h2 style="font-size:16px;color:#0f3c37;">${escapeHtml(S.situation)}</h2>
+    <h2 style="line-height:1.4;direction:rtl;font-size:16px;color:#0f3c37;">${escapeHtml(S.situation)}</h2>
     <p style="margin:0 0 14px;">${escapeHtml(data.situationText)}</p>
 
     ${data.recommendedAction ? `
-      <h2 style="font-size:16px;color:#0f3c37;">${escapeHtml(S.executiveSummary)}</h2>
+      <h2 style="line-height:1.4;direction:rtl;font-size:16px;color:#0f3c37;">${escapeHtml(S.executiveSummary)}</h2>
       <p style="margin:0 0 4px;">${factsAssumptionsLine}</p>
       ${topScenario ? `<p style="margin:0 0 14px;">السيناريو الأرجح المعتمد في هذا التحليل: "${escapeHtml(topScenario.title)}".</p>` : ""}
     ` : ""}
 
     <div style="border:1px solid #ddd; border-radius:8px; padding:14px; background:#f7f9f8; margin-bottom:10px;">
-      <h2 style="font-size:14px;color:#0f3c37;margin:0 0 6px;">${escapeHtml(S.bottomLine)}</h2>
+      <h2 style="line-height:1.4;direction:rtl;font-size:14px;color:#0f3c37;margin:0 0 6px;">${escapeHtml(S.bottomLine)}</h2>
       <p style="margin:0; font-weight:600;">${escapeHtml(data.recommendedAction?.summary ?? (topScenario?.recommendedResponse ?? S.notAvailable))}</p>
     </div>
 
@@ -95,21 +95,21 @@ export function buildArabicReportHtml(data: ForecastReportData): string {
 
     <div style="page-break-before: always;"></div>
 
-    <h2 style="font-size:16px;color:#0f3c37;">${escapeHtml(S.keyVariables)}</h2>
+    <h2 style="line-height:1.4;direction:rtl;font-size:16px;color:#0f3c37;">${escapeHtml(S.keyVariables)}</h2>
     ${variableGroups.map(([h, items]) => section(h, items)).join("")}
     ${section(S.whatCouldChange, data.whatCouldChangeForecast)}
     ${data.limitsOfForecast ? `
-      <h2 style="font-size:14px;color:#888;margin:14px 0 6px;">${escapeHtml(S.limitsOfForecast)}</h2>
+      <h2 style="line-height:1.4;direction:rtl;font-size:14px;color:#888;margin:14px 0 6px;">${escapeHtml(S.limitsOfForecast)}</h2>
       <p style="margin:0 0 10px; color:#888; font-size:12.5px; font-style:italic;">${escapeHtml(data.limitsOfForecast)}</p>
     ` : ""}
 
     <div style="page-break-before: always;"></div>
 
-    <h2 style="font-size:16px;color:#0f3c37;">${escapeHtml(S.scenarioMap)}</h2>
+    <h2 style="line-height:1.4;direction:rtl;font-size:16px;color:#0f3c37;">${escapeHtml(S.scenarioMap)}</h2>
     ${pathGroups
       .map(
         (group) => `
-      ${group.pathLabel ? `<h3 style="font-size:14px;color:#0f3c37;margin:14px 0 6px;">${escapeHtml(S.decisionPath)}: ${escapeHtml(group.pathLabel)}</h3>` : ""}
+      ${group.pathLabel ? `<h3 style="line-height:1.4;direction:rtl;font-size:14px;color:#0f3c37;margin:14px 0 6px;">${escapeHtml(S.decisionPath)}: ${escapeHtml(group.pathLabel)}</h3>` : ""}
       ${group.scenarios
         .map(
           (sc) => `
@@ -126,15 +126,15 @@ export function buildArabicReportHtml(data: ForecastReportData): string {
 
     <div style="page-break-before: always;"></div>
 
-    <h2 style="font-size:16px;color:#0f3c37;">${escapeHtml(S.scenarioDetails)}</h2>
+    <h2 style="line-height:1.4;direction:rtl;font-size:16px;color:#0f3c37;">${escapeHtml(S.scenarioDetails)}</h2>
     ${pathGroups
       .map(
         (group) => `
-      ${group.pathLabel ? `<h3 style="font-size:15px;color:#0f3c37;margin:16px 0 6px;">${escapeHtml(S.decisionPath)}: ${escapeHtml(group.pathLabel)}</h3>` : ""}
+      ${group.pathLabel ? `<h3 style="line-height:1.4;direction:rtl;font-size:15px;color:#0f3c37;margin:16px 0 6px;">${escapeHtml(S.decisionPath)}: ${escapeHtml(group.pathLabel)}</h3>` : ""}
       ${group.scenarios
         .map(
           (sc) => `
-      <h3 style="font-size:14px; margin:14px 0 4px;">${escapeHtml(scenarioLabel(sc.outcomeType))} — ${escapeHtml(sc.title)}</h3>
+      <h3 style="line-height:1.4;direction:rtl;font-size:14px; margin:14px 0 4px;">${escapeHtml(scenarioLabel(sc.outcomeType))} — ${escapeHtml(sc.title)}</h3>
       <p style="margin:0 0 8px;">${escapeHtml(sc.description)}</p>
       ${section(S.whyItCouldHappen, sc.evidence)}
       ${section(S.whatWouldTrigger, sc.triggers)}
@@ -149,11 +149,11 @@ export function buildArabicReportHtml(data: ForecastReportData): string {
 
     ${data.recommendedAction ? `
       <div style="page-break-before: always;"></div>
-      <h2 style="font-size:16px;color:#0f3c37;">${escapeHtml(S.decisionSupport)}</h2>
-      <h3 style="font-size:14px;">${escapeHtml(S.recommendedAction)}</h3>
+      <h2 style="line-height:1.4;direction:rtl;font-size:16px;color:#0f3c37;">${escapeHtml(S.decisionSupport)}</h2>
+      <h3 style="line-height:1.4;direction:rtl;font-size:14px;">${escapeHtml(S.recommendedAction)}</h3>
       <p style="margin:0 0 10px; font-weight:600;">${escapeHtml(data.recommendedAction.summary)}</p>
       ${data.recommendedAction.conditionalBranches.length > 0 ? `
-        <h3 style="font-size:14px;">${escapeHtml(S.ifThen)}</h3>
+        <h3 style="line-height:1.4;direction:rtl;font-size:14px;">${escapeHtml(S.ifThen)}</h3>
         ${data.recommendedAction.conditionalBranches
           .map((b) => `<p style="margin:0 0 6px;">${escapeHtml(b.condition)} ← ${escapeHtml(b.action)}</p>`)
           .join("")}
@@ -162,15 +162,15 @@ export function buildArabicReportHtml(data: ForecastReportData): string {
 
     ${data.updateNote ? `
       <div style="page-break-before: always;"></div>
-      <h2 style="font-size:16px;color:#0f3c37;">${escapeHtml(S.updateHistory)}</h2>
-      <h3 style="font-size:14px;">${escapeHtml(S.newInformation)}</h3>
+      <h2 style="line-height:1.4;direction:rtl;font-size:16px;color:#0f3c37;">${escapeHtml(S.updateHistory)}</h2>
+      <h3 style="line-height:1.4;direction:rtl;font-size:14px;">${escapeHtml(S.newInformation)}</h3>
       <p style="margin:0; white-space:pre-line;">${escapeHtml(data.updateNote)}</p>
     ` : ""}
 
     <div style="page-break-before: always;"></div>
-    <h2 style="font-size:16px;color:#0f3c37;">${escapeHtml(S.outcome)}</h2>
+    <h2 style="line-height:1.4;direction:rtl;font-size:16px;color:#0f3c37;">${escapeHtml(S.outcome)}</h2>
     ${!data.outcome ? `<p style="color:#999;">${escapeHtml(S.outcomeNotRecorded)}</p>` : `
-      <h3 style="font-size:14px;">${escapeHtml(S.forecastVsReality)}</h3>
+      <h3 style="line-height:1.4;direction:rtl;font-size:14px;">${escapeHtml(S.forecastVsReality)}</h3>
       <p style="margin:0 0 8px; font-weight:600;">${escapeHtml(S.matchedScenario)}: ${escapeHtml(data.outcome.matchedScenarioTitle ?? S.notAvailable)}</p>
       ${section(S.whatWentRight, data.outcome.whatWentRight)}
       ${section(S.whatWasMissed, data.outcome.whatWasMissed)}
