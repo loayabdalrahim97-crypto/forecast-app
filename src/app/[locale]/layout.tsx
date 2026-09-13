@@ -1,10 +1,16 @@
 import type { ReactNode } from "react";
+import Script from "next/script";
 import { Space_Grotesk, IBM_Plex_Sans } from "next/font/google";
 import { SUPPORTED_LOCALES, isRtl } from "@/lib/i18n/config";
 import { Providers } from "../providers";
 import { NavBar } from "@/components/nav-bar";
 import { Footer } from "@/components/footer";
 import "@/design-system/tokens.css";
+
+// Optional — analytics stays off entirely (no scripts, no requests)
+// unless this env var is set, so local/dev builds never send data and
+// the feature can be disabled by simply removing the Railway variable.
+const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
 const heading = Space_Grotesk({
   subsets: ["latin"],
@@ -35,6 +41,22 @@ export default function LocaleLayout({
 
   return (
     <html lang={locale} dir={dir} className={`${heading.variable} ${body.variable}`}>
+      {GA_MEASUREMENT_ID && (
+        <>
+          <Script
+            src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+            strategy="afterInteractive"
+          />
+          <Script id="ga4-init" strategy="afterInteractive">
+            {`
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', '${GA_MEASUREMENT_ID}');
+            `}
+          </Script>
+        </>
+      )}
       <body
         style={{
           // next/font sets --fc-font-*-loaded; bridge them onto the
