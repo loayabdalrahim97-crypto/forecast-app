@@ -41,23 +41,45 @@ describe("buildArabicReportHtml", () => {
     expect(html).toContain('lang="ar"');
   });
 
+  it("shows the brand name in English, not the Arabic transliteration", () => {
+    const html = buildArabicReportHtml(baseData);
+    expect(html).toContain(">Foresee<");
+    expect(html).not.toContain("فورسي");
+  });
+
+  it("never renders a heading as an <h2>/<h3> tag (confirmed source of garbled Arabic text)", () => {
+    const html = buildArabicReportHtml(baseData);
+    expect(html).not.toMatch(/<h2[ >]/);
+    expect(html).not.toMatch(/<h3[ >]/);
+  });
+
   it("includes the situation text verbatim (no fabricated content)", () => {
     const html = buildArabicReportHtml(baseData);
     expect(html).toContain("موقف تجريبي للاختبار");
   });
 
-  it("includes facts, assumptions, and unknowns as separate sections", () => {
+  it("includes facts, assumptions, and unknowns", () => {
     const html = buildArabicReportHtml(baseData);
     expect(html).toContain("حقيقة أولى");
     expect(html).toContain("افتراض أول");
     expect(html).toContain("مجهول أول");
   });
 
-  it("shows 'not recorded' when no outcome exists, not an empty/undefined section", () => {
+  it("includes the bottom line and decision support summary", () => {
     const html = buildArabicReportHtml(baseData);
-    expect(html).toContain("لم تُسجَّل نتيجة بعد");
-    expect(html).not.toContain("undefined");
-    expect(html).not.toContain("null");
+    expect(html).toContain("توصية أساسية");
+  });
+
+  it("includes the scenario title and recommended response", () => {
+    const html = buildArabicReportHtml(baseData);
+    expect(html).toContain("عنوان السيناريو");
+    expect(html).toContain("استجابة موصى بها");
+  });
+
+  it("omits sections trimmed from the condensed report (key variables, update history, outcome)", () => {
+    const html = buildArabicReportHtml(baseData);
+    expect(html).not.toContain("تحديثات التوقع");
+    expect(html).not.toContain("ماذا حدث فعلاً");
   });
 
   it("escapes HTML special characters in user-supplied text (no injection)", () => {
@@ -67,16 +89,5 @@ describe("buildArabicReportHtml", () => {
     });
     expect(html).not.toContain("<script>alert(1)</script>");
     expect(html).toContain("&lt;script&gt;");
-  });
-
-  it("omits the update-history section entirely when there was no update", () => {
-    const html = buildArabicReportHtml(baseData);
-    expect(html).not.toContain("تحديثات التوقع");
-  });
-
-  it("includes the update-history section when an update note exists", () => {
-    const html = buildArabicReportHtml({ ...baseData, updateNote: "معلومة جديدة تمت إضافتها" });
-    expect(html).toContain("تحديثات التوقع");
-    expect(html).toContain("معلومة جديدة تمت إضافتها");
   });
 });
